@@ -1,0 +1,82 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180">
+    <style>
+        .hero__s0 { fill: var(--neutral-100, transparent); stroke: var(--neutral-800, #d4d4d4); stroke-width: 2; }
+        .hero-title {
+            font-size: 16px;
+            color: var(--neutral-800);
+            font-weight: 700;
+            text-align: left;
+            text-transform: initial;
+            line-height: 1.3;
+        }
+        .hero-subtitle {
+            font-size: 11px;
+            color: var(--neutral-800);
+            font-weight: 600;
+            text-align: left;
+            text-transform: initial;
+            margin-top: 8px;
+        }
+        .hero-text {
+            font-size: 8px;
+            color: var(--neutral-800);
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: justify;
+            text-transform: initial;
+        }
+        .hero__button-primary {
+            fill: var(--primary-400, #3b82f6);
+        }
+        .hero__button-secondary {
+            fill: transparent;
+            stroke: var(--primary-400, #3b82f6);
+            stroke-width: 1;
+        }
+        .hero__button-text-primary {
+            font-size: 8px;
+            color: var(--neutral-1000, #fff);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .hero__button-text-secondary {
+            font-size: 8px;
+            color: var(--neutral-1000, #fff);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+    <path fill-rule="evenodd" class="hero__s0"
+          d="m5 0h270c2.76 0 5 2.24 5 5v170c0 2.76-2.24 5-5 5h-270c-2.76 0-5-2.24-5-5v-170c0-2.76 2.24-5 5-5z"/>
+    <foreignObject x="15" y="40" width="250" height="45">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="hero-title">Lorem ipsum dolor sit amet</div>
+        </div>
+    </foreignObject>
+    <foreignObject x="15" y="60" width="250" height="20">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="hero-subtitle">Etiam in feugiat orci</div>
+        </div>
+    </foreignObject>
+    <foreignObject x="15" y="85" width="250" height="35">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="hero-text">
+                Nulla porta diam nisi, nec malesuada risus porta non. Quisque tincidunt dapibus quam quis sollicitudin. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut varius sit amet erat non cursus. Pellentesque at velit tempor, semper mi non, accumsan mi. Ut ornare eleifend blandit. Nulla lacinia non orci ac tincidunt. Vivamus dignissim sagittis ex. Etiam a convallis urna, sed pharetra risus.
+            </div>
+        </div>
+    </foreignObject>
+    <rect x="15" y="130" width="95" height="18" rx="4" class="hero__button-primary"/>
+    <foreignObject x="15" y="130" width="95" height="18">
+        <div xmlns="http://www.w3.org/1999/xhtml"
+             style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <span class="hero__button-text-primary">BUTTON</span>
+        </div>
+    </foreignObject>
+    <rect x="115" y="130" width="95" height="18" rx="4" class="hero__button-secondary"/>
+    <foreignObject x="115" y="130" width="95" height="18">
+        <div xmlns="http://www.w3.org/1999/xhtml"
+             style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <span class="hero__button-text-secondary">OTHER BUTTON</span>
+        </div>
+    </foreignObject>
+</svg>

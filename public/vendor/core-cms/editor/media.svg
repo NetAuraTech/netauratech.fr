@@ -1,0 +1,23 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180">
+    <style>
+        .media__s0 { fill: var(--neutral-100, transparent); stroke: var(--neutral-800, #d4d4d4); stroke-width: 2; }
+        .media__image-bg {
+            fill: var(--neutral-200, #e5e5e5);
+        }
+        .media__image-icon {
+            fill: var(--neutral-400, #a0a0a0);
+        }
+        .media__sun {
+            fill: var(--primary-400, #fbbf24);
+        }
+    </style>
+
+    <path fill-rule="evenodd" class="media__s0"
+          d="m5 0h270c2.76 0 5 2.24 5 5v170c0 2.76-2.24 5-5 5h-270c-2.76 0-5-2.24-5-5v-170c0-2.76 2.24-5 5-5z"/>
+    <rect x="15" y="15" width="250" height="150" rx="4" class="media__image-bg"/>
+    <circle cx="220" cy="55" r="12" class="media__sun"/>
+    <path d="M 15 135 L 70 85 L 110 115 L 150 75 L 200 105 L 240 85 L 265 110 L 265 165 L 15 165 Z"
+          class="media__image-icon"/>
+    <path d="M 15 125 L 50 100 L 85 125 L 85 165 L 15 165 Z"
+          class="media__image-icon" opacity="0.7"/>
+</svg>

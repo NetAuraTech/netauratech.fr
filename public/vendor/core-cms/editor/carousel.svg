@@ -1,0 +1,61 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180">
+    <style>
+        .carousel__s0 { fill: var(--neutral-100, transparent); stroke: var(--neutral-800, #d4d4d4); stroke-width: 2; }
+        .carousel__title-text {
+            font-size: 14px;
+            color: var(--neutral-800);
+            font-weight: 700;
+            text-align: left;
+            text-transform: initial;
+        }
+        .carousel__slide-active {
+            fill: var(--neutral-200, #e5e5e5);
+            stroke: var(--primary-400, #3b82f6);
+            stroke-width: 2;
+        }
+        .carousel__slide-inactive {
+            fill: var(--neutral-300, #d0d0d0);
+            opacity: 0.5;
+        }
+        .carousel__image-icon {
+            fill: var(--neutral-400, #a0a0a0);
+        }
+        .carousel__sun {
+            fill: var(--primary-400, #fbbf24);
+        }
+        .carousel__arrow {
+            fill: var(--neutral-700, #404040);
+        }
+        .carousel__dot-active {
+            fill: var(--primary-400, #3b82f6);
+        }
+        .carousel__dot-inactive {
+            fill: var(--neutral-400, #d0d0d0);
+        }
+    </style>
+    <path fill-rule="evenodd" class="carousel__s0"
+          d="m5 0h270c2.76 0 5 2.24 5 5v170c0 2.76-2.24 5-5 5h-270c-2.76 0-5-2.24-5-5v-170c0-2.76 2.24-5 5-5z"/>
+    <foreignObject x="15" y="20" width="250" height="25">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="carousel__title-text">My great title</div>
+        </div>
+    </foreignObject>
+    <rect x="15" y="50" width="50" height="85" rx="4" class="carousel__slide-inactive"/>
+    <circle cx="35" cy="70" r="4" class="carousel__sun" opacity="0.5"/>
+    <path d="M 15 125 L 30 110 L 45 115 L 60 110 L 65 125 Z" class="carousel__image-icon" opacity="0.5"/>
+    <rect x="70" y="45" width="140" height="95" rx="4" class="carousel__slide-active"/>
+    <circle cx="165" cy="75" r="8" class="carousel__sun"/>
+    <path d="M 70 130 L 100 105 L 130 118 L 165 108 L 195 120 L 210 130 Z" class="carousel__image-icon"/>
+    <rect x="215" y="50" width="50" height="85" rx="4" class="carousel__slide-inactive"/>
+    <circle cx="245" cy="70" r="4" class="carousel__sun" opacity="0.5"/>
+    <path d="M 215 125 L 230 110 L 245 115 L 260 110 L 265 125 Z" class="carousel__image-icon" opacity="0.5"/>
+    <circle cx="30" cy="92" r="12" class="carousel__arrow"/>
+    <path d="M 34 92 L 26 92 M 26 92 L 30 88 M 26 92 L 30 96" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="250" cy="92" r="12" class="carousel__arrow"/>
+    <path d="M 246 92 L 254 92 M 254 92 L 250 88 M 254 92 L 250 96" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(140, 155)">
+        <circle cx="-15" cy="0" r="3" class="carousel__dot-inactive"/>
+        <circle cx="0" cy="0" r="4" class="carousel__dot-active"/>
+        <circle cx="15" cy="0" r="3" class="carousel__dot-inactive"/>
+    </g>
+</svg>

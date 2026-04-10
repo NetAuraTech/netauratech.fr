@@ -1,0 +1,78 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180">
+    <style>
+        .contact__s0 { fill: var(--neutral-100, transparent); stroke: var(--neutral-800, #d4d4d4); stroke-width: 2; }
+        .contact__title-text {
+            font-size: 14px;
+            color: var(--neutral-800);
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: justify;
+            text-transform: initial;
+        }
+        .contact__content-text {
+            font-size: 10px;
+            color: var(--neutral-800);
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: justify;
+            text-transform: initial;
+        }
+        .contact__label-text {
+            font-size: 10px;
+            color: var(--neutral-800);
+            font-weight: 500;
+            text-transform: initial;
+            text-align: justify;
+            text-transform: initial;
+        }
+        .contact__input-bg {
+            fill: var(--neutral-100, #fff);
+            stroke: var(--neutral-300, #000);
+            stroke-width: 1;
+        }
+        .contact__s2 { fill: var(--primary-400, #000) }
+        .contact__button-text {
+            font-size: 9px;
+            color: var(--neutral-1000, #fff);
+            font-weight: 700;
+        }
+    </style>
+    <path fill-rule="evenodd" class="contact__s0"
+          d="m5 0h270c2.76 0 5 2.24 5 5v170c0 2.76-2.24 5-5 5h-270c-2.76 0-5-2.24-5-5v-170c0-2.76 2.24-5 5-5z"/>
+    <foreignObject x="15" y="20" width="250" height="105">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="contact__title-text">My great title</div>
+            <div class="contact__content-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </div>
+        </div>
+    </foreignObject>
+    <!-- Input 1 -->
+    <foreignObject x="15" y="65" width="50" height="15">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="contact__label-text">Name</div>
+        </div>
+    </foreignObject>
+    <rect x="15" y="78" width="120" height="12" rx="2" class="contact__input-bg"/>
+    <!-- Input 2 -->
+    <foreignObject x="145" y="65" width="50" height="15">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="contact__label-text">Firstname</div>
+        </div>
+    </foreignObject>
+    <rect x="145" y="78" width="120" height="12" rx="2" class="contact__input-bg"/>
+    <!-- Textarea -->
+    <foreignObject x="15" y="95" width="60" height="15">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="contact__label-text">Message</div>
+        </div>
+    </foreignObject>
+    <rect x="15" y="108" width="250" height="35" rx="2" class="contact__input-bg"/>
+    <rect x="15" y="150" width="56" height="17" rx="3" class="contact__s2"/>
+    <foreignObject x="15" y="150" width="56" height="17">
+        <div xmlns="http://www.w3.org/1999/xhtml"
+             style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <span class="contact__button-text">SEND</span>
+        </div>
+    </foreignObject>
+</svg>

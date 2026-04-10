@@ -1,0 +1,41 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180">
+    <style>
+        .header__s0 { fill: var(--neutral-100, transparent); stroke: var(--neutral-800, #d4d4d4); stroke-width: 2; }
+        .header-bg {
+            fill: var(--neutral-200, #1a1a2e);
+        }
+        .header__logo-text {
+            font-size: 11px;
+            color: var(--neutral-800, #fff);
+            font-weight: 700;
+            text-transform: initial;
+        }
+        .header__nav-link {
+            font-size: 8px;
+            color: var(--neutral-800, #fff);
+            font-weight: 400;
+            text-transform: initial;
+        }
+        .header__nav-link-active {
+            font-size: 8px;
+            color: var(--accent-400, #e91e63);
+            font-weight: 400;
+            text-transform: initial;
+        }
+    </style>
+    <path fill-rule="evenodd" class="header__s0"
+          d="m5 0h270c2.76 0 5 2.24 5 5v170c0 2.76-2.24 5-5 5h-270c-2.76 0-5-2.24-5-5v-170c0-2.76 2.24-5 5-5z"/>
+    <rect x="1" y="1" width="278" height="30" class="header-bg"/>
+    <foreignObject x="10" y="10" width="40" height="16">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <div class="header__logo-text">Logo</div>
+        </div>
+    </foreignObject>
+    <foreignObject x="110" y="12" width="170" height="16">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; gap: 6px; align-items: center;">
+            <span class="header__nav-link-active">Lorem ipsum</span>
+            <span class="header__nav-link">Quisque suscipit</span>
+            <span class="header__nav-link">Nulla porta</span>
+        </div>
+    </foreignObject>
+</svg>
