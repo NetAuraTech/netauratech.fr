@@ -16,10 +16,8 @@ COPY . .
 
 RUN DB_CONNECTION=sqlite DB_DATABASE=:memory: composer install \
     --no-interaction --optimize-autoloader
-RUN composer require laravel/octane
 
 RUN cp .env.example .env || touch .env \
-    && DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan octane:install --server=frankenphp \
     && npm install \
     && DB_CONNECTION=sqlite DB_DATABASE=:memory: npm run build
 
