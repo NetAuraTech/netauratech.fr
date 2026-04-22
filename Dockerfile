@@ -23,7 +23,7 @@ RUN cp .env.example .env || touch .env \
     && npm install \
     && DB_CONNECTION=sqlite DB_DATABASE=:memory: npm run build
 
-FROM dunglas/frankenphp:latest-php8.4-alpine
+FROM dunglas/frankenphp:php8.4-alpine
 RUN apk add --no-cache \
     libpq libpng libzip icu-libs \
     imagemagick freetype libjpeg-turbo libwebp
