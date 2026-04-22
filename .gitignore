@@ -25,7 +25,6 @@ Homestead.json
 
 /public/build
 /storage/app
-/storage/framework
 /storage/tenant_*
 /storage/logs
 .env.backup
