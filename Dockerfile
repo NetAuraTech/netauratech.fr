@@ -3,10 +3,10 @@ FROM dunglas/frankenphp:php8.4-alpine AS builder
 RUN apk add --no-cache \
     libpq-dev libpng-dev libzip-dev zip unzip git icu-dev \
     imagemagick-dev libtool make gcc g++ autoconf \
-    freetype-dev libjpeg-turbo-dev libwebp-dev nodejs npm
+    freetype-dev libjpeg-turbo-dev libwebp-dev nodejs npm linux-headers
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install pdo_pgsql pgsql bcmath gd zip intl opcache \
+    && docker-php-ext-install pdo_pgsql pgsql bcmath gd zip intl opcache pcntl \
     && pecl install imagick redis \
     && docker-php-ext-enable imagick redis
 
