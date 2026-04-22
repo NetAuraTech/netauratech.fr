@@ -3047,16 +3047,16 @@
         },
         {
             "name": "netauratech/core-cms",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/core-cms.git",
-                "reference": "c6a3e5acf34d80dabaaba0816f0a0de4b9dd21d4"
+                "reference": "35fd091b30dc452d0b609ced5066c2ea5d53dcdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/c6a3e5acf34d80dabaaba0816f0a0de4b9dd21d4",
-                "reference": "c6a3e5acf34d80dabaaba0816f0a0de4b9dd21d4",
+                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/35fd091b30dc452d0b609ced5066c2ea5d53dcdb",
+                "reference": "35fd091b30dc452d0b609ced5066c2ea5d53dcdb",
                 "shasum": ""
             },
             "require": {
@@ -3145,10 +3145,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.2",
+                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.3",
                 "issues": "https://github.com/NetAuraTech/core-cms/issues"
             },
-            "time": "2026-04-22T18:56:59+00:00"
+            "time": "2026-04-22T21:10:13+00:00"
         },
         {
             "name": "netauratech/gdpr-consent",
@@ -3207,16 +3207,16 @@
         },
         {
             "name": "netauratech/media-manager",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/media-manager.git",
-                "reference": "4d0d52fbe9de64ca8e935147afb411f9bc85f4a4"
+                "reference": "063724147e4e7dd37463273309682f08deba8e59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/media-manager/zipball/4d0d52fbe9de64ca8e935147afb411f9bc85f4a4",
-                "reference": "4d0d52fbe9de64ca8e935147afb411f9bc85f4a4",
+                "url": "https://api.github.com/repos/NetAuraTech/media-manager/zipball/063724147e4e7dd37463273309682f08deba8e59",
+                "reference": "063724147e4e7dd37463273309682f08deba8e59",
                 "shasum": ""
             },
             "require": {
@@ -3257,28 +3257,28 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/media-manager/tree/1.0.0",
+                "source": "https://github.com/NetAuraTech/media-manager/tree/1.0.1",
                 "issues": "https://github.com/NetAuraTech/media-manager/issues"
             },
-            "time": "2026-04-09T14:44:13+00:00"
+            "time": "2026-04-22T21:13:14+00:00"
         },
         {
             "name": "netauratech/multi-tenancy",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/multi-tenancy.git",
-                "reference": "6a6d9fd64a0e3939d541519e73819d6a561456ec"
+                "reference": "5878ca80616fd37c30ff02c973288dbab88a72a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/multi-tenancy/zipball/6a6d9fd64a0e3939d541519e73819d6a561456ec",
-                "reference": "6a6d9fd64a0e3939d541519e73819d6a561456ec",
+                "url": "https://api.github.com/repos/NetAuraTech/multi-tenancy/zipball/5878ca80616fd37c30ff02c973288dbab88a72a3",
+                "reference": "5878ca80616fd37c30ff02c973288dbab88a72a3",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^12.0",
-                "netauratech/core-cms": "^1.0",
+                "netauratech/core-cms": "^1.0.1",
                 "php": "^8.1",
                 "stancl/tenancy": "^3.9"
             },
@@ -3313,10 +3313,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/multi-tenancy/tree/1.0.3",
+                "source": "https://github.com/NetAuraTech/multi-tenancy/tree/1.0.4",
                 "issues": "https://github.com/NetAuraTech/multi-tenancy/issues"
             },
-            "time": "2026-04-20T15:54:13+00:00"
+            "time": "2026-04-22T21:14:46+00:00"
         },
         {
             "name": "netauratech/portfolio-manager",
@@ -3375,16 +3375,16 @@
         },
         {
             "name": "netauratech/theme-manager",
-            "version": "v1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/theme-manager.git",
-                "reference": "853dbc823664c3593b169348c5fb7470854e278b"
+                "reference": "e89a156ed4bdf8428f14999ddc2e8e37233a5553"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/theme-manager/zipball/853dbc823664c3593b169348c5fb7470854e278b",
-                "reference": "853dbc823664c3593b169348c5fb7470854e278b",
+                "url": "https://api.github.com/repos/NetAuraTech/theme-manager/zipball/e89a156ed4bdf8428f14999ddc2e8e37233a5553",
+                "reference": "e89a156ed4bdf8428f14999ddc2e8e37233a5553",
                 "shasum": ""
             },
             "require": {
@@ -3407,10 +3407,10 @@
             },
             "description": "Manages CMS themes.",
             "support": {
-                "source": "https://github.com/NetAuraTech/theme-manager/tree/v1.0.0",
+                "source": "https://github.com/NetAuraTech/theme-manager/tree/1.0.1",
                 "issues": "https://github.com/NetAuraTech/theme-manager/issues"
             },
-            "time": "2025-11-05T19:49:01+00:00"
+            "time": "2026-04-22T21:11:38+00:00"
         },
         {
             "name": "nette/schema",
