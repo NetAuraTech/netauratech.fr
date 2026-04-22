@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:latest-php8.4-alpine AS builder
+FROM dunglas/frankenphp:php8.4-alpine AS builder
 
 RUN apk add --no-cache \
     libpq-dev libpng-dev libzip-dev zip unzip git icu-dev \
