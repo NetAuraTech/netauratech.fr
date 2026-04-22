@@ -3047,16 +3047,16 @@
         },
         {
             "name": "netauratech/core-cms",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/core-cms.git",
-                "reference": "175937bece175b343b952325ecc6e8e8f86a6b1c"
+                "reference": "c938ca56e57ce0006c094758eb361275e51d6f17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/175937bece175b343b952325ecc6e8e8f86a6b1c",
-                "reference": "175937bece175b343b952325ecc6e8e8f86a6b1c",
+                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/c938ca56e57ce0006c094758eb361275e51d6f17",
+                "reference": "c938ca56e57ce0006c094758eb361275e51d6f17",
                 "shasum": ""
             },
             "require": {
@@ -3145,10 +3145,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.5",
+                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.6",
                 "issues": "https://github.com/NetAuraTech/core-cms/issues"
             },
-            "time": "2026-04-22T21:36:07+00:00"
+            "time": "2026-04-22T22:14:55+00:00"
         },
         {
             "name": "netauratech/gdpr-consent",
