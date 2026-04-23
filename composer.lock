@@ -3047,16 +3047,16 @@
         },
         {
             "name": "netauratech/core-cms",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/core-cms.git",
-                "reference": "c938ca56e57ce0006c094758eb361275e51d6f17"
+                "reference": "ab88e038d5f0873b9eb026b58ec697544dfc11a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/c938ca56e57ce0006c094758eb361275e51d6f17",
-                "reference": "c938ca56e57ce0006c094758eb361275e51d6f17",
+                "url": "https://api.github.com/repos/NetAuraTech/core-cms/zipball/ab88e038d5f0873b9eb026b58ec697544dfc11a6",
+                "reference": "ab88e038d5f0873b9eb026b58ec697544dfc11a6",
                 "shasum": ""
             },
             "require": {
@@ -3145,10 +3145,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.6",
+                "source": "https://github.com/NetAuraTech/core-cms/tree/1.0.7",
                 "issues": "https://github.com/NetAuraTech/core-cms/issues"
             },
-            "time": "2026-04-22T22:14:55+00:00"
+            "time": "2026-04-23T00:31:33+00:00"
         },
         {
             "name": "netauratech/gdpr-consent",
@@ -3264,16 +3264,16 @@
         },
         {
             "name": "netauratech/multi-tenancy",
-            "version": "1.0.4",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetAuraTech/multi-tenancy.git",
-                "reference": "5878ca80616fd37c30ff02c973288dbab88a72a3"
+                "reference": "0dde4ffed281d03ab87e64cc0bc99c2e1888ec89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetAuraTech/multi-tenancy/zipball/5878ca80616fd37c30ff02c973288dbab88a72a3",
-                "reference": "5878ca80616fd37c30ff02c973288dbab88a72a3",
+                "url": "https://api.github.com/repos/NetAuraTech/multi-tenancy/zipball/0dde4ffed281d03ab87e64cc0bc99c2e1888ec89",
+                "reference": "0dde4ffed281d03ab87e64cc0bc99c2e1888ec89",
                 "shasum": ""
             },
             "require": {
@@ -3313,10 +3313,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/NetAuraTech/multi-tenancy/tree/1.0.4",
+                "source": "https://github.com/NetAuraTech/multi-tenancy/tree/1.0.5",
                 "issues": "https://github.com/NetAuraTech/multi-tenancy/issues"
             },
-            "time": "2026-04-22T21:14:46+00:00"
+            "time": "2026-04-23T00:31:20+00:00"
         },
         {
             "name": "netauratech/portfolio-manager",
