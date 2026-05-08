@@ -1,0 +1,14 @@
+{
+  "contact_form": {
+    "submitted": "Your contact request has been successfully sent.",
+    "mail": {
+      "subject": "New contact request",
+      "greeting": "Hello,",
+      "intro": "You have received a new contact request.",
+      "lastname": "Lastname: {value}",
+      "firstname": "Firstname: {value}",
+      "email": "Email: {value}",
+      "message": "Message: {value}"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "E_MISSING_TRANSLATION": "No translation for locale \"{locale}\" on page {pageId}.",
+  "E_EMAIL_EXISTS": "This email address is already in use by another account.",
+  "E_INVALID_CURRENT_PASSWORD": "The current password is incorrect.",
+  "E_PROVIDER_ALREADY_LINKED": "The \"{provider}\" account is already linked to another user.",
+  "E_PROVIDER_NOT_CONFIGURED": "{provider} authentication is not configured.",
+  "E_UNVERIFIED_ACCOUNT": "This account has not yet been verified. Please verify your email address before continuing.",
+  "E_INVALID_TOKEN": "This link is invalid or has expired. Please request a new one.",
+  "E_MAX_ATTEMPTS_EXCEEDED": "This link has been used too many times. Please request a new one.",
+  "E_ROW_NOT_FOUND": "The requested resource cannot be found.",
+  "E_SLUG_EXISTS": "Slug \"{slug}\" is already taken.",
+  "E_FILE_TOO_LARGE": "File exceeds the {limit}MB limit.",
+  "E_INVALID_EXTENSION": "Extension \".${ext}\" is not allowed.",
+  "E_INVALID_CREDENTIALS": "Authentication failed. Please try again.",
+  "E_TOO_MANY_REQUESTS": "Too many attempts. Limit of {limit} requests reached. Please try again in {availableIn} minutes.",
+  "E_UNAUTHORIZED": "You must be logged in to access this resource.",
+  "E_FORBIDDEN": "You do not have permission to access this resource."
+}

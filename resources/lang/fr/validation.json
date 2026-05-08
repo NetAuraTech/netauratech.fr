@@ -1,0 +1,33 @@
+{
+  "required": "Le champ { field } est obligatoire",
+  "email": "Le champ { field } doit être une adresse e-mail valide",
+  "minLength": "Le champ { field } doit contenir au moins { min } caractères",
+  "maxLength": "Le champ { field } ne doit pas dépasser { max } caractères",
+  "confirmed": "La confirmation du champ { field } ne correspond pas",
+  "unique": "Le champ { field } est déjà utilisé",
+  "exists": "Le champ { field } sélectionné est invalide",
+  "string": "Le champ { field } doit être une chaîne de caractères",
+  "number": "Le champ { field } doit être un nombre",
+  "boolean": "Le champ { field } doit être vrai ou faux",
+  "date": "Le champ { field } doit être une date valide",
+  "enum": "Le champ { field } sélectionné est invalide",
+  "failed": "Les données fournies ne sont pas valides. Veuillez vérifier vos informations et réessayer.",
+  "front": {
+    "required": "{field} est requis",
+    "email": "Veuillez saisir une adresse email valide",
+    "min_length": "{field} doit contenir au moins {min} caractères (actuellement : {current})",
+    "max_length": "{field} doit contenir au maximum {max} caractères (actuellement : {current})",
+    "matches": "Doit correspondre à {other}",
+    "one_of": "{field} contient une valeur invalide",
+    "fields": {
+      "email": "Email",
+      "password": "Mot de passe",
+      "password_confirmation": "Confirmation du mot de passe",
+      "current_password": "Mot de passe actuel",
+      "username": "Nom d'utilisateur",
+      "search": "Recherche",
+      "select": "Sélection",
+      "role": "Rôle"
+    }
+  }
+}

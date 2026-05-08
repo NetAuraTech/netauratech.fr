@@ -1,0 +1,430 @@
+{
+  "value": "Administration",
+  "dashboard": "Tableau de bord",
+  "category": {
+    "access_control": "Contrôle d'accès",
+    "content": "Contenu"
+  },
+  "users": {
+    "created": "Un e-mail d'invitation a été envoyé à {email} afin que l'utilisateur {username} puisse créer son compte.",
+    "updated_email": "Un e-mail de confirmation a été envoyé à l'utilisateur afin de confirmer le changement d'adresse e-mail.",
+    "updated": "L'utilisateur a été modifié avec succès.",
+    "deleted": "L'utilisateur a été supprimé avec succès.",
+    "mail": {
+      "subject": "Vous avez été invité à rejoindre {app}",
+      "greeting": "Vous avez été invité,",
+      "intro": "Un administrateur vous a invité à rejoindre {app}. Cliquez sur le bouton ci-dessous pour accepter votre invitation et configurer votre compte.",
+      "action": "Accepter l’invitation",
+      "outro": "Une fois que vous aurez accepté, vous pourrez définir votre mot de passe et commencer à utiliser votre compte immédiatement. Votre adresse e-mail sera vérifiée automatiquement. ",
+      "expiry": "Ce lien d'invitation expirera dans {days} jours.",
+      "footer": "Si vous rencontrez des difficultés pour cliquer sur le bouton, copiez et collez l'URL ci-dessous dans votre navigateur web :"
+    },
+    "list": {
+      "action": "Inviter un utilisateur",
+      "empty": "Aucun utilisateur trouvé.",
+      "register_on": "Inscrit le",
+      "title": "Gérer les utilisateurs"
+    },
+    "show": {
+      "title": "Voir l'utilisateur: {username}",
+      "info": {
+        "email": "E-mail",
+        "username": "Nom d'utilisateur",
+        "value": "Information sur l'utilisateur"
+      },
+      "history": {
+        "created_at": "Créé le",
+        "updated_at": "Dernière mise à jour",
+        "verified_at": "E-mail vérifié le",
+        "value": "Chronologie du compte"
+      },
+      "providers": {
+        "connected": "Connecté",
+        "not_connected": "Non connecté",
+        "value": "Comptes connectés"
+      },
+      "role": {
+        "current": "Rôle actuel",
+        "value": "Rôle et permissions"
+      },
+      "permission": {
+        "value": "Permissions de ce rôle ({amount})"
+      }
+    },
+    "create": {
+      "title": "Inviter un utilisateur"
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur: {username}"
+    },
+    "delete": {
+      "title": "Supprimer l'utilisateur: {username}"
+    },
+    "form": {
+      "email": {
+        "placeholder": "john.doe@test.local",
+        "value": "E-mail"
+      },
+      "username": {
+        "placeholder": "JohnDoe",
+        "value": "Nom d'utilisateur"
+      },
+      "role": {
+        "placeholder": "Choisir un rôle...",
+        "value": "Rôle"
+      },
+      "submit": "Envoyer"
+    },
+    "status": {
+      "verified": "✓ Vérifié",
+      "unverified": "× Non vérifié",
+      "pending_invite": "⟳ Invitation en attente",
+      "value": "Statut"
+    },
+    "search": {
+      "filter": "Filtrer",
+      "placeholder": "John Doe",
+      "value": "Rechercher"
+    },
+    "roles": {
+      "user": {
+        "description": "Utilisateur standard disposant de droits d'accès limités.",
+        "value": "Utilisateur"
+      },
+      "admin": {
+        "description": "Accès complet au système avec toutes les autorisations.",
+        "value": "Administrateur"
+      },
+      "placeholder": "Tous les rôles",
+      "value": "Rôles",
+      "value_one": "Rôle"
+    },
+    "permissions": {
+      "category": {
+        "admin": "Administration",
+        "users": "Utilisateurs",
+        "roles": "Rôles",
+        "permissions": "Permissions"
+      },
+      "admin": {
+        "access": {
+          "value": "Accéder au tableau de bord de l'administration"
+        }
+      },
+      "users": {
+        "create": {
+          "value": "Créer des utilisateurs"
+        },
+        "view": {
+          "value": "Afficher les utilisateurs"
+        },
+        "update": {
+          "value": "Modifier les utilisateurs"
+        },
+        "delete": {
+          "value": "Supprimer les utilisateurs"
+        },
+        "manage_roles": {
+          "value": "Gérer les rôles des utilisateurs"
+        }
+      },
+      "roles": {
+        "create": {
+          "value": "Créer des rôles"
+        },
+        "view": {
+          "value": "Afficher les rôles"
+        },
+        "update": {
+          "value": "Modifier les rôles"
+        },
+        "delete": {
+          "value": "Supprimer les rôles"
+        },
+        "manage_permissions": {
+          "value": "Gérer les rôles des permissions"
+        }
+      },
+      "permissions": {
+        "create": {
+          "value": "Créer des permissions"
+        },
+        "view": {
+          "value": "Afficher les permissions"
+        },
+        "update": {
+          "value": "Modifier les permissions"
+        },
+        "delete": {
+          "value": "Supprimer les permissions"
+        }
+      }
+    },
+    "actions": "Actions",
+    "value": "Utilisateurs",
+    "value_one": "Utilisateur"
+  },
+  "files": {
+    "list": {
+      "title": "Gérer les fichiers",
+      "action": {
+        "upload": "Téléverser",
+        "folders": "Dossiers"
+      },
+      "folders": {
+        "all": "Tous"
+      }
+    },
+    "show": {
+      "title": "Ouvrir",
+      "alts": {
+        "title": "Textes alternatifs",
+        "empty": "Aucun texte alternatif pour le moment.",
+        "add": "Ajouter",
+        "close": "Fermer",
+        "edit": "Modifier",
+        "delete": {
+          "value": "Supprimer",
+          "confirm": "Êtes-vous sûr de vouloir supprimer ce texte alternatif ?"
+        },
+        "form": {
+          "locale": {
+            "value": "Langue"
+          },
+          "key": {
+            "value": "Clé",
+            "placeholder": "image_principale, vignette, ..."
+          },
+          "alt_text": {
+            "value": "Texte alternatif",
+            "placeholder": "Texte descriptif"
+          },
+          "submit": "Ajouter",
+          "cancel": "Annuler",
+          "update": "Mettre à jour"
+        }
+      }
+    },
+    "delete": {
+      "title": "Supprimer le fichier : {filename}",
+      "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier ?"
+    },
+    "upload": {
+      "remove": "Retirer",
+      "submit": "Téléverser le fichier",
+      "help": "Cliquez pour téléverser ou glissez-déposez",
+      "try_again": "Essayez un autre fichier",
+      "max_size": "Max {size}",
+      "error": {
+        "size": "Le fichier dépasse la limite de {max}"
+      }
+    },
+    "form": {
+      "name": {
+        "value": "Nom"
+      },
+      "type": {
+        "value": "Type"
+      },
+      "size": {
+        "value": "Taille"
+      },
+      "uploaded_at": {
+        "value": "Téléversé le"
+      }
+    },
+    "search": {
+      "filter": "Filtrer",
+      "placeholder": "...",
+      "value": "Rechercher",
+      "type": {
+        "value": "Type de fichier",
+        "options": {
+          "placeholder": "Tous les types",
+          "image": "Images",
+          "video": "Vidéos",
+          "audio": "Audio",
+          "pdf": "PDF"
+        }
+      }
+    },
+    "actions": "Actions",
+    "value": "Fichiers"
+  },
+  "folders": {
+    "list": {
+      "title": "Gérer les dossiers",
+      "add": "Ajouter un sous-dossier",
+      "rename": "Renommer le dossier",
+      "browse": "Parcourir les fichiers",
+      "empty": {
+        "value": "Aucun dossier pour le moment.",
+        "help": "Créez un dossier ci-dessus pour commencer à organiser vos fichiers."
+      }
+    },
+    "delete": {
+      "title": "Supprimer le dossier {folder}",
+      "confirm": "Êtes-vous sûr de vouloir supprimer ce dossier ?"
+    },
+    "form": {
+      "name": {
+        "root": "Nouveau dossier racine",
+        "sub": "Nouveau sous-dossier",
+        "placeholder": "Nom du dossier"
+      },
+      "help": "Sera créé à l'intérieur du dossier sélectionné.",
+      "create": "Créer",
+      "cancel": "Annuler",
+      "update": "Mettre à jour"
+    }
+  },
+  "templates": {
+    "list": {
+      "title": "Gérer les modèles",
+      "empty": {
+        "help": "Les modèles sont créés à partir des pages dans l'éditeur de page.",
+        "value": "Aucun modèle pour le moment"
+      }
+    },
+    "search": {
+      "filter": "Filtrer",
+      "placeholder": "Section, Image, Héro, ...",
+      "value": "Rechercher",
+      "type": {
+        "page": "Page",
+        "block": "Bloc",
+        "placeholder": "Tous",
+        "value": "Type"
+      }
+    },
+    "delete": {
+      "title": "Supprimer le modèle : {name}",
+      "confirm": "Êtes-vous sûr de vouloir supprimer ce modèle ?"
+    },
+    "value": "Modèles"
+  },
+  "pages": {
+    "list": {
+      "action": "Créer une nouvelle page",
+      "empty": "Aucune page trouvée.",
+      "title": "Gérer les pages"
+    },
+    "show": {
+      "title": "Voir la page : {title}",
+      "translation": "Traductions ({count})",
+      "meta": {
+        "title": "A un méta-titre",
+        "id": "ID de la page",
+        "locale": "Langue par défaut",
+        "translations": "Traductions",
+        "created": "Créée le",
+        "updated": "Dernière mise à jour",
+        "value": "Métadonnées"
+      },
+      "revision": {
+        "view": "Voir la révision",
+        "value": "Historique des révisions",
+        "pin": "Épingler la révision (exclure de la suppression automatique)",
+        "unpin": "Désépingler la révision",
+        "restore": {
+          "confirm": "Restaurer cette révision ? Le contenu actuel sera d'abord sauvegardé en tant que nouvelle révision.",
+          "value": "Restaurer"
+        },
+        "latest": "Dernière en date",
+        "index": "Index",
+        "created": {
+          "at": "Créée le",
+          "by": "Créée par"
+        },
+        "back": "Retour à l'éditeur",
+        "empty": {
+          "value": "Aucune révision pour le moment",
+          "help": "Les révisions sont sauvegardées automatiquement lorsque vous mettez à jour une traduction."
+        },
+        "help": "Jusqu'à 10 révisions sont conservées automatiquement. Les révisions épinglées ne sont jamais supprimées."
+      },
+      "homepage": {
+        "confirm": "Souhaitez-vous définir cette page comme page d'accueil ? La page d'accueil actuelle sera supprimée.",
+        "help": {
+          "title": {
+            "not_set": "Non définie comme page d'accueil",
+            "set": "Page d'accueil actuelle"
+          },
+          "message": {
+            "not_set": "En définissant cette page comme page d'accueil, elle devient accessible à l'adresse / (URL racine).",
+            "set": "Cette page est accessible à l'adresse / (URL racine)."
+          }
+        },
+        "submit": "Définir comme page d'accueil",
+        "value": "Page d'accueil"
+      },
+      "last_update": "Dernière mise à jour",
+      "default": "Par défaut"
+    },
+    "create": {
+      "title": "Créer une nouvelle page",
+      "details": {
+        "value": "Détails de la page"
+      },
+      "seo": {
+        "value": "SEO",
+        "help": "Optionnel - Utilise par défaut le {title} s'il est vide."
+      }
+    },
+    "edit": {
+      "title": "Modifier la page : {title}"
+    },
+    "delete": {
+      "title": "Supprimer la page : {title}",
+      "confirm": "Êtes-vous sûr de vouloir supprimer cette page ? Cela supprimera définitivement la page, ainsi que toutes ses traductions et révisions. Cette action est irréversible."
+    },
+    "status": {
+      "all": "Tous",
+      "draft": "Brouillon",
+      "published": "Publiée",
+      "archived": "Archivée",
+      "value": "Statut"
+    },
+    "locale": {
+      "all": "Toutes",
+      "value": "Langue"
+    },
+    "title": {
+      "value": "Titre"
+    },
+    "slug": {
+      "value": "Slug (URL)"
+    },
+    "search": {
+      "filter": "Filtrer",
+      "placeholder": "Accueil, ...",
+      "value": "Rechercher"
+    },
+    "form": {
+      "title": {
+        "value": "Titre",
+        "placeholder": "Ma super page"
+      },
+      "locale": {
+        "default": "Langue par défaut"
+      },
+      "slug": {
+        "value": "Slug (URL)"
+      },
+      "meta": {
+        "title": {
+          "value": "Méta-titre",
+          "placeholder": "Ma super page"
+        },
+        "description": {
+          "value": "Méta-description",
+          "placeholder": "Une courte description affichée dans les résultats de recherche."
+        }
+      },
+      "submit": "Envoyer"
+    },
+    "actions": "Actions",
+    "value_one": "Page",
+    "value": "Pages"
+  }
+}

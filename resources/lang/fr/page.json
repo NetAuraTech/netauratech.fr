@@ -1,0 +1,14 @@
+{
+  "contact_form": {
+    "submitted": "Votre demande de contact a bien été envoyée.",
+    "mail": {
+      "subject": "Nouvelle demande de contact",
+      "greeting": "Bonjour,",
+      "intro": "Vous avez reçu une nouvelle demande de contact.",
+      "lastname": "Nom: {value}",
+      "firstname": "Prénom: {value}",
+      "email": "E-Mail: {value}",
+      "message": "Message: {value}"
+    }
+  }
+}
