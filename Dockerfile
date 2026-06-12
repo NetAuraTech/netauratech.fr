@@ -24,7 +24,8 @@ RUN cp .env.example .env || touch .env \
 FROM dunglas/frankenphp:php8.4-alpine
 RUN apk add --no-cache \
     libpq libpng libzip icu-libs \
-    imagemagick freetype libjpeg-turbo libwebp
+    imagemagick freetype libjpeg-turbo libwebp \
+    postgresql-client
 
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
