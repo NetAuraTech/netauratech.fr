@@ -109,7 +109,7 @@
     "@vinejs/vine": "^4.3.0",
     "better-sqlite3": "^12.6.2",
     "dompurify": "^3.4.13",
-    "edge.js": "^6.5.0",
+    "edge.js": "^6.5.1",
     "html-to-image": "^1.11.13",
     "ipaddr.js": "^2.4.0",
     "jsdom": "^29.0.1",
