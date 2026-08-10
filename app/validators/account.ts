@@ -1,8 +1,6 @@
 import vine from '@vinejs/vine'
 import type User from '#models/auth/user'
-
-const email = () => vine.string().trim().toLowerCase().email().maxLength(254)
-const password = () => vine.string().minLength(8).maxLength(32)
+import { email, password } from '#validators/rules'
 
 export const updateEmailValidator = (id: User['id']) =>
   vine.create({

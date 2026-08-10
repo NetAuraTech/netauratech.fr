@@ -8,6 +8,8 @@ interface ButtonBaseProps {
   loading?: boolean
   /** HTML button type. Defaults to `'submit'`. */
   type?: 'button' | 'submit' | 'reset'
+  /** HTML name attribute for form submission identification. */
+  name?: string
   /**
    * Visual variant.
    *

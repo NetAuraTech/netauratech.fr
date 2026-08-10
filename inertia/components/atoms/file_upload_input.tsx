@@ -4,7 +4,7 @@ import { Paragraph } from '~/components/atoms/paragraph'
 import { humanSize } from '~/utils/file'
 import { Label } from '~/components/atoms/label'
 import { Button } from '~/components/atoms/button'
-import type { CmsFilesTranslations } from '#types/translations'
+import type { AdminFilesTranslations } from '#types/translations'
 import { useTranslation } from '~/hooks/use_translation'
 
 interface FileUploadInputProps {
@@ -24,7 +24,7 @@ interface FileUploadInputProps {
   label?: string
   /** Optional hint shown below the drop zone */
   hint?: string
-  translations: CmsFilesTranslations
+  translations: AdminFilesTranslations
 }
 
 /**
@@ -63,7 +63,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
     hint,
     translations,
   } = props
-  const { t } = useTranslation<CmsFilesTranslations>(translations)
+  const { t } = useTranslation<AdminFilesTranslations>(translations)
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
 

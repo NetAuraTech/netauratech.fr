@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "value": "Administrateur",
+    "description": "Accès complet à toutes les fonctionnalités, y compris les paramètres système."
+  },
+  "user": {
+    "value": "Utilisateur",
+    "description": "Compte standard sans droits d'administration."
+  }
+}

@@ -12,7 +12,7 @@ export function Footer() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 pb-10 mb-8 border-b border-primary">
         <div className="col-span-2 md:col-span-1">
           <Link
-            route="page.home"
+            href="/"
             className="text-ink-inverted font-semibold tracking-wide text-xl font-cormorant"
           >
             {pageProps.app_name}

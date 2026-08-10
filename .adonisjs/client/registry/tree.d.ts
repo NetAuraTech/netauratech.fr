@@ -7,9 +7,19 @@ export interface ApiDefinition {
       serve: typeof routes['drive.fs.serve']
     }
   }
-  eventStream: typeof routes['event_stream']
-  subscribe: typeof routes['subscribe']
-  unsubscribe: typeof routes['unsubscribe']
+  health: {
+    liveness: typeof routes['health.liveness']
+    readiness: typeof routes['health.readiness']
+  }
+  sitemap: {
+    show: typeof routes['sitemap.show']
+  }
+  robots: {
+    show: typeof routes['robots.show']
+  }
+  front: {
+    home: typeof routes['front.home']
+  }
   auth: {
     session: {
       render: typeof routes['auth.session.render']
@@ -82,42 +92,32 @@ export interface ApiDefinition {
       render: typeof routes['admin.users_update.render']
       execute: typeof routes['admin.users_update.execute']
     }
-    pages: {
-      render: typeof routes['admin.pages.render']
-      setHomepage: typeof routes['admin.pages.set_homepage']
-      destroy: typeof routes['admin.pages.destroy']
+    roles: {
+      render: typeof routes['admin.roles.render']
+      destroy: typeof routes['admin.roles.destroy']
     }
-    pagesCreate: {
-      render: typeof routes['admin.pages_create.render']
-      execute: typeof routes['admin.pages_create.execute']
+    rolesCreate: {
+      render: typeof routes['admin.roles_create.render']
+      execute: typeof routes['admin.roles_create.execute']
     }
-    pagesShow: {
-      render: typeof routes['admin.pages_show.render']
+    rolesShow: {
+      render: typeof routes['admin.roles_show.render']
     }
-    pagesUpdate: {
-      render: typeof routes['admin.pages_update.render']
-      execute: typeof routes['admin.pages_update.execute']
-      publish: typeof routes['admin.pages_update.publish']
-      unpublish: typeof routes['admin.pages_update.unpublish']
+    rolesUpdate: {
+      render: typeof routes['admin.roles_update.render']
+      execute: typeof routes['admin.roles_update.execute']
     }
-    pageTranslations: {
-      execute: typeof routes['admin.page_translations.execute']
+    permissions: {
+      render: typeof routes['admin.permissions.render']
+      destroy: typeof routes['admin.permissions.destroy']
     }
-    pageRevisions: {
-      index: typeof routes['admin.page_revisions.index']
-      restore: typeof routes['admin.page_revisions.restore']
-      toggleKeep: typeof routes['admin.page_revisions.toggle_keep']
+    permissionsCreate: {
+      render: typeof routes['admin.permissions_create.render']
+      execute: typeof routes['admin.permissions_create.execute']
     }
-    pagesPreview: {
-      render: typeof routes['admin.pages_preview.render']
-    }
-    templates: {
-      render: typeof routes['admin.templates.render']
-      execute: typeof routes['admin.templates.execute']
-      createFromPage: typeof routes['admin.templates.create_from_page']
-      applyToPage: typeof routes['admin.templates.apply_to_page']
-      update: typeof routes['admin.templates.update']
-      destroy: typeof routes['admin.templates.destroy']
+    permissionsUpdate: {
+      render: typeof routes['admin.permissions_update.render']
+      execute: typeof routes['admin.permissions_update.execute']
     }
     files: {
       render: typeof routes['admin.files.render']
@@ -133,36 +133,99 @@ export interface ApiDefinition {
       update: typeof routes['admin.file_folders.update']
       destroy: typeof routes['admin.file_folders.destroy']
     }
+    settings: {
+      maintenance: {
+        render: typeof routes['admin.settings.maintenance.render']
+        update: typeof routes['admin.settings.maintenance.update']
+        toggle: typeof routes['admin.settings.maintenance.toggle']
+      }
+    }
+    logs: {
+      render: typeof routes['admin.logs.render']
+    }
   }
   api: {
-    theme: {
-      execute: typeof routes['api.theme.execute']
-    }
-    admin: {
-      builderOperations: {
-        execute: typeof routes['api.admin.builder_operations.execute']
-        presence: typeof routes['api.admin.builder_operations.presence']
-        saveDraft: typeof routes['api.admin.builder_operations.save_draft']
+    v1: {
+      admin: {
+        usersApi: {
+          index: typeof routes['api.v1.admin.users_api.index']
+        }
+        usersCreateApi: {
+          store: typeof routes['api.v1.admin.users_create_api.store']
+        }
+        usersShowApi: {
+          show: typeof routes['api.v1.admin.users_show_api.show']
+        }
+        usersUpdateApi: {
+          update: typeof routes['api.v1.admin.users_update_api.update']
+        }
+        usersDeleteApi: {
+          destroy: typeof routes['api.v1.admin.users_delete_api.destroy']
+        }
+        rolesApi: {
+          index: typeof routes['api.v1.admin.roles_api.index']
+        }
+        rolesCreateApi: {
+          store: typeof routes['api.v1.admin.roles_create_api.store']
+        }
+        rolesShowApi: {
+          show: typeof routes['api.v1.admin.roles_show_api.show']
+        }
+        rolesUpdateApi: {
+          update: typeof routes['api.v1.admin.roles_update_api.update']
+        }
+        rolesDeleteApi: {
+          destroy: typeof routes['api.v1.admin.roles_delete_api.destroy']
+        }
+        filesApi: {
+          index: typeof routes['api.v1.admin.files_api.index']
+          move: typeof routes['api.v1.admin.files_api.move']
+        }
+        filesUploadApi: {
+          store: typeof routes['api.v1.admin.files_upload_api.store']
+        }
+        filesShowApi: {
+          show: typeof routes['api.v1.admin.files_show_api.show']
+        }
+        filesDeleteApi: {
+          destroy: typeof routes['api.v1.admin.files_delete_api.destroy']
+        }
+        filesAltApi: {
+          upsertAlt: typeof routes['api.v1.admin.files_alt_api.upsert_alt']
+          deleteAlt: typeof routes['api.v1.admin.files_alt_api.delete_alt']
+        }
+        foldersApi: {
+          index: typeof routes['api.v1.admin.folders_api.index']
+          store: typeof routes['api.v1.admin.folders_api.store']
+        }
+        foldersShowApi: {
+          show: typeof routes['api.v1.admin.folders_show_api.show']
+          children: typeof routes['api.v1.admin.folders_show_api.children']
+        }
+        foldersUpdateApi: {
+          update: typeof routes['api.v1.admin.folders_update_api.update']
+        }
+        foldersDeleteApi: {
+          destroy: typeof routes['api.v1.admin.folders_delete_api.destroy']
+        }
+        theme: {
+          execute: typeof routes['api.v1.admin.theme.execute']
+        }
+        dashboardApi: {
+          index: typeof routes['api.v1.admin.dashboard_api.index']
+        }
+        logsApi: {
+          index: typeof routes['api.v1.admin.logs_api.index']
+        }
+        maintenanceApi: {
+          index: typeof routes['api.v1.admin.maintenance_api.index']
+          update: typeof routes['api.v1.admin.maintenance_api.update']
+          toggle: typeof routes['api.v1.admin.maintenance_api.toggle']
+        }
+        permissionsApi: {
+          index: typeof routes['api.v1.admin.permissions_api.index']
+        }
       }
-      pagesPreview: {
-        token: typeof routes['api.admin.pages_preview.token']
-      }
-      file: {
-        list: typeof routes['api.admin.file.list']
-        find: typeof routes['api.admin.file.find']
-      }
     }
-  }
-  contact: {
-    execute: typeof routes['contact.execute']
-  }
-  page: {
-    sitemap: typeof routes['page.sitemap']
-    robots: typeof routes['page.robots']
-    home: typeof routes['page.home']
-    localised: {
-      render: typeof routes['page.localised.render']
-    }
-    render: typeof routes['page.render']
   }
 }

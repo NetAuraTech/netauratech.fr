@@ -1,6 +1,6 @@
 import { BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import BackupService from '#services/backup/backup_service'
+import { EnforceRetentionPolicyAction } from '#actions/backup/enforce_retention_policy_action'
 
 /**
  * Ace command that enforces the retention policy by deleting backups that
@@ -22,20 +22,21 @@ export default class BackupCleanup extends BaseCommand {
   }
 
   async run() {
-    const backupService = await this.app.container.make(BackupService)
+    const enforceRetentionPolicyAction = await this.app.container.make(EnforceRetentionPolicyAction)
 
     this.logger.info('Starting backup cleanup...')
 
     try {
-      const result = await backupService.cleanup()
+      const result = await enforceRetentionPolicyAction.execute()
 
       this.logger.success('Cleanup completed!')
-      this.logger.info(`  Deleted: ${result.deleted} backup(s)`)
+      this.logger.info(`  Deleted: ${result.deleted.length} backup(s)`)
       this.logger.info(`  Kept: ${result.kept} backup(s)`)
 
-      if (result.errors > 0) {
-        this.logger.warning(`  Errors: ${result.errors}`)
-        this.exitCode = 1
+      if (result.deleted.length > 0) {
+        for (const filename of result.deleted) {
+          this.logger.info(`    - ${filename}`)
+        }
       }
     } catch (error) {
       this.logger.fatal('Unexpected error during cleanup')

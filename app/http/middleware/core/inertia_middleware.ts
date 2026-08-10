@@ -3,14 +3,19 @@ import type { NextFn } from '@adonisjs/core/types/http'
 import UserTransformer from '#transformers/user_transformer'
 import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware'
 import { inject } from '@adonisjs/core'
-import PreferencesService from '#services/preferences/preference_service'
+import { GetPreferencesAction } from '#actions/preferences/get_preferences_action'
 import { DEFAULT_PREFERENCES } from '#types/preferences'
 import env from '#start/env'
-import { CmsTranslations, CommonTranslations } from '#types/translations'
+import { CommonTranslations } from '#types/translations'
+import { NavRegistry } from '#services/core/nav_registry'
+import type { AdminNavGroup } from '#types/nav'
 
 @inject()
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
-  constructor(private preferencesService: PreferencesService) {
+  constructor(
+    private getPreferencesAction: GetPreferencesAction,
+    private navRegistry: NavRegistry
+  ) {
     super()
   }
 
@@ -46,11 +51,11 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
     const error: string | undefined = session?.flashMessages.get('error') || errorFromBag
 
     const preferences = ctx.inertia.always(
-      user ? await this.preferencesService.get(user) : DEFAULT_PREFERENCES
+      user ? await this.getPreferencesAction.execute({ user }) : DEFAULT_PREFERENCES
     )
 
     const routeName = ctx.route?.name ?? ''
-    const isCms = routeName.startsWith('admin.') || routeName.startsWith('cms.')
+    const isAdmin = routeName.startsWith('admin.')
 
     /**
      * Data shared with all Inertia pages. Make sure you are using
@@ -94,23 +99,47 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
           }),
           matches: ctx.i18n.t('validation.front.matches', { other: '{other}' }),
           one_of: ctx.i18n.t('validation.front.one_of', { field: '{field}' }),
+          slug_format: ctx.i18n.t('validation.front.slug_format', { field: '{field}' }),
         },
       } as CommonTranslations,
-      cms_translations: isCms
-        ? ({
-            category: {
-              access_control: ctx.i18n.t('cms.category.access_control'),
-              main: ctx.i18n.t('cms.category.main'),
-              content: ctx.i18n.t('cms.category.content'),
-            },
-            dashboard: ctx.i18n.t('cms.dashboard'),
-            pages: ctx.i18n.t('cms.pages.value'),
-            templates: ctx.i18n.t('cms.templates.value'),
-            users: ctx.i18n.t('cms.users.value'),
-            files: ctx.i18n.t('cms.files.value'),
-          } as CmsTranslations)
-        : undefined,
+      admin_menu: isAdmin ? this.buildAdminMenu(ctx) : undefined,
     }
+  }
+
+  /**
+   * Compose the admin navigation shared with every admin page: the entries
+   * registered by each domain in `start/nav.ts`, grouped by category in
+   * registration order, with labels resolved in the request locale. Domains
+   * absent from the composition simply contribute no group.
+   */
+  private buildAdminMenu(ctx: HttpContext): AdminNavGroup[] {
+    const groups: AdminNavGroup[] = []
+
+    for (const [, entries] of this.navRegistry.entries()) {
+      for (const entry of entries) {
+        let group = groups.find((g) => g.category === entry.category)
+        if (!group) {
+          group = {
+            category: entry.category,
+            label:
+              entry.category === 'no_category'
+                ? null
+                : ctx.i18n.t(`admin.category.${entry.category}`),
+            entries: [],
+          }
+          groups.push(group)
+        }
+        group.entries.push({
+          label: ctx.i18n.t(entry.label),
+          icon: entry.icon,
+          route: entry.route,
+          routeParams: entry.routeParams,
+          permission: entry.permission,
+        })
+      }
+    }
+
+    return groups
   }
 
   async handle(ctx: HttpContext, next: NextFn) {

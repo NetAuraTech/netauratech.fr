@@ -33,7 +33,8 @@ const dbConfig = defineConfig({
         naturalSort: true,
 
         /**
-         * Paths containing migration files.
+         * Paths containing migration files. The `inertia` flavor prunes the
+         * CMS module, so `database/migrations/cms` is absent.
          */
         paths: ['database/migrations'],
       },
@@ -64,7 +65,7 @@ const dbConfig = defineConfig({
      * Install package to switch: npm install mysql2
      */
     // mysql: {
-    //   client: 'mysql2',
+    //   client: "mysql2",
     //   connection: {
     //     host: process.env.MYSQL_HOST,
     //     port: Number(process.env.MYSQL_PORT || 3306),
@@ -74,7 +75,7 @@ const dbConfig = defineConfig({
     //   },
     //   migrations: {
     //     naturalSort: true,
-    //     paths: ['database/migrations'],
+    //     paths: ["database/migrations"],
     //   },
     //   debug: app.inDev,
     // },
@@ -84,7 +85,7 @@ const dbConfig = defineConfig({
      * Install package to switch: npm install tedious
      */
     // mssql: {
-    //   client: 'mssql',
+    //   client: "mssql",
     //   connection: {
     //     server: process.env.MSSQL_SERVER,
     //     port: Number(process.env.MSSQL_PORT || 1433),
@@ -94,7 +95,7 @@ const dbConfig = defineConfig({
     //   },
     //   migrations: {
     //     naturalSort: true,
-    //     paths: ['database/migrations'],
+    //     paths: ["database/migrations"],
     //   },
     //   debug: app.inDev,
     // },
@@ -104,7 +105,7 @@ const dbConfig = defineConfig({
      * Install package to switch: npm install @libsql/client
      */
     // libsql: {
-    //   client: 'libsql',
+    //   client: "libsql",
     //   connection: {
     //     url: process.env.LIBSQL_URL,
     //     authToken: process.env.LIBSQL_AUTH_TOKEN,
@@ -112,7 +113,7 @@ const dbConfig = defineConfig({
     //   useNullAsDefault: true,
     //   migrations: {
     //     naturalSort: true,
-    //     paths: ['database/migrations'],
+    //     paths: ["database/migrations"],
     //   },
     //   debug: app.inDev,
     // },

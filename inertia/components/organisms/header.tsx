@@ -36,7 +36,7 @@ export function Header() {
   return (
     <header className="header" data-state={menuState} aria-expanded={isExpanded}>
       <Link
-        route="page.home"
+        href="/"
         className="header__logo font-semibold tracking-wide text-xl font-cormorant"
         onClick={closeMenu}
       >
@@ -49,7 +49,7 @@ export function Header() {
         data-state={menuState}
         aria-expanded={isExpanded}
       >
-        <NavLink route={'page.home'} label="Home" variant="nav" onClick={closeMenu} />
+        <NavLink href="/" label="Home" variant="nav" onClick={closeMenu} />
       </nav>
       <button
         className="header__burger md:display-hidden"

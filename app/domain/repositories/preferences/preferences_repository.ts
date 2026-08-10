@@ -1,8 +1,9 @@
-import { inject } from '@adonisjs/core'
+﻿import { inject } from '@adonisjs/core'
 import UserPreference from '#models/preferences/user_preference'
 import type User from '#models/auth/user'
 import type { UserPreferences } from '#types/preferences'
 import { DEFAULT_PREFERENCES } from '#types/preferences'
+import { BaseRepository } from '#repositories/base_repository'
 
 /**
  * Repository handling all database operations for {@link UserPreference} records.
@@ -12,7 +13,7 @@ import { DEFAULT_PREFERENCES } from '#types/preferences'
  * as the ownership anchor.
  */
 @inject()
-export default class PreferencesRepository {
+export default class PreferencesRepository extends BaseRepository {
   /**
    * Returns the preferences record for the given user, or `null` if no row
    * exists yet.
@@ -25,7 +26,7 @@ export default class PreferencesRepository {
    * if (!prefs) { ... }
    */
   async findByUser(user: User): Promise<UserPreference | null> {
-    return UserPreference.query().where('userId', user.id).first()
+    return UserPreference.query(this.client()).where('userId', user.id).first()
   }
 
   /**
@@ -43,7 +44,7 @@ export default class PreferencesRepository {
    * const prefs = await preferencesRepository.upsert(user, { theme: 'dark' })
    */
   async upsert(user: User, data: Partial<UserPreferences>): Promise<UserPreference> {
-    return await UserPreference.updateOrCreate({ userId: user.id }, data)
+    return await UserPreference.updateOrCreate({ userId: user.id }, data, this.client())
   }
 
   /**
@@ -61,6 +62,10 @@ export default class PreferencesRepository {
    * return prefs.theme // always defined
    */
   async getOrCreate(user: User): Promise<UserPreference> {
-    return await UserPreference.firstOrCreate({ userId: user.id }, DEFAULT_PREFERENCES)
+    return await UserPreference.firstOrCreate(
+      { userId: user.id },
+      DEFAULT_PREFERENCES,
+      this.client()
+    )
   }
 }

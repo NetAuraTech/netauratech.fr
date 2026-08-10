@@ -3,7 +3,7 @@ import i18nManager from '@adonisjs/i18n/services/main'
 import type { NextFn } from '@adonisjs/core/types/http'
 import { type HttpContext, RequestValidator } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import PreferencesService from '#services/preferences/preference_service'
+import { GetPreferencesAction } from '#actions/preferences/get_preferences_action'
 
 /**
  * Detect user locale middleware with priority:
@@ -13,7 +13,7 @@ import PreferencesService from '#services/preferences/preference_service'
  */
 @inject()
 export default class DetectUserLocaleMiddleware {
-  constructor(protected preferencesService: PreferencesService) {}
+  constructor(protected getPreferencesAction: GetPreferencesAction) {}
   /**
    * Using i18n for validation messages. Applicable to only
    * "request.validateUsing" method calls
@@ -35,7 +35,7 @@ export default class DetectUserLocaleMiddleware {
     const user = ctx.auth.user
 
     if (user) {
-      const preferences = await this.preferencesService.get(user)
+      const preferences = await this.getPreferencesAction.execute({ user })
 
       return preferences.locale
     }
@@ -79,8 +79,15 @@ export default class DetectUserLocaleMiddleware {
       ctx.view.share({ i18n: ctx.i18n })
     }
 
-    if ('inertia' in ctx) {
-      ctx.inertia.share({
+    // Inertia shared props are only injected when the view layer exists —
+    // the Inertia context is detected at runtime (its type augmentation is
+    // absent in headless flavors, hence the local cast).
+    const inertiaView = (
+      ctx as unknown as { inertia?: { share(data: Record<string, unknown>): void } }
+    ).inertia
+
+    if (inertiaView) {
+      inertiaView.share({
         locale: ctx.i18n?.locale || language || 'en',
       })
     }

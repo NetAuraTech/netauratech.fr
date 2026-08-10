@@ -1,0 +1,170 @@
+{
+  "category": {
+    "admin": "Administration",
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "pages": "Pages",
+    "templates": "Templates",
+    "files": "Files",
+    "folders": "Folders",
+    "settings": "Settings",
+    "logs": "Logs"
+  },
+  "admin": {
+    "access": {
+      "value": "Access admin dashboard",
+      "description": "Allows access to the administration area."
+    }
+  },
+  "users": {
+    "view": {
+      "value": "View users",
+      "description": "Allows listing and viewing user accounts."
+    },
+    "create": {
+      "value": "Create users",
+      "description": "Allows inviting and creating user accounts."
+    },
+    "update": {
+      "value": "Update users",
+      "description": "Allows editing user accounts."
+    },
+    "delete": {
+      "value": "Delete users",
+      "description": "Allows deleting user accounts."
+    },
+    "manage_roles": {
+      "value": "Manage roles",
+      "description": "Allows changing the role assigned to a user."
+    }
+  },
+  "roles": {
+    "view": {
+      "value": "View roles",
+      "description": "Allows listing and viewing roles."
+    },
+    "create": {
+      "value": "Create roles",
+      "description": "Allows creating custom roles."
+    },
+    "update": {
+      "value": "Update roles",
+      "description": "Allows editing custom roles and their permissions."
+    },
+    "delete": {
+      "value": "Delete roles",
+      "description": "Allows deleting custom roles."
+    },
+    "manage_permissions": {
+      "value": "Manage permissions",
+      "description": "Allows changing the permissions granted to a role."
+    }
+  },
+  "permissions": {
+    "view": {
+      "value": "View permissions",
+      "description": "Allows listing and viewing permissions."
+    },
+    "create": {
+      "value": "Create permissions",
+      "description": "Allows creating custom permissions."
+    },
+    "update": {
+      "value": "Update permissions",
+      "description": "Allows editing custom permissions."
+    },
+    "delete": {
+      "value": "Delete permissions",
+      "description": "Allows deleting custom permissions."
+    }
+  },
+  "pages": {
+    "view": {
+      "value": "View pages",
+      "description": "Allows listing and viewing pages."
+    },
+    "create": {
+      "value": "Create pages",
+      "description": "Allows creating pages."
+    },
+    "update": {
+      "value": "Update pages",
+      "description": "Allows editing pages and their content."
+    },
+    "delete": {
+      "value": "Delete pages",
+      "description": "Allows deleting pages."
+    },
+    "publish": {
+      "value": "Publish pages",
+      "description": "Allows publishing and unpublishing pages."
+    }
+  },
+  "templates": {
+    "view": {
+      "value": "View templates",
+      "description": "Allows listing and viewing templates."
+    },
+    "create": {
+      "value": "Create templates",
+      "description": "Allows creating templates."
+    },
+    "update": {
+      "value": "Update templates",
+      "description": "Allows editing templates."
+    },
+    "delete": {
+      "value": "Delete templates",
+      "description": "Allows deleting templates."
+    }
+  },
+  "files": {
+    "view": {
+      "value": "View files",
+      "description": "Allows browsing the media library."
+    },
+    "create": {
+      "value": "Upload files",
+      "description": "Allows uploading files to the media library."
+    },
+    "update": {
+      "value": "Update files",
+      "description": "Allows editing file metadata."
+    },
+    "delete": {
+      "value": "Delete files",
+      "description": "Allows deleting files."
+    }
+  },
+  "folders": {
+    "view": {
+      "value": "View folders",
+      "description": "Allows browsing media folders."
+    },
+    "create": {
+      "value": "Create folders",
+      "description": "Allows creating media folders."
+    },
+    "update": {
+      "value": "Update folders",
+      "description": "Allows renaming and moving media folders."
+    },
+    "delete": {
+      "value": "Delete folders",
+      "description": "Allows deleting media folders."
+    }
+  },
+  "settings": {
+    "maintenance": {
+      "value": "Toggle maintenance mode",
+      "description": "Allows enabling and disabling maintenance mode."
+    }
+  },
+  "logs": {
+    "view": {
+      "value": "View logs",
+      "description": "Allows viewing application logs."
+    }
+  }
+}

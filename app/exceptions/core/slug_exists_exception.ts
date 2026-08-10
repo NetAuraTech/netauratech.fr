@@ -1,39 +1,18 @@
-import { Exception } from '@adonisjs/core/exceptions'
-import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
+import { BaseHttpException } from '#exceptions/base_http_exception'
 
-export default class SlugExistsException extends Exception {
+export default class SlugExistsException extends BaseHttpException {
   static status = 409
   static code = 'E_SLUG_EXISTS'
 
-  constructor(private slug: string) {
-    super(`Slug "${slug}" is already taken.`, {
-      status: SlugExistsException.status,
-      code: SlugExistsException.code,
-    })
+  constructor(protected slug: string) {
+    super(`Slug "${slug}" is already taken.`)
   }
 
-  async handle(error: this, ctx: HttpContext) {
-    const { request, response, session, i18n } = ctx
+  protected details() {
+    return { slug: this.slug }
+  }
 
-    const message = i18n.t(`exceptions.${error.code}`, {
-      slug: error.slug,
-    })
-
-    if (request.wantsJSON()) {
-      return response.status(error.status).send({
-        error: {
-          code: error.code,
-          message: message,
-          details: {
-            slug: error.slug,
-          },
-          ...(app.inDev && { stack: error.stack }),
-        },
-      })
-    }
-
-    session.flash('error', message)
-    return response.redirect().back()
+  protected i18nParams() {
+    return { slug: this.slug }
   }
 }

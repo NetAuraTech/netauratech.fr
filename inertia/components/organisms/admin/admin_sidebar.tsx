@@ -43,7 +43,7 @@ interface AdminSidebarProps {
 export function AdminSidebar(props: AdminSidebarProps) {
   const { sidebarOpen } = props
   const pageProps = usePage<SharedProps>().props
-  const { t, format } = useTranslation(pageProps.cms_translations!)
+  const { format } = useTranslation({})
 
   const { menu } = useMenu()
 
@@ -60,18 +60,16 @@ export function AdminSidebar(props: AdminSidebarProps) {
       </Card>
       <Card>
         <nav className="grid gap-1">
-          {Object.entries(menu).map(([category, entries]) => (
-            <div key={`admin-category-${category}`}>
-              {category !== 'no_category' && (
-                <Heading level={4}>{t(`category.${category}` as any)}</Heading>
-              )}
+          {menu.map((group) => (
+            <div key={`admin-category-${group.category}`}>
+              {group.label && <Heading level={4}>{group.label}</Heading>}
               <ul className="grid gap-1 my-2">
-                {entries.map((entry) => (
-                  <li key={`admin-category-${category}-${entry.label}`}>
+                {group.entries.map((entry) => (
+                  <li key={`admin-category-${group.category}-${entry.label}`}>
                     <CanAccess permission={entry.permission}>
                       <NavLink
                         label={entry.label}
-                        route={entry.route}
+                        route={entry.route as any}
                         routeParams={entry.routeParams}
                         variant="admin_nav"
                       >

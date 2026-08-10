@@ -1,64 +1,46 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { AuthService } from '#services/auth/auth_service'
-import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
+import { registerValidator } from '#validators/auth'
 import { regenerateCsrfToken } from '#helpers/auth/crsf'
-import { EmailVerificationService } from '#services/auth/email_verification_service'
+import { I18nService } from '#services/i18n_service'
+import { buildRegisterPayload } from '#helpers/i18n_payloads/register'
 import { enabledProviders } from '#helpers/auth/oauth'
+import { RegisterUserAction } from '#actions/auth/register_user_action'
+import { SendEmailVerificationAction } from '#actions/email_verification/send_email_verification_action'
 
 @inject()
 export default class RegisterController {
   constructor(
-    protected authService: AuthService,
-    protected emailVerificationService: EmailVerificationService
+    protected i18n: I18nService,
+    protected registerUserAction: RegisterUserAction,
+    protected sendEmailVerificationAction: SendEmailVerificationAction
   ) {}
 
   render(ctx: HttpContext) {
-    const { inertia, i18n } = ctx
+    const { inertia } = ctx
 
     return inertia.render('auth/front/register', {
       providers: enabledProviders,
-      translations: {
-        title: i18n.t('auth.register.title'),
-        sub_title: i18n.t('auth.register.sub_title'),
-        account: {
-          has: i18n.t('auth.register.account.has'),
-          login: i18n.t('auth.register.account.login'),
-        },
-        email: {
-          value: i18n.t('auth.register.email.value'),
-          placeholder: i18n.t('auth.register.email.placeholder'),
-        },
-        password: {
-          value: i18n.t('auth.register.password.value'),
-          help: i18n.t('auth.register.password.help'),
-          confirmation: {
-            value: i18n.t('auth.register.password.confirmation.value'),
-            help: i18n.t('auth.register.password.confirmation.help'),
-          },
-        },
-        submit: i18n.t('auth.register.submit'),
-        or_continue_with: i18n.t('auth.register.or_continue_with'),
-      },
+      translations: buildRegisterPayload(this.i18n),
     })
   }
 
   async execute(ctx: HttpContext) {
-    const { request, response, auth, session, i18n } = ctx
+    const { request, response, auth, session } = ctx
 
     const payload = await registerValidator.validate(request.all())
 
-    const user = await this.authService.register({
+    const user = await this.registerUserAction.execute({
       ...payload,
-      locale: ctx.i18n.locale,
+      locale: this.i18n.getLocale(),
     })
 
     await auth.use('web').login(user)
     regenerateCsrfToken(ctx)
 
-    await this.emailVerificationService.send(user)
+    await this.sendEmailVerificationAction.execute({ user })
 
-    session.flash('success', i18n.t('auth.session.register.success'))
+    session.flash('success', this.i18n.translate('auth.session.register.success'))
 
     return response.redirect().toRoute('settings.profile.render')
   }

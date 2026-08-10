@@ -40,6 +40,21 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Variables for configuring the auth guards
+  |----------------------------------------------------------
+  |
+  | Which authentication mechanisms are active. full/inertia keep the
+  | session guard and may opt into the token guard (REST API); the api
+  | flavor disables the session guard entirely.
+  |
+  */
+  AUTH_GUARD_WEB: Env.schema.boolean.optional(),
+  AUTH_GUARD_API: Env.schema.boolean.optional(),
+  AUTH_API_TOKEN_EXPIRY: Env.schema.string.optional(),
+  AUTH_API_CLIENT_URL: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring database connection
   |----------------------------------------------------------
   */
@@ -152,4 +167,13 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   LIMITER_STORE: Env.schema.enum(['redis', 'memory'] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for sitemap.xml generation.
+  | Comma-separated lists; both have safe defaults in config/sitemap.ts.
+  |----------------------------------------------------------
+  */
+  SITEMAP_ADDITIONS: Env.schema.string.optional(),
+  SITEMAP_EXCLUSIONS: Env.schema.string.optional(),
 })

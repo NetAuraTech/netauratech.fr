@@ -1,0 +1,258 @@
+name: Flavor Prune Pipeline
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+    inputs:
+      flavors:
+        description: 'Comma-separated flavors to regenerate (empty = all discovered)'
+        required: false
+        default: ''
+
+# Only the CI identity may push to flavor branches. The GITHUB_TOKEN cannot
+# trigger a downstream workflow, so flavor branches pushed here do not re-run
+# CI — the gates below are the source of truth.
+permissions:
+  contents: write
+
+jobs:
+  # ─── Stage 0: main gates must pass before any flavor is regenerated ─────
+  # Spec #4 requires "only after main's own gates pass, so that broken code is
+  # never propagated into flavors". ci.yml gates `main` on every push, but it
+  # runs in parallel with this workflow — so this job polls the CI workflow
+  # conclusion for the pushed SHA and blocks regeneration until it succeeds.
+  main-gates:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - name: Wait for the CI workflow to pass on main
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+            const sha = context.sha
+
+            for (let attempt = 0; attempt < 60; attempt++) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner,
+                repo,
+                head_sha: sha,
+                per_page: 100,
+              })
+
+              // Pick the CI run deterministically. Filtering on the workflow
+              // *path* in JS (rather than the workflow_id query param, which
+              // resolves to the most recent run across workflows for the SHA)
+              // guarantees we evaluate ci.yml's conclusion and never another
+              // workflow's run created for the same SHA.
+              const run = data.workflow_runs.find(
+                (candidate) => candidate.path === '.github/workflows/ci.yml'
+              )
+              if (run && run.status === 'completed') {
+                if (run.conclusion === 'success') {
+                  console.log(`CI workflow ${run.id} passed for ${sha}`)
+                  return
+                }
+                core.setFailed(
+                  `CI workflow ${run.id} concluded with "${run.conclusion}" for ${sha} — ` +
+                    'broken main must not regenerate flavor branches.'
+                )
+                return
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 15000))
+            }
+
+            core.setFailed(`Timed out waiting for the CI workflow to conclude for ${sha}.`)
+
+  # ─── Stage 1: discover flavor manifests present on main ───────────────────
+  # Builds the matrix of flavors to regenerate from the manifest files in
+  # tooling/prune/flavors/. Issues #5 and #8 will drop `inertia.manifest.ts`
+  # and `api.manifest.ts` there — this job then picks them up automatically.
+  # The main CI workflow (ci.yml) already gates `main` on lint, typecheck,
+  # backend/frontend/browser tests, and codegen drift — no need to re-run a
+  # subset here. The prune-flavor job below gates the pruned tree itself.
+  discover-flavors:
+    runs-on: ubuntu-latest
+    needs: main-gates
+    outputs:
+      flavors: ${{ steps.list.outputs.flavors }}
+      empty: ${{ steps.list.outputs.empty }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: List flavor manifests
+        id: list
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="tooling/prune/flavors"
+          flavors=""
+          if [ -d "$dir" ]; then
+            for f in "$dir"/*.manifest.ts; do
+              [ -f "$f" ] || continue
+              name="$(basename "$f" .manifest.ts)"
+              flavors="$flavors,\"$name\""
+            done
+          fi
+          flavors="[${flavors#,}]"
+          echo "flavors=$flavors" >> "$GITHUB_OUTPUT"
+          if [ "$flavors" = "[]" ]; then
+            echo "empty=true" >> "$GITHUB_OUTPUT"
+            echo 'No flavor manifests found in tooling/prune/flavors/ — nothing to prune.'
+          else
+            echo "empty=false" >> "$GITHUB_OUTPUT"
+            echo "Discovered flavors: $flavors"
+          fi
+
+  # ─── Stage 2: per-flavor prune + gates + force-push ───────────────────────
+  # For each discovered flavor: checkout main → prune → clean install → run
+  # flavor gates (typecheck, lint, tests of remaining suites) → force-push the
+  # flavor branch with the source main SHA. A failed prune or gate blocks only
+  # that flavor's publication.
+  prune-flavor:
+    runs-on: ubuntu-latest
+    needs: discover-flavors
+    if: needs.discover-flavors.outputs.empty == 'false'
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ${{ fromJson(needs.discover-flavors.outputs.flavors) }}
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d app_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      REDIS_ENABLED: 'true'
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: '6379'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Record source main SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies (pre-prune, for engine + ts-exec)
+        run: npm ci
+
+      - name: Apply flavor manifest (prune)
+        run: node --import @poppinss/ts-exec tooling/prune/apply.ts ${{ matrix.flavor }}
+
+      - name: Reinstall dependencies (post-prune package.json)
+        run: npm ci
+
+      - name: Regenerate AdonisJS indexes (post-prune codegen)
+        run: |
+          # The dev server is the only entry point that regenerates every
+          # committed codegen file: the assembler init hooks rewrite the server
+          # indexes and pages.d.ts at startup, and the Tuyau client registry is
+          # written once the running app commits its routes (routesScanned
+          # hook), which typecheck and test commands never trigger. ".env.test"
+          # boots the full app without external services, same as ci.yml's
+          # codegen-drift job.
+          cp .env.test .env
+          mkdir -p tmp
+          node ace serve > tmp/codegen.log 2>&1 &
+          SERVER_PID=$!
+          for i in $(seq 1 90); do
+            if grep -q 'tuyau: created api client registry' tmp/codegen.log; then
+              break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo 'Dev server exited before the codegen output was regenerated:'
+              cat tmp/codegen.log
+              exit 1
+            fi
+            sleep 1
+          done
+          kill "$SERVER_PID" 2>/dev/null || true
+          if ! grep -q 'tuyau: created api client registry' tmp/codegen.log; then
+            echo 'Timed out waiting for the codegen output to be regenerated:'
+            cat tmp/codegen.log
+            exit 1
+          fi
+
+      - name: Run typecheck (backend)
+        run: npx tsc --noEmit
+
+      - name: Run typecheck (inertia, if the inertia tree survives)
+        continue-on-error: false
+        run: |
+          if [ -f inertia/tsconfig.json ]; then
+            npx tsc --noEmit --project inertia/tsconfig.json
+          else
+            echo 'inertia/tsconfig.json absent — skipping inertia typecheck (expected for the api flavor).'
+          fi
+
+      - name: Run ESLint
+        run: npm run lint:ci
+
+      - name: Run Prettier check
+        run: npm run format:ci
+
+      - name: Run frontend tests (if the inertia tree survives)
+        run: |
+          if [ -d inertia ]; then
+            npm run test:front
+          else
+            echo 'inertia/ absent — skipping frontend tests (expected for the api flavor).'
+          fi
+
+      - name: Run backend tests (remaining suites)
+        run: npm run test -- unit integration functional
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit pruned tree
+        run: |
+          git add -A
+          git commit -m "chore(flavor): regenerate ${{ matrix.flavor }} from main ${{ steps.sha.outputs.sha }}
+
+          Auto-generated by the flavor prune pipeline (issue #4).
+          Source: main @ ${{ steps.sha.outputs.sha }}"
+
+      - name: Force-push flavor branch
+        run: git push --force-with-lease origin "HEAD:refs/heads/${{ matrix.flavor }}"
+        env:
+          # The GITHUB_TOKEN has contents:write permission (declared above).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { UserRepository } from '#repositories/auth/user_repository'
-import { UserFactory } from '#factories/user_factory'
+import { UserFactory, RoleFactory } from '#factories/user_factory'
 
 test.group('UserRepository', () => {
   const repo = new UserRepository()
@@ -143,5 +143,25 @@ test.group('UserRepository', () => {
 
     const reloaded = await repo.findById(u.id)
     assert.equal(reloaded!.username, 'manual_save')
+  })
+
+  test('reassignRole() moves every user from one role to another', async ({ assert }) => {
+    const fromRole = await RoleFactory.create()
+    const toRole = await RoleFactory.create()
+
+    const u1 = await UserFactory.merge({ roleId: fromRole.id }).create()
+    const u2 = await UserFactory.merge({ roleId: fromRole.id }).create()
+    const untouched = await UserFactory.merge({ roleId: toRole.id }).create()
+
+    const moved = await repo.reassignRole(fromRole.id, toRole.id)
+
+    assert.equal(moved, 2)
+
+    await u1.refresh()
+    await u2.refresh()
+    await untouched.refresh()
+    assert.equal(u1.roleId, toRole.id)
+    assert.equal(u2.roleId, toRole.id)
+    assert.equal(untouched.roleId, toRole.id)
   })
 })

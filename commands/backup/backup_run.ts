@@ -1,12 +1,12 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import BackupService from '#services/backup/backup_service'
+import RunBackupAction from '#actions/backup/run_backup_action'
 
 /**
- * Ace command that triggers a database backup via {@link BackupService}.
+ * Ace command that triggers a database backup via {@link RunBackupAction}.
  *
  * When `--type` is omitted, the backup type is auto-detected based on
- * the configured `fullBackupDay` schedule — full on the designated weekday,
+ * the configured `fullBackupDay` schedule � full on the designated weekday,
  * differential on all others. Passing `--type` forces a specific strategy
  * regardless of the schedule.
  *
@@ -34,7 +34,7 @@ export default class BackupRun extends BaseCommand {
   declare type?: 'full' | 'differential'
 
   async run() {
-    const backupService = await this.app.container.make(BackupService)
+    const runBackupAction = await this.app.container.make(RunBackupAction)
 
     this.logger.info('Starting database backup...')
 
@@ -43,13 +43,13 @@ export default class BackupRun extends BaseCommand {
 
       if (this.type === 'full') {
         this.logger.info('Running FULL backup (forced)')
-        result = await backupService.runFullBackup()
+        result = await runBackupAction.execute({ strategy: 'full' })
       } else if (this.type === 'differential') {
         this.logger.info('Running DIFFERENTIAL backup (forced)')
-        result = await backupService.runDifferentialBackup()
+        result = await runBackupAction.execute({ strategy: 'differential' })
       } else {
         this.logger.info('Auto-detecting backup type based on schedule...')
-        result = await backupService.run()
+        result = await runBackupAction.execute()
       }
 
       if (result.success) {

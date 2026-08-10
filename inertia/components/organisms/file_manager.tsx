@@ -5,7 +5,6 @@ import { Icon } from '~/components/atoms/icon'
 import { Field } from '~/components/molecules/field'
 import { useEffect, useState } from 'react'
 import { Data } from '@generated/data'
-import { urlFor } from '~/client'
 import { Paginated } from '~/types/paginated'
 import { Pagination } from '~/components/molecules/pagination'
 
@@ -13,11 +12,6 @@ interface FileManagerProps {
   mime_type?: 'image' | 'video' | 'audio' | 'application/pdf'
   handleClose: () => void
   handleClick: (file: Data.File) => void
-}
-
-interface ApiListResponse {
-  files: Paginated<Data.File>
-  folders: Data.FileFolder[]
 }
 
 interface ApiFilters {
@@ -46,18 +40,38 @@ export function FileManager(props: FileManagerProps) {
   }, [filters])
 
   const handleFetch = async () => {
-    const res = await fetch(urlFor('api.admin.file.list', {}, { qs: filters }), {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
+    const params = new URLSearchParams()
+
+    if (filters.folder_id !== undefined) params.set('folder_id', String(filters.folder_id))
+    if (filters.mime_type) params.set('mime_type', filters.mime_type)
+    if (filters.search) params.set('search', filters.search)
+
+    const [filesRes, foldersRes] = await Promise.all([
+      fetch(`/api/v1/admin/files?${params.toString()}`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      }),
+      fetch('/api/v1/admin/folders', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      }),
+    ])
+
+    const files = await filesRes.json()
+    const folders = await foldersRes.json()
+
+    setFolders(folders.data ?? [])
+
+    setFiles({
+      data: files.data ?? [],
+      metadata: files.metadata ?? {
+        total: 0,
+        perPage: 0,
+        currentPage: 0,
+        lastPage: 0,
+        firstPage: 0,
       },
     })
-
-    const data: ApiListResponse = await res.json()
-
-    setFolders(data.folders)
-
-    setFiles(data.files)
   }
 
   const handleCurrentFolderChange = (id?: number | undefined) => {

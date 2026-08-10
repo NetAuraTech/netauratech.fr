@@ -4,7 +4,16 @@ import type Permission from '#models/auth/permission'
 export default class PermissionTransformer extends BaseTransformer<Permission> {
   toObject() {
     return {
-      ...this.pick(this.resource, ['id', 'name', 'slug', 'category', 'createdAt', 'updatedAt']),
+      ...this.pick(this.resource, [
+        'id',
+        'name',
+        'slug',
+        'description',
+        'category',
+        'isSystem',
+        'createdAt',
+        'updatedAt',
+      ]),
     }
   }
 }

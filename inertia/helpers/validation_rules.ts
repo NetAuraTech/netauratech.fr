@@ -199,6 +199,7 @@ export function validate(
  * Ready-made rule arrays for common form fields.
  */
 export const presets = {
+  requiredString: (fieldNameKey?: string) => [rules.required(fieldNameKey)],
   email: (fieldNameKey?: string) => [rules.required(fieldNameKey), rules.email()],
   password: (fieldNameKey?: string) => [
     rules.required(fieldNameKey),

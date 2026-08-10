@@ -85,6 +85,7 @@ export function SettingsLayout(props: PageProps) {
                 />
               </CanAccess>
               <NavLink
+                name="logout"
                 label={t('header.tabs.logout')}
                 route="auth.session.destroy"
                 variant="setting_nav"

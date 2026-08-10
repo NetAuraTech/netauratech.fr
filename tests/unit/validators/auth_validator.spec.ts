@@ -8,7 +8,6 @@ import {
 } from '#validators/auth'
 import User from '#models/auth/user'
 
-
 test.group('Auth Validators', () => {
   test('registerValidator requires valid email and confirmed password', async ({ assert }) => {
     const valid = {

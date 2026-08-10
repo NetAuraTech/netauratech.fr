@@ -12,10 +12,8 @@ export const listeners = {
     SendInvitationEmail: () => import('#listeners/admin/send_invitation_email'),
   },
   auth: {
+    BaseTokenListener: () => import('#listeners/auth/base_token_listener'),
     SendForgotPasswordEmail: () => import('#listeners/auth/send_forgot_password_email'),
     SendVerificationEmail: () => import('#listeners/auth/send_verification_email'),
-  },
-  page: {
-    SendContactFormEmail: () => import('#listeners/page/send_contact_form_email'),
   },
 }

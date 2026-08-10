@@ -1,6 +1,6 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { inject } from '@adonisjs/core'
-import BackupService from '#services/backup/backup_service'
+import { ListBackupsAction } from '#actions/backup/list_backups_action'
 
 /**
  * Ace command that lists all backup archives found on the configured
@@ -35,10 +35,10 @@ export default class BackupList extends BaseCommand {
   declare limit: number
 
   async run() {
-    const backupService = await this.app.container.make(BackupService)
+    const listBackupsAction = await this.app.container.make(ListBackupsAction)
 
     try {
-      let backups = await backupService.listBackups()
+      let backups = await listBackupsAction.execute()
 
       if (backups.length === 0) {
         this.logger.info('No backups found')

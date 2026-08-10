@@ -10,9 +10,9 @@ export default class extends BaseSeeder {
     }
 
     const roles = Object.entries(rolesData).map(([slug, meta]) => ({
-      name: `roles:${slug}.value`,
+      name: `roles.${slug}.value`,
       slug,
-      description: `roles:${slug}.description`,
+      description: `roles.${slug}.description`,
       isSystem: meta.isSystem,
     }))
 

@@ -1,11 +1,6 @@
 import vine from '@vinejs/vine'
 import type User from '#models/auth/user'
-
-/**
- * Shared rules for email and password.
- */
-const email = () => vine.string().trim().toLowerCase().email().maxLength(254)
-const password = () => vine.string().minLength(8).maxLength(32)
+import { email, password } from '#validators/rules'
 
 /**
  * Validator to use when performing self-register
@@ -44,7 +39,7 @@ export const invitationValidator = vine.create({
   token: vine.string(),
 })
 
-export const acceptInvitationValidator = (id: User['id']) =>
+export const acceptInvitationValidator = (id?: User['id']) =>
   vine.create({
     email: email().unique(async (query, value) => {
       const user = await query.from('users').where('email', value).whereNot('id', id!).first()

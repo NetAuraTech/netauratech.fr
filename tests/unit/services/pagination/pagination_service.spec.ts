@@ -3,7 +3,6 @@ import { PaginationService } from '#services/pagination/pagination_service'
 import User from '#models/auth/user'
 import { DEFAULT_PAGINATION } from '#types/pagination'
 
-
 test.group('PaginationService', () => {
   test('paginate() returns results with default page and perPage', async ({ assert }) => {
     const service = new PaginationService()

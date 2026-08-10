@@ -1,7 +1,43 @@
 import logger from '@adonisjs/core/services/logger'
 import type { HttpContext } from '@adonisjs/core/http'
-import { LogCategory, type LogContext, type LogEntry, LogLevel } from '#types/logging'
+import {
+  LogCategory,
+  type CreateLogEntryInput,
+  type LogContext,
+  type LogEntry,
+  LogLevel,
+} from '#types/logging'
+import { LogEntryRepository } from '#repositories/logging/log_entry_repository'
+import loggingConfig from '#config/logging'
 import { inject } from '@adonisjs/core'
+
+/**
+ * Numeric severity order used to compare levels against the configured
+ * persistence threshold. Array index = severity rank.
+ */
+const LEVEL_ORDER: LogLevel[] = [
+  LogLevel.DEBUG,
+  LogLevel.INFO,
+  LogLevel.WARN,
+  LogLevel.ERROR,
+  LogLevel.FATAL,
+]
+
+/**
+ * Categories whose entries are always persisted, regardless of level —
+ * they carry security-relevant or audit-trail meaning.
+ */
+const ALWAYS_PERSISTED_CATEGORIES: LogCategory[] = [LogCategory.SECURITY, LogCategory.BUSINESS]
+
+/**
+ * Noisy categories whose `debug` entries are never persisted when
+ * `persistence.excludeDebugNoise` is enabled.
+ */
+const DEBUG_NOISE_CATEGORIES: LogCategory[] = [
+  LogCategory.API,
+  LogCategory.DATABASE,
+  LogCategory.PERFORMANCE,
+]
 
 /**
  * Centralised logging service wrapping AdonisJS's built-in logger.
@@ -10,9 +46,21 @@ import { inject } from '@adonisjs/core'
  * domain-specific helpers (auth, security, API, database, performance,
  * business) that automatically attach the correct {@link LogCategory}
  * and structured context to every entry.
+ *
+ * In addition to the in-memory pino output, every entry flowing through
+ * {@link LogService.log} is write-through persisted to the `log_entries`
+ * table when it passes the persistence gate ({@link LogService.shouldPersist}).
+ * Persistence is fire-and-forget — failures are swallowed and reported to
+ * the pino logger so a database outage never breaks a request.
  */
 @inject()
 export class LogService {
+  /**
+   * Instantiated directly rather than injected — this service is resolved
+   * too early in middleware/lifecycle paths for container injection.
+   */
+  private logEntryRepository = new LogEntryRepository()
+
   /**
    * Emits a log entry at the `DEBUG` level.
    *
@@ -149,6 +197,94 @@ export class LogService {
       case LogLevel.FATAL:
         logger.fatal(logData, message)
         break
+    }
+
+    // Fire-and-forget write-through — never awaited, failures are swallowed
+    // inside persistEntry so a database outage never breaks a request.
+    void this.persistEntry(entry, level, category)
+  }
+
+  /**
+   * Decides whether a log entry should be persisted to the `log_entries`
+   * table, based on the `logging.persistence` configuration.
+   *
+   * Rules:
+   * - Entries in security-relevant categories (`security`, `business`) are
+   *   always persisted, regardless of level.
+   * - When `excludeDebugNoise` is enabled, `debug` entries from noisy
+   *   categories (`api`, `database`, `performance`) are never persisted.
+   * - Otherwise, entries are persisted when their level is at or above the
+   *   configured `minLevel`.
+   *
+   * @param level - The resolved log level of the entry.
+   * @param category - The resolved category of the entry.
+   * @returns `true` when the entry should be written to the database.
+   */
+  private shouldPersist(level: LogLevel, category: LogCategory): boolean {
+    if (ALWAYS_PERSISTED_CATEGORIES.includes(category)) {
+      return true
+    }
+
+    const { minLevel, excludeDebugNoise } = loggingConfig.persistence
+
+    if (
+      excludeDebugNoise &&
+      level === LogLevel.DEBUG &&
+      DEBUG_NOISE_CATEGORIES.includes(category)
+    ) {
+      return false
+    }
+
+    return LEVEL_ORDER.indexOf(level) >= LEVEL_ORDER.indexOf(minLevel)
+  }
+
+  /**
+   * Persists a log entry to the `log_entries` table.
+   *
+   * Fire-and-forget: this method never throws. Any database failure is
+   * caught and reported to the in-memory pino logger so that logging never
+   * crashes the calling request. Explicit identity fields on the entry take
+   * precedence over the legacy `context` keys (`userId`, `userEmail`, …).
+   *
+   * @param entry - The original log entry as passed to {@link LogService.log}.
+   * @param level - The resolved log level (after convenience-method overrides).
+   * @param category - The resolved category (defaults to `system`).
+   */
+  private async persistEntry(
+    entry: LogEntry,
+    level: LogLevel,
+    category: LogCategory
+  ): Promise<void> {
+    if (!this.shouldPersist(level, category)) return
+
+    const context = entry.context ?? {}
+
+    const input: CreateLogEntryInput = {
+      level,
+      category,
+      message: entry.message,
+      actorId: entry.actorId ?? context.userId ?? null,
+      actorEmail: entry.actorEmail ?? context.userEmail ?? null,
+      ip: entry.ip ?? context.ip ?? null,
+      userAgent: entry.userAgent ?? context.userAgent ?? null,
+      requestId: entry.requestId ?? context.requestId ?? null,
+      context: { ...context, ...(entry.metadata ?? {}) },
+      error: entry.error
+        ? {
+            name: entry.error.name,
+            message: entry.error.message,
+            stack: entry.error.stack,
+          }
+        : null,
+    }
+
+    try {
+      await this.logEntryRepository.createRecord(input)
+    } catch (dbError) {
+      logger.warn(
+        { err: dbError, originalMessage: entry.message },
+        'Failed to persist log entry to database'
+      )
     }
   }
 

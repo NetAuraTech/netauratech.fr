@@ -1,37 +1,18 @@
-import { Exception } from '@adonisjs/core/exceptions'
-import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
+import { BaseHttpException } from '#exceptions/base_http_exception'
 
-export default class ProviderAlreadyLinkedException extends Exception {
+export default class ProviderAlreadyLinkedException extends BaseHttpException {
   static status = 409
   static code = 'E_PROVIDER_ALREADY_LINKED'
 
-  constructor(private provider: string) {
-    super(`The "${provider}" account is already linked to another user.`, {
-      status: ProviderAlreadyLinkedException.status,
-      code: ProviderAlreadyLinkedException.code,
-    })
+  constructor(protected provider: string) {
+    super(`The "${provider}" account is already linked to another user.`)
   }
 
-  async handle(error: this, ctx: HttpContext) {
-    const { request, response, session, i18n } = ctx
+  protected details() {
+    return { provider: this.provider }
+  }
 
-    const message = i18n.t(`exceptions.${error.code}`, { provider: error.provider })
-
-    if (request.wantsJSON()) {
-      return response.status(error.status).send({
-        error: {
-          code: error.code,
-          message: message,
-          details: {
-            provider: error.provider,
-          },
-          ...(app.inDev && { stack: error.stack }),
-        },
-      })
-    }
-
-    session.flash('error', message)
-    return response.redirect().back()
+  protected i18nParams() {
+    return { provider: this.provider }
   }
 }

@@ -1,5 +1,5 @@
 import drive from '@adonisjs/drive/services/main'
-import sharp from 'sharp'
+import sharp, { type Sharp } from 'sharp'
 import type File from '#models/file/file'
 import app from '@adonisjs/core/services/app'
 
@@ -62,7 +62,7 @@ export class ImageOptimizerService {
 
       // Initialize Sharp. For local storage, we use the absolute path for better stability
       // on certain Linux environments compared to Buffer-based processing.
-      let sharpInstance: sharp.Sharp
+      let sharpInstance: Sharp
       if (file.disk === 'fs') {
         sharpInstance = sharp(app.makePath('storage', originalPath), { failOn: 'none' })
       } else {

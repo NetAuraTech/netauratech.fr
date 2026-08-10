@@ -3,6 +3,8 @@ import { ChangeEvent, ReactNode } from 'react'
 interface CheckboxProps {
   /** The `name` and `id` attribute of the underlying `<input>`. */
   name: string
+  /** The submitted value when the checkbox is checked (defaults to `"on"`). */
+  value?: string | number
   /** Sets the initial checked state via `defaultChecked`. */
   checked?: boolean
   disabled?: boolean

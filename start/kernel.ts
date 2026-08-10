@@ -10,6 +10,7 @@
 
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
+import { assetMiddleware } from '#start/asset_middleware'
 
 /**
  * The error handler is used to convert an exception
@@ -26,8 +27,7 @@ server.use([
   () => import('#middleware/core/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
-  () => import('@adonisjs/vite/vite_middleware'),
-  () => import('#middleware/core/inertia_middleware'),
+  ...assetMiddleware,
 ])
 
 /**
@@ -52,4 +52,5 @@ export const middleware = router.named({
   permission: () => import('#middleware/auth/permission_middleware'),
   guest: () => import('#middleware/auth/guest_middleware'),
   auth: () => import('#middleware/auth/auth_middleware'),
+  maintenance: () => import('#middleware/maintenance_middleware'),
 })

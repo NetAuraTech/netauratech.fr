@@ -56,4 +56,23 @@ test.group('LogService', () => {
       service.logApiRequest(ctx as unknown as HttpContext, 120)
     })
   })
+
+  test('failed write-through does not throw and never rejects', async ({ assert }) => {
+    const service = new LogService()
+
+    // Force the persistence layer to fail — simulates a database outage.
+    ;(service as any).logEntryRepository = {
+      createRecord: async () => {
+        throw new Error('database unavailable')
+      },
+    }
+
+    assert.doesNotThrow(() => {
+      service.logBusiness('test.persistence.failure', { userId: 1 })
+    })
+
+    // Let the fire-and-forget promise settle — the internal catch must
+    // prevent any unhandled rejection from crashing the process.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  })
 })

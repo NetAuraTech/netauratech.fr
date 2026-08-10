@@ -5,17 +5,48 @@
 
 export const controllers = {
   account: {
+    api: {
+      AccountApi: () => import('#controllers/account/api/account_api_controller'),
+    },
     front: {
       Account: () => import('#controllers/account/front/account_controller'),
       EmailChange: () => import('#controllers/account/front/email_change_controller'),
     },
   },
   auth: {
-    cms: {
-      Users: () => import('#controllers/auth/cms/users_controller'),
-      UsersCreate: () => import('#controllers/auth/cms/users_create_controller'),
-      UsersShow: () => import('#controllers/auth/cms/users_show_controller'),
-      UsersUpdate: () => import('#controllers/auth/cms/users_update_controller'),
+    admin: {
+      Permissions: () => import('#controllers/auth/admin/permissions_controller'),
+      PermissionsCreate: () => import('#controllers/auth/admin/permissions_create_controller'),
+      PermissionsUpdate: () => import('#controllers/auth/admin/permissions_update_controller'),
+      Roles: () => import('#controllers/auth/admin/roles_controller'),
+      RolesCreate: () => import('#controllers/auth/admin/roles_create_controller'),
+      RolesShow: () => import('#controllers/auth/admin/roles_show_controller'),
+      RolesUpdate: () => import('#controllers/auth/admin/roles_update_controller'),
+      Users: () => import('#controllers/auth/admin/users_controller'),
+      UsersCreate: () => import('#controllers/auth/admin/users_create_controller'),
+      UsersShow: () => import('#controllers/auth/admin/users_show_controller'),
+      UsersUpdate: () => import('#controllers/auth/admin/users_update_controller'),
+    },
+    api: {
+      AcceptInvitationApi: () => import('#controllers/auth/api/accept_invitation_api_controller'),
+      EmailVerificationApi: () => import('#controllers/auth/api/email_verification_api_controller'),
+      ForgotPasswordApi: () => import('#controllers/auth/api/forgot_password_api_controller'),
+      Me: () => import('#controllers/auth/api/me_controller'),
+      PermissionsApi: () => import('#controllers/auth/api/permissions_api_controller'),
+      RegisterApi: () => import('#controllers/auth/api/register_api_controller'),
+      ResetPasswordApi: () => import('#controllers/auth/api/reset_password_api_controller'),
+      RolesApi: () => import('#controllers/auth/api/roles_api_controller'),
+      RolesCreateApi: () => import('#controllers/auth/api/roles_create_api_controller'),
+      RolesDeleteApi: () => import('#controllers/auth/api/roles_delete_api_controller'),
+      RolesShowApi: () => import('#controllers/auth/api/roles_show_api_controller'),
+      RolesUpdateApi: () => import('#controllers/auth/api/roles_update_api_controller'),
+      SocialApi: () => import('#controllers/auth/api/social_api_controller'),
+      Token: () => import('#controllers/auth/api/token_controller'),
+      UsersApi: () => import('#controllers/auth/api/users_api_controller'),
+      UsersCreateApi: () => import('#controllers/auth/api/users_create_api_controller'),
+      UsersDeleteApi: () => import('#controllers/auth/api/users_delete_api_controller'),
+      UsersShowApi: () => import('#controllers/auth/api/users_show_api_controller'),
+      UsersUpdateApi: () => import('#controllers/auth/api/users_update_api_controller'),
     },
     front: {
       AcceptInvitation: () => import('#controllers/auth/front/accept_invitation_controller'),
@@ -28,35 +59,53 @@ export const controllers = {
     },
   },
   core: {
-    cms: {
-      Dashboard: () => import('#controllers/core/cms/dashboard_controller'),
+    admin: {
+      Dashboard: () => import('#controllers/core/admin/dashboard_controller'),
+    },
+    api: {
+      DashboardApi: () => import('#controllers/core/api/dashboard_api_controller'),
+    },
+    front: {
+      Home: () => import('#controllers/core/front/home_controller'),
+      Robots: () => import('#controllers/core/front/robots_controller'),
+      Sitemap: () => import('#controllers/core/front/sitemap_controller'),
     },
   },
   file: {
+    admin: {
+      FileFolders: () => import('#controllers/file/admin/file_folders_controller'),
+      Files: () => import('#controllers/file/admin/files_controller'),
+    },
     api: {
       File: () => import('#controllers/file/api/file_controller'),
-    },
-    cms: {
-      FileFolders: () => import('#controllers/file/cms/file_folders_controller'),
-      Files: () => import('#controllers/file/cms/files_controller'),
+      FilesAltApi: () => import('#controllers/file/api/files_alt_api_controller'),
+      FilesApi: () => import('#controllers/file/api/files_api_controller'),
+      FilesDeleteApi: () => import('#controllers/file/api/files_delete_api_controller'),
+      FilesShowApi: () => import('#controllers/file/api/files_show_api_controller'),
+      FilesUploadApi: () => import('#controllers/file/api/files_upload_api_controller'),
+      FoldersApi: () => import('#controllers/file/api/folders_api_controller'),
+      FoldersDeleteApi: () => import('#controllers/file/api/folders_delete_api_controller'),
+      FoldersShowApi: () => import('#controllers/file/api/folders_show_api_controller'),
+      FoldersUpdateApi: () => import('#controllers/file/api/folders_update_api_controller'),
     },
   },
-  page: {
+  health: {
+    Health: () => import('#controllers/health/health_controller'),
+  },
+  log: {
+    admin: {
+      Logs: () => import('#controllers/log/admin/logs_controller'),
+    },
     api: {
-      BuilderOperations: () => import('#controllers/page/api/builder_operations_controller'),
+      LogsApi: () => import('#controllers/log/api/logs_api_controller'),
     },
-    cms: {
-      PageRevisions: () => import('#controllers/page/cms/page_revisions_controller'),
-      PageTranslations: () => import('#controllers/page/cms/page_translations_controller'),
-      Pages: () => import('#controllers/page/cms/pages_controller'),
-      PagesCreate: () => import('#controllers/page/cms/pages_create_controller'),
-      PagesPreview: () => import('#controllers/page/cms/pages_preview_controller'),
-      PagesShow: () => import('#controllers/page/cms/pages_show_controller'),
-      PagesUpdate: () => import('#controllers/page/cms/pages_update_controller'),
+  },
+  maintenance: {
+    admin: {
+      Maintenance: () => import('#controllers/maintenance/admin/maintenance_controller'),
     },
-    front: {
-      Contact: () => import('#controllers/page/front/contact_controller'),
-      Page: () => import('#controllers/page/front/page_controller'),
+    api: {
+      MaintenanceApi: () => import('#controllers/maintenance/api/maintenance_api_controller'),
     },
   },
   preferences: {
@@ -68,13 +117,11 @@ export const controllers = {
     },
   },
   profile: {
+    api: {
+      ProfileApi: () => import('#controllers/profile/api/profile_api_controller'),
+    },
     front: {
       Profile: () => import('#controllers/profile/front/profile_controller'),
-    },
-  },
-  template: {
-    cms: {
-      Templates: () => import('#controllers/template/cms/templates_controller'),
     },
   },
 }

@@ -13,7 +13,6 @@ export type Locale = 'fr' | 'en'
 
 /**
  * Shape of a user's resolved preferences as consumed by the frontend
- * and returned by {@link PreferencesService.get}.
  */
 export interface UserPreferences {
   [key: string]: Theme | Locale

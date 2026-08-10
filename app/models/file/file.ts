@@ -1,3 +1,4 @@
+import i18nManager from '@adonisjs/i18n/services/main'
 import { FileSchema } from '#database/schema'
 import { beforeDelete, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
@@ -47,18 +48,40 @@ export default class File extends FileSchema {
   }
 
   /**
-   * Resolves the alt text for a given locale and key.
-   * Returns the override string directly if provided, otherwise looks up
-   * the named alt from the loaded `alts` relation or falls back to empty string.
+   * Resolves the alt text for a given display intent using a single shared
+   * priority chain, in order:
+   *
+   * 1. Keyed {@link FileAlt} for the requested locale.
+   * 2. Keyed {@link FileAlt} for the default locale.
+   * 3. Keyed {@link FileAlt} in any locale.
+   * 4. The first alt entry (fallback for unkeyed intents).
+   * 5. The inline override.
+   *
+   * The same chain serves CMS image blocks and manual front pages, so alt
+   * resolution never drifts between the two rendering paths.
    *
    * @param locale - The current page locale
-   * @param key - The named alt key (e.g. "hero")
-   * @param override - Optional inline override bypassing the named system
+   * @param key - The named alt key (e.g. "hero"), or null when none is requested
+   * @param override - Optional inline override, used only when no alt matches
    */
   resolveAlt(locale: string, key: string | null, override?: string | null): string {
-    if (override) return override
-    if (!key) return ''
+    const alts = this.alts ?? []
+    const defaultLocale = i18nManager.defaultLocale
 
-    return this.alts?.find((a) => a.locale === locale && a.key === key)?.value ?? ''
+    if (key) {
+      const keyedLocale = alts.find((a) => a.locale === locale && a.key === key)
+      if (keyedLocale) return keyedLocale.value
+
+      const keyedDefault = alts.find((a) => a.locale === defaultLocale && a.key === key)
+      if (keyedDefault) return keyedDefault.value
+
+      const keyedAny = alts.find((a) => a.key === key)
+      if (keyedAny) return keyedAny.value
+    }
+
+    const first = alts[0]
+    if (first) return first.value
+
+    return override ?? ''
   }
 }

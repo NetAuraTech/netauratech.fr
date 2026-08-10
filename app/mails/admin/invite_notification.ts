@@ -1,29 +1,7 @@
-import { BaseMail } from '@adonisjs/mail'
-import type { MailPayload } from '#types/mail'
+import { BaseNotification } from '#mails/base_notification'
 
-export default class InviteNotification extends BaseMail {
-  constructor(private payload: MailPayload) {
-    super()
-  }
-
-  /**
-   * The "prepare" method is called automatically when
-   * the email is sent or queued.
-   */
-  prepare() {
-    const { user, translations, ...rest } = this.payload
-    const { email, locale } = user
-    const { subject, ...translated } = translations
-
-    this.message
-      .to(email)
-      .subject(subject || '')
-      .htmlView('emails/admin_invite_email', {
-        locale: locale,
-        app_name: process.env.APP_NAME || 'AdonisJS',
-        subject,
-        ...translated,
-        ...rest,
-      })
+export default class InviteNotification extends BaseNotification {
+  get templatePath(): string {
+    return 'emails/admin_invite_email'
   }
 }

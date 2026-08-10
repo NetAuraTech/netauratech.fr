@@ -3,169 +3,156 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {{ appName || 'Notification' }}
-    </title>
+    <title>{{ appName || 'Notification' }}</title>
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        width: 100% !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background-color: #f4f4f7;
-        color: #51545e;
-        line-height: 1.6;
-      }
-      
-      .email-container {
-        max-width: 600px;
-        margin: 20px auto;
-        background-color: #ffffff;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      }
-      
-      .email-header {
-        padding: 32px;
-        text-align: center;
-        color: #ffffff;
-        background: {{ warning ? '#dc2626' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-      }
-      
-      .email-header h1 {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 600;
-        color: #ffffff;
-      }
-      
-      .email-body {
-        padding: 40px 32px;
-      }
-      
-      .email-body p {
-        margin: 0 0 16px;
-        font-size: 16px;
-      }
-      
-      .button-container {
-        text-align: center;
-        margin: 32px 0;
-      }
-      
-      .button {
-        display: inline-block;
-        padding: 14px 32px;
-        border-radius: 6px;
-        background-color: {{ warning ? '#dc2626' : '#5468ff' }}
-        color: #ffffff !important;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 16px;
-      }
-      
-      .alert {
-        margin: 24px 0;
-        padding: 16px;
-        border-left: 4px solid;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      
-      .warning-box {
-        background-color: #fef2f2;
-        border-color: #dc2626;
-        color: #991b1b;
-      }
-      
-      .expiry-box {
-        background-color: #fef3c7;
-        border-color: #f59e0b;
-        color: #92400e;
-      }
-      
-      .footer {
-        padding: 32px;
-        background-color: #f4f4f7;
-        text-align: center;
-        font-size: 12px;
-        color: #6b7280;
-      }
-      
-      .link-fallback {
-        margin-top: 24px;
-        padding: 16px;
-        background-color: #f9fafb;
-        border-radius: 6px;
-        font-size: 13px;
-        word-break: break-all;
-      }
+
+
+
+
+
+
+
+                                                body {
+                                                  margin: 0;
+                                                  padding: 0;
+                                                  width: 100% !important;
+                                                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                                                  background-color: #f4f4f7;
+                                                  color: #51545e;
+                                                  line-height: 1.6;
+                                                }
+
+                                                .email-container {
+                                                  max-width: 600px;
+                                                  margin: 20px auto;
+                                                  background-color: #ffffff;
+                                                  border-radius: 8px;
+                                                  overflow: hidden;
+                                                  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                                }
+
+                                                .email-header {
+                                                  padding: 32px;
+                                                  text-align: center;
+                                                  color: #ffffff;
+                                                  background: {{ warning ? '#dc2626' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+                                                }
+
+                                                .email-header h1 {
+                                                  margin: 0;
+                                                  font-size: 24px;
+                                                  font-weight: 600;
+                                                  color: #ffffff;
+                                                }
+
+                                                .email-body {
+                                                  padding: 40px 32px;
+                                                }
+
+                                                .email-body p {
+                                                  margin: 0 0 16px;
+                                                  font-size: 16px;
+                                                }
+
+                                                .button-container {
+                                                  text-align: center;
+                                                  margin: 32px 0;
+                                                }
+
+                                                .button {
+                                                  display: inline-block;
+                                                  padding: 14px 32px;
+                                                  border-radius: 6px;
+                                                  background-color: {{ warning ? '#dc2626' : '#5468ff' }}
+                                                  color: #ffffff !important;
+                                                  text-decoration: none;
+                                                  font-weight: 600;
+                                                  font-size: 16px;
+                                                }
+
+                                                .alert {
+                                                  margin: 24px 0;
+                                                  padding: 16px;
+                                                  border-left: 4px solid;
+                                                  border-radius: 4px;
+                                                  font-size: 14px;
+                                                }
+
+                                                .warning-box {
+                                                  background-color: #fef2f2;
+                                                  border-color: #dc2626;
+                                                  color: #991b1b;
+                                                }
+
+                                                .expiry-box {
+                                                  background-color: #fef3c7;
+                                                  border-color: #f59e0b;
+                                                  color: #92400e;
+                                                }
+
+                                                .footer {
+                                                  padding: 32px;
+                                                  background-color: #f4f4f7;
+                                                  text-align: center;
+                                                  font-size: 12px;
+                                                  color: #6b7280;
+                                                }
+
+                                                .link-fallback {
+                                                  margin-top: 24px;
+                                                  padding: 16px;
+                                                  background-color: #f9fafb;
+                                                  border-radius: 6px;
+                                                  font-size: 13px;
+                                                  word-break: break-all;
+                                                }
+
+
+
+
+
+
+
     </style>
   </head>
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>
-          {{ warning ? '🔔 ' : '' }}{{ subject }}
-        </h1>
+        <h1>{{ warning ? '🔔 ' : '' }}{{ subject }}</h1>
       </div>
 
       <div class="email-body">
         @if(greeting)
-          <p>
-            <strong>{{ greeting }}</strong>
-          </p>
+          <p><strong>{{ greeting }}</strong></p>
         @end
-        
         @if(intro)
-          <p>
-            {{ intro }}
-          </p>
+          <p>{{ intro }}</p>
         @end
-        
         @let(url = verification_link || confirmation_link || reset_link || invitation_link)
-
         @if(url && action)
-          <div class="button-container">
-            <a href="{{ url }}" class="button">{{ action }}</a>
-          </div>
+          <div class="button-container"><a href="{{ url }}" class="button">{{ action }}</a></div>
         @end
-        
         @if(warning)
           <div class="alert warning-box">
-            <p>
-              ⚠️ {{ warning }}
-            </p>
+            <p>⚠️ {{ warning }}</p>
           </div>
         @end
-        
         @if(expiry)
-          <div class="alert expiry-box">
-            <strong>⏰ {{ expiry }}</strong>
-          </div>
+          <div class="alert expiry-box"><strong>⏰ {{ expiry }}</strong></div>
         @end
-        
         @if(outro)
-          <p>
-            {{ outro }}
-          </p>
+          <p>{{ outro }}</p>
         @end
-        
         @if(url && footer)
           <div class="link-fallback">
-            <p style="margin: 0 0 8px;">
-              <strong>{{ footer }}</strong>
-            </p>
+            <p style="margin: 0 0 8px;"><strong>{{ footer }}</strong></p>
             <a href="{{ url }}" style="color: #5468ff;">{{ url }}</a>
           </div>
         @end
       </div>
 
       <div class="footer">
-        <p>
-          &copy; {{ new Date().getFullYear() }} {{ app_name || 'App' }}. All rights reserved.
-        </p>
+        <p>&copy; {{ new Date().getFullYear() }} {{ app_name || 'App' }}. All rights reserved.</p>
       </div>
     </div>
   </body>

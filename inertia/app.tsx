@@ -25,7 +25,7 @@ createInertiaApp({
   resolve: (name) => {
     return resolvePageComponent(
       `./pages/${name}.tsx`,
-      import.meta.glob('./pages/**/*.tsx'),
+      import.meta.glob(['./pages/**/*.tsx', '!./pages/**/*.spec.tsx']),
       (page: ReactElement<Data.SharedProps>) => <Layout children={page} />
     )
   },

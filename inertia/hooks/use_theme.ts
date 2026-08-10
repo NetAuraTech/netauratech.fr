@@ -153,7 +153,7 @@ export function useTheme(options: UseThemeOptions = {}) {
     }
 
     if (isAuthenticated) {
-      const response = await fetch('/api/settings/preferences/theme', {
+      const response = await fetch('/api/v1/admin/preferences/theme', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

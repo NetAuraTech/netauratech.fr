@@ -1,13 +1,15 @@
+import { transactionContext } from '#shared/context/transaction_context'
 import Token from '#models/core/token'
 import { type FindOptions, type FullToken, TOKEN_TYPES, type TokenType } from '#types/core'
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
-import type User from '#models/auth/user'
+import User from '#models/auth/user'
 import InvalidTokenException from '#exceptions/core/invalid_token_exception'
 import { inject } from '@adonisjs/core'
 import { LogService } from '#services/logging/log_service'
 import { maskToken } from '#helpers/core/crypto'
 import MaxAttemptsExceededException from '#exceptions/core/max_attempts_exceeded_exception'
+import { BaseRepository } from '#repositories/base_repository'
 
 /**
  * Handles all database operations for the {@link Token} model.
@@ -29,8 +31,15 @@ import MaxAttemptsExceededException from '#exceptions/core/max_attempts_exceeded
  *   so that callers never need to handle a `null` return.
  */
 @inject()
-export class TokenRepository {
-  constructor(protected logService: LogService) {}
+export class TokenRepository extends BaseRepository {
+  /**
+   * Maximum verification attempts allowed for any token type.
+   */
+  readonly MAX_ATTEMPTS = 3
+
+  constructor(protected logService: LogService) {
+    super()
+  }
 
   /**
    * Finds a token by its primary key.
@@ -42,7 +51,7 @@ export class TokenRepository {
    * const token = await tokenRepository.findById(1)
    */
   async findById(id: number): Promise<Token | null> {
-    return await Token.find(id)
+    return await Token.query(this.client()).where('id', id).first()
   }
 
   /**
@@ -55,7 +64,7 @@ export class TokenRepository {
    * const tokens = await tokenRepository.findAll({ orderBy: 'createdAt', limit: 50 })
    */
   async findAll(options?: FindOptions): Promise<Token[]> {
-    let query = Token.query()
+    let query = Token.query(this.client())
 
     if (options?.orderBy) {
       query = query.orderBy(options.orderBy, options.orderDirection || 'asc')
@@ -84,7 +93,7 @@ export class TokenRepository {
    * const token = await tokenRepository.findOne({ userId: 1, type: TOKEN_TYPES.PASSWORD_RESET })
    */
   async findOne(criteria: Record<string, any>): Promise<Token | null> {
-    let query = Token.query()
+    let query = Token.query(this.client())
 
     Object.entries(criteria).forEach(([key, value]) => {
       query = query.where(key, value)
@@ -107,7 +116,7 @@ export class TokenRepository {
    * const tokens = await tokenRepository.findMany({ userId: 1 }, { orderBy: 'expiresAt' })
    */
   async findMany(criteria: Record<string, any>, options?: FindOptions): Promise<Token[]> {
-    let query = Token.query()
+    let query = Token.query(this.client())
 
     Object.entries(criteria).forEach(([key, value]) => {
       query = query.where(key, value)
@@ -135,179 +144,39 @@ export class TokenRepository {
    * validators must be hashed by the caller before being passed here.
    *
    * @param data - The token data to persist.
-   * @param data.userId - The ID of the user this token belongs to.
-   * @param data.type - The token type (see {@link TOKEN_TYPES}).
-   * @param data.selector - The plain-text selector used for fast lookup.
-   * @param data.token - The **hashed** validator.
-   * @param data.expiresAt - The expiration datetime.
-   * @param data.attempts - Optional initial attempt count (defaults to `0`).
    * @returns The newly created {@link Token}.
    *
    * @example
-   * const token = await tokenRepository.create({
-   *   userId: user.id,
-   *   type: TOKEN_TYPES.PASSWORD_RESET,
-   *   selector,
-   *   token: hashedValidator,
-   *   expiresAt: DateTime.now().plus({ hours: 1 }),
-   * })
+   * const token = await tokenRepository.create({ userId, type, selector, token: hashedValidator })
    */
-  async create(data: {
-    userId: number
-    type: TokenType
-    selector: string
-    token: string
-    expiresAt: DateTime
-    attempts?: number
-  }): Promise<Token> {
-    return await Token.create(data)
+  async create(data: Partial<Token>): Promise<Token> {
+    return Token.create(data as any, this.client())
   }
 
   /**
-   * Updates a token by its primary key.
-   *
-   * @param id - The primary key of the token to update.
-   * @param data - Partial {@link Token} fields to merge into the record.
-   * @returns The updated {@link Token}, or `null` if no record was found.
-   *
-   * @example
-   * const updated = await tokenRepository.update(1, { attempts: 2 })
-   */
-  async update(id: number, data: Partial<Token>): Promise<Token | null> {
-    const token = await this.findById(id)
-
-    if (!token) {
-      return null
-    }
-
-    token.merge(data as any)
-    await token.save()
-
-    return token
-  }
-
-  /**
-   * Deletes a token by its primary key.
-   *
-   * @param id - The primary key of the token to delete.
-   * @returns `true` if the record was deleted, `false` if it was not found.
-   *
-   * @example
-   * const deleted = await tokenRepository.delete(1)
-   */
-  async delete(id: number): Promise<boolean> {
-    const token = await this.findById(id)
-
-    if (!token) {
-      return false
-    }
-
-    await token.delete()
-    return true
-  }
-
-  /**
-   * Deletes all tokens matching the provided criteria.
-   *
-   * Each key/value pair in `criteria` is applied as a `WHERE` clause.
-   * Records are fetched first and deleted individually to trigger any
-   * model-level hooks.
-   *
-   * @param criteria - Map of column/value pairs to filter by.
-   * @returns The number of deleted records.
-   *
-   * @example
-   * const count = await tokenRepository.deleteMany({ userId: 1, type: TOKEN_TYPES.PASSWORD_RESET })
-   */
-  async deleteMany(criteria: Record<string, any>): Promise<number> {
-    let query = Token.query()
-
-    Object.entries(criteria).forEach(([key, value]) => {
-      query = query.where(key, value)
-    })
-
-    const tokens = await query
-    await Promise.all(tokens.map((token) => token.delete()))
-
-    return tokens.length
-  }
-
-  /**
-   * Counts tokens matching the given criteria.
-   *
-   * Each key/value pair in `criteria` is applied as a `WHERE` clause.
-   * Omitting `criteria` returns the total count of all tokens.
-   *
-   * @param criteria - Optional map of column/value pairs to filter by.
-   * @returns The number of matching records.
-   *
-   * @example
-   * const total = await tokenRepository.count()
-   * const userTokens = await tokenRepository.count({ userId: 1 })
-   */
-  async count(criteria?: Record<string, any>): Promise<number> {
-    let query = Token.query()
-
-    if (criteria) {
-      Object.entries(criteria).forEach(([key, value]) => {
-        query = query.where(key, value)
-      })
-    }
-
-    const result = await query.count('* as total')
-    return Number(result[0].$extras.total)
-  }
-
-  /**
-   * Checks whether at least one token matches the given criteria.
-   *
-   * @param criteria - Map of column/value pairs to filter by.
-   * @returns `true` if at least one matching record exists, `false` otherwise.
-   *
-   * @example
-   * const hasActive = await tokenRepository.exists({ userId: 1, type: TOKEN_TYPES.EMAIL_VERIFICATION })
-   */
-  async exists(criteria: Record<string, any>): Promise<boolean> {
-    const count = await this.count(criteria)
-    return count > 0
-  }
-
-  /**
-   * Splits a raw `selector.validator` token string into its two components.
-   *
-   * Internal utility — returns `null` on malformed input without throwing,
-   * so that callers can decide how to handle the failure.
+   * Splits a raw `selector.validator` string into its two components.
    *
    * @param token - The raw token string in `selector.validator` format.
-   * @returns An object with `selector` and `validator` strings, or `null` if
-   *   the format is invalid.
+   * @returns An object with `selector` and `validator`, or `null` if the format is invalid.
    */
-  private splitToken(token: FullToken): { selector: string; validator: string } | null {
+  #splitToken(token: FullToken): { selector: string; validator: string } | null {
     const parts = token.split('.')
-    if (parts.length !== 2) {
-      return null
-    }
-    return {
-      selector: parts[0],
-      validator: parts[1],
-    }
+    if (parts.length !== 2) return null
+    return { selector: parts[0], validator: parts[1] }
   }
 
   /**
-   * Finds a non-expired token by its plain-text selector and type.
+   * Finds a token record by its plain-text selector and expected type.
    *
-   * Internal utility — returns `null` rather than throwing so that
-   * higher-level methods can compose it freely.
+   * Does not verify the validator hash — use {@link verify} for that.
+   * Returns `null` if no matching record exists or if the token has expired.
    *
-   * @param selector - The plain-text selector to look up.
-   * @param type - The token type to filter by.
-   * @returns The matching {@link Token} if found and not expired, `null` otherwise.
-   *
-   * @example
-   * const token = await tokenRepository.findBySelector('abc123', TOKEN_TYPES.PASSWORD_RESET)
+   * @param selector - The plain-text selector portion of the token.
+   * @param type - The expected token type to filter by.
+   * @returns The matching {@link Token}, or `null`.
    */
-  async findBySelector(selector: string, type: string): Promise<Token | null> {
-    return await Token.query()
+  async findBySelector(selector: string, type: TokenType): Promise<Token | null> {
+    return await Token.query(this.client())
       .where('selector', selector)
       .where('type', type)
       .where('expires_at', '>', DateTime.now().toSQL())
@@ -315,205 +184,160 @@ export class TokenRepository {
   }
 
   /**
-   * Verifies a raw `selector.validator` token against its stored hash.
+   * Verifies the validator portion of a token against its stored hash.
    *
-   * Internal utility — returns `false` rather than throwing so that
-   * higher-level methods can compose it freely.
+   * Checks attempt count before verifying the token so that a brute-forced
+   * token returns `MaxAttemptsExceededException` rather than `InvalidTokenException`.
    *
    * @param token - The raw `selector.validator` token to verify.
    * @param type - The expected token type.
-   * @returns `true` if the token is valid and not expired, `false` otherwise.
-   *
-   * @example
-   * const isValid = await tokenRepository.verify(token, TOKEN_TYPES.EMAIL_VERIFICATION)
+   * @returns `true` if the validator matches, `false` otherwise.
+   * @throws {MaxAttemptsExceededException} If the attempt counter has reached
+   *   or exceeded the maximum allowed attempts.
    */
-  async verify(token: FullToken, type: string): Promise<boolean> {
-    const parts = this.splitToken(token)
-    if (!parts) {
-      return false
-    }
+  async verify(token: FullToken, type: TokenType): Promise<boolean> {
+    const parts = this.#splitToken(token)
 
-    const data = await this.findBySelector(parts.selector, type)
-    if (!data) {
-      return false
-    }
+    if (!parts) return false
 
-    return await hash.verify(data.token, parts.validator)
+    await this.checkAttempts(token)
+
+    const record = await this.findBySelector(parts.selector, type)
+    if (!record) return false
+
+    return hash.verify(record.token, parts.validator)
   }
 
   /**
-   * Resolves a raw token to its associated {@link User}.
+   * Increments the attempt counter for a token.
    *
-   * Internal utility — returns `null` rather than throwing so that
-   * higher-level methods can compose it freely.
+   * Called every time a token is presented for verification, allowing the
+   * system to detect brute-force attempts and lock out abusive clients.
    *
    * @param token - The raw `selector.validator` token.
-   * @param type - The expected token type.
-   * @returns The associated {@link User}, or `null` if the token is invalid.
-   *
-   * @example
-   * const user = await tokenRepository.getUserFromToken(token, TOKEN_TYPES.PASSWORD_RESET)
-   */
-  async getUserFromToken(token: FullToken, type: string): Promise<User | null> {
-    const parts = this.splitToken(token)
-    if (!parts) {
-      return null
-    }
-
-    const data = await this.findBySelector(parts.selector, type)
-    if (!data) {
-      return null
-    }
-
-    const isValid = await hash.verify(data.token, parts.validator)
-    if (!isValid) {
-      return null
-    }
-
-    await data.load('user')
-    return data.user || null
-  }
-
-  /**
-   * Increments the attempt counter on the token identified by the given selector.
-   *
-   * The attempt counter is used to enforce brute-force protection on token
-   * verification endpoints. This method is a no-op if the token cannot be found.
-   *
-   * @param token - The raw `selector.validator` token whose attempt count should
-   *   be incremented.
-   *
-   * @example
-   * await tokenRepository.incrementAttempts(token)
-   */
-  async incrementAttempts(token: FullToken): Promise<void> {
-    const parts = this.splitToken(token)
-    if (!parts) {
-      return
-    }
-
-    const data = await Token.query().where('selector', parts.selector).first()
-
-    if (data) {
-      data.attempts = (data.attempts || 0) + 1
-      await data.save()
-    }
-  }
-
-  /**
-   * Checks whether the attempt counter on a token has reached or exceeded the
-   * maximum allowed number of verification attempts, throwing if so.
-   *
-   * This method is a no-op if the token cannot be parsed or found — in those
-   * cases the caller should rely on {@link verify} or the `getUser*` methods
-   * to surface the invalid token.
-   *
-   * @param token - The raw `selector.validator` token to check.
-   * @param maxAttempts - Maximum number of allowed attempts (default: `3`).
    * @throws {MaxAttemptsExceededException} If the attempt counter has reached
-   *   or exceeded `maxAttempts`.
-   *
-   * @example
-   * await tokenRepository.checkAttempts(token)
-   * // throws automatically if limit reached, no-op otherwise
+   *   or exceeded the maximum allowed attempts.
    */
-  async checkAttempts(token: FullToken, maxAttempts: number = 3): Promise<void> {
-    const parts = this.splitToken(token)
-    if (!parts) {
-      return
-    }
+  async checkAttempts(token: FullToken): Promise<void> {
+    const parts = this.#splitToken(token)
 
-    const data = await Token.query().where('selector', parts.selector).first()
+    if (!parts) return
 
-    if (!data) {
-      return
-    }
+    const record = await Token.query(this.client()).where('selector', parts.selector).first()
 
-    if ((data.attempts || 0) >= maxAttempts) {
-      this.logService.logSecurity('Password reset token exceeded max attempts', {
-        token: maskToken(token),
-      })
+    if (!record) return
 
+    if (record.attempts >= this.MAX_ATTEMPTS) {
       throw new MaxAttemptsExceededException()
     }
+
+    record.attempts += 1
+    await transactionContext.merge(record)
+    await record.save()
   }
 
   /**
-   * Immediately expires all active tokens of a given type for a user by
-   * setting their `expiresAt` to the current timestamp.
+   * Expires a token by setting its `expiresAt` to the current time.
    *
-   * Only tokens that have not already expired are affected.
+   * Use this instead of deleting when you want to keep an audit trail
+   * that the token existed but is no longer valid.
    *
-   * @param userId - The primary key of the user whose tokens should be expired.
-   * @param type - The token type to expire (see {@link TOKEN_TYPES}).
+   * @param id - The primary key of the token to expire.
    *
    * @example
-   * await tokenRepository.expireTokensByType(user.id, TOKEN_TYPES.PASSWORD_RESET)
+   * await tokenRepository.expire(token.id)
    */
-  async expireTokensByType(userId: number, type: string): Promise<void> {
-    await Token.query()
-      .where('type', type)
-      .where('user_id', userId)
-      .where('expires_at', '>', DateTime.now().toSQL())
-      .update({
-        expires_at: DateTime.now().toSQL(),
-      })
+  async expire(id: number): Promise<void> {
+    const token = await this.findById(id)
+    if (!token) return
+
+    token.expiresAt = DateTime.now()
+    await transactionContext.merge(token)
+    await token.save()
   }
 
   /**
-   * Expires all active email verification tokens for a user.
+   * Expires all tokens of a given type for a user.
    *
-   * Typically called after the user's email has been successfully verified.
+   * Generic implementation used by {@link BaseTokenListener} and the
+   * convenience helpers below. Sets `expiresAt` to now so that an audit
+   * trail is preserved — records are not deleted.
    *
+   * @param user - The user whose tokens should be expired.
+   * @param type - The token type to filter by.
+   */
+  async expireTokensByType(user: User, type: TokenType): Promise<void> {
+    const tokens = await Token.query(this.client()).where('user_id', user.id).where('type', type)
+
+    for (const token of tokens) {
+      token.expiresAt = DateTime.now()
+      await transactionContext.merge(token)
+      await token.save()
+    }
+  }
+
+  /**
    * @param user - The user whose email verification tokens should be expired.
    *
-   * @example
-   * await tokenRepository.expireEmailVerificationTokens(user)
+   * Called after the user's email has been successfully verified, to
+   * invalidate any remaining unverified tokens.
    */
   async expireEmailVerificationTokens(user: User): Promise<void> {
-    await this.expireTokensByType(user.id, TOKEN_TYPES.EMAIL_VERIFICATION)
+    await this.expireTokensByType(user, TOKEN_TYPES.EMAIL_VERIFICATION)
   }
 
   /**
-   * Expires all active password reset tokens for a user.
-   *
-   * Typically called after the user's password has been successfully reset.
-   *
+   * Expires all password reset tokens for a given user.
    * @param user - The user whose password reset tokens should be expired.
-   *
-   * @example
-   * await tokenRepository.expirePasswordResetTokens(user)
+   * Called after the user's password has been successfully changed, to
+   * invalidate any remaining unverified tokens.
    */
   async expirePasswordResetTokens(user: User): Promise<void> {
-    await this.expireTokensByType(user.id, TOKEN_TYPES.PASSWORD_RESET)
+    await this.expireTokensByType(user, TOKEN_TYPES.PASSWORD_RESET)
   }
 
   /**
-   * Expires all active email change tokens for a user.
+   * Resolves a token to its associated {@link User}.
    *
-   * Typically called after the email change has been confirmed or cancelled.
+   * Delegates verification to {@link verify} so that attempt tracking is
+   * always applied before hash comparison. Loads the associated user with
+   * role and permissions preloaded. Returns `null` if any step fails — it
+   * does not throw.
    *
-   * @param user - The user whose email change tokens should be expired.
-   *
-   * @example
-   * await tokenRepository.expireEmailChangeTokens(user)
+   * @param token - The raw `selector.validator` token.
+   * @param type - The expected token type to filter by.
+   * @returns The associated {@link User}, or `null`.
    */
-  async expireEmailChangeTokens(user: User): Promise<void> {
-    await this.expireTokensByType(user.id, TOKEN_TYPES.EMAIL_CHANGE)
-  }
+  async getUserFromToken(token: FullToken, type: TokenType): Promise<User | null> {
+    const parts = this.#splitToken(token)
 
-  /**
-   * Expires all active invitation tokens for a user.
-   *
-   * Typically called after the user has accepted their invitation.
-   *
-   * @param user - The user whose invitation tokens should be expired.
-   *
-   * @example
-   * await tokenRepository.expireInviteTokens(user)
-   */
-  async expireInviteTokens(user: User): Promise<void> {
-    await this.expireTokensByType(user.id, TOKEN_TYPES.PENDING_INVITE)
+    if (!parts) return null
+
+    // Delegate to verify() so attempt tracking is always applied.
+    // catch swallows MaxAttemptsExceededException — we return null, not throw.
+    try {
+      const isValid = await this.verify(token, type)
+      if (!isValid) return null
+    } catch {
+      return null
+    }
+
+    const data = await Token.query(this.client())
+      .where('selector', parts.selector)
+      .where('type', type)
+      .where('expires_at', '>', DateTime.now().toSQL())
+      .first()
+
+    if (!data || !data.userId) return null
+
+    const user = await User.query(this.client()).where('id', data.userId).first()
+    if (!user) return null
+
+    await user.load('role', (query) => {
+      query.preload('permissions')
+    })
+
+    return user
   }
 
   /**
@@ -595,9 +419,10 @@ export class TokenRepository {
   /**
    * Retrieves a valid invitation token record by its raw `selector.validator` string.
    *
-   * Unlike the `getUser*` helpers, this method returns the {@link Token} itself
-   * rather than the associated user, allowing the caller to inspect token metadata
-   * (e.g. invited email, expiration) before loading the user.
+   * Delegates verification to {@link verify} so that attempt tracking is always
+   * applied before hash comparison. Unlike the `getUser*` helpers, this method
+   * returns the {@link Token} itself rather than the associated user, allowing
+   * the caller to inspect token metadata (e.g. invited email, expiration).
    *
    * @param token - The raw `selector.validator` invitation token.
    * @returns The matching {@link Token} if valid and not expired.
@@ -607,25 +432,30 @@ export class TokenRepository {
    * const token = await tokenRepository.getUserInvitationToken(token)
    */
   async getUserInvitationToken(token: FullToken): Promise<Token> {
-    const parts = this.splitToken(token)
+    const parts = this.#splitToken(token)
 
     if (!parts) {
       throw new InvalidTokenException()
     }
 
-    const data = await Token.query()
+    // Delegate to verify() so attempt tracking is always applied.
+    try {
+      const isValid = await this.verify(token, TOKEN_TYPES.PENDING_INVITE)
+      if (!isValid) {
+        throw new InvalidTokenException()
+      }
+    } catch (e) {
+      if (e instanceof MaxAttemptsExceededException) throw e
+      throw new InvalidTokenException()
+    }
+
+    const data = await Token.query(this.client())
       .where('selector', parts.selector)
       .where('type', TOKEN_TYPES.PENDING_INVITE)
       .where('expires_at', '>', DateTime.now().toSQL())
       .first()
 
     if (!data) {
-      throw new InvalidTokenException()
-    }
-
-    const isValid = await hash.verify(data.token, parts.validator)
-
-    if (!isValid) {
       throw new InvalidTokenException()
     }
 
@@ -652,7 +482,10 @@ export class TokenRepository {
    * await tokenRepository.deleteInvitationTokens(user.id)
    */
   async deleteInvitationTokens(userId: number): Promise<void> {
-    await Token.query().where('type', TOKEN_TYPES.PENDING_INVITE).where('user_id', userId).delete()
+    await Token.query(this.client())
+      .where('type', TOKEN_TYPES.PENDING_INVITE)
+      .where('user_id', userId)
+      .delete()
   }
 
   /**
@@ -684,5 +517,122 @@ export class TokenRepository {
     }
 
     await this.checkAttempts(token)
+  }
+
+  /**
+   * Deletes a token by its primary key.
+   *
+   * @param id - The primary key of the token to delete.
+   * @returns `true` if deleted, `false` if not found.
+   */
+  async delete(id: number): Promise<boolean> {
+    const token = await this.findById(id)
+
+    if (!token) return false
+
+    await token.delete()
+    return true
+  }
+
+  /**
+   * Updates a token by its primary key.
+   *
+   * @param id - The primary key of the token to update.
+   * @param data - Partial {@link Token} fields to merge into the record.
+   * @returns The updated {@link Token}, or `null` if not found.
+   */
+  async update(id: number, data: Partial<Token>): Promise<Token | null> {
+    const token = await this.findById(id)
+
+    if (!token) return null
+
+    token.merge(data as any)
+    await transactionContext.merge(token)
+    await token.save()
+    return token
+  }
+
+  /**
+   * Counts tokens matching the given criteria.
+   *
+   * @param criteria - Optional map of column/value pairs to filter by.
+   * @returns The number of matching records.
+   */
+  async count(criteria?: Record<string, any>): Promise<number> {
+    let query = Token.query(this.client())
+
+    if (criteria) {
+      Object.entries(criteria).forEach(([key, value]) => {
+        query = query.where(key, value)
+      })
+    }
+
+    const result = await query.count('* as total')
+    return Number(result[0].$extras.total)
+  }
+
+  /**
+   * Checks whether at least one token matches the given criteria.
+   *
+   * @param criteria - Map of column/value pairs to filter by.
+   * @returns `true` if at least one matching record exists, `false` otherwise.
+   */
+  async exists(criteria: Record<string, any>): Promise<boolean> {
+    const count = await this.count(criteria)
+    return count > 0
+  }
+
+  /**
+   * Deletes all tokens matching the provided criteria.
+   *
+   * @param criteria - Map of column/value pairs to filter by.
+   * @returns The number of deleted records.
+   */
+  async deleteMany(criteria: Record<string, any>): Promise<number> {
+    let query = Token.query(this.client())
+
+    Object.entries(criteria).forEach(([key, value]) => {
+      query = query.where(key, value)
+    })
+
+    const tokens = await query
+    await Promise.all(tokens.map((token) => token.delete()))
+
+    return tokens.length
+  }
+
+  /**
+   * Increments the attempt counter for a token.
+   *
+   * @param token - The raw `selector.validator` token.
+   */
+  async incrementAttempts(token: FullToken): Promise<void> {
+    const parts = this.#splitToken(token)
+    if (!parts) return
+
+    const data = await Token.query(this.client()).where('selector', parts.selector).first()
+    if (!data) return
+
+    data.attempts = (data.attempts || 0) + 1
+    await transactionContext.merge(data)
+    await data.save()
+  }
+
+  /**
+   * Expires all email change tokens for a user.
+   *
+   * @param user - The user whose email change tokens should be expired.
+   */
+  async expireEmailChangeTokens(user: User): Promise<void> {
+    await this.expireTokensByType(user, TOKEN_TYPES.EMAIL_CHANGE)
+  }
+
+  /**
+   * Expires all invitation tokens for a user.
+   *
+   * @param user - The user whose invitation tokens should be expired.
+   */
+  async expireInviteTokens(user: User): Promise<void> {
+    await this.expireTokensByType(user, TOKEN_TYPES.PENDING_INVITE)
   }
 }

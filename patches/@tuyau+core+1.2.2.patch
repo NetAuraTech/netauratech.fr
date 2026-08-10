@@ -1,0 +1,13 @@
+diff --git a/node_modules/@tuyau/core/build/index-BPATPJFD.d.ts b/node_modules/@tuyau/core/build/index-BPATPJFD.d.ts
+index 907d02b..e270598 100644
+--- a/node_modules/@tuyau/core/build/index-BPATPJFD.d.ts
++++ b/node_modules/@tuyau/core/build/index-BPATPJFD.d.ts
+@@ -53,7 +53,7 @@ type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : nev
+  */
+ type ExtractQuery<T> = 'query' extends keyof T ? T extends {
+     query?: infer Q;
+-} ? Q : {} : {};
++} ? [Q] extends [Record<string, any>] ? Q : {} : {} : {};
+ /**
+  * Extract query params for GET/HEAD requests.
+  * Excludes headers, cookies, and params from the validator type since these are not query params.

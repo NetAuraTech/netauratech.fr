@@ -1,0 +1,170 @@
+{
+  "category": {
+    "admin": "Administration",
+    "users": "Utilisateurs",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "pages": "Pages",
+    "templates": "Modèles",
+    "files": "Fichiers",
+    "folders": "Dossiers",
+    "settings": "Paramètres",
+    "logs": "Journaux"
+  },
+  "admin": {
+    "access": {
+      "value": "Accéder au tableau de bord",
+      "description": "Permet l'accès à l'espace d'administration."
+    }
+  },
+  "users": {
+    "view": {
+      "value": "Voir les utilisateurs",
+      "description": "Permet de lister et consulter les comptes utilisateurs."
+    },
+    "create": {
+      "value": "Créer des utilisateurs",
+      "description": "Permet d'inviter et de créer des comptes utilisateurs."
+    },
+    "update": {
+      "value": "Modifier les utilisateurs",
+      "description": "Permet de modifier les comptes utilisateurs."
+    },
+    "delete": {
+      "value": "Supprimer les utilisateurs",
+      "description": "Permet de supprimer les comptes utilisateurs."
+    },
+    "manage_roles": {
+      "value": "Gérer les rôles",
+      "description": "Permet de changer le rôle assigné à un utilisateur."
+    }
+  },
+  "roles": {
+    "view": {
+      "value": "Voir les rôles",
+      "description": "Permet de lister et consulter les rôles."
+    },
+    "create": {
+      "value": "Créer des rôles",
+      "description": "Permet de créer des rôles personnalisés."
+    },
+    "update": {
+      "value": "Modifier les rôles",
+      "description": "Permet de modifier les rôles personnalisés et leurs permissions."
+    },
+    "delete": {
+      "value": "Supprimer les rôles",
+      "description": "Permet de supprimer les rôles personnalisés."
+    },
+    "manage_permissions": {
+      "value": "Gérer les permissions",
+      "description": "Permet de modifier les permissions accordées à un rôle."
+    }
+  },
+  "permissions": {
+    "view": {
+      "value": "Voir les permissions",
+      "description": "Permet de lister et consulter les permissions."
+    },
+    "create": {
+      "value": "Créer des permissions",
+      "description": "Permet de créer des permissions personnalisées."
+    },
+    "update": {
+      "value": "Modifier les permissions",
+      "description": "Permet de modifier les permissions personnalisées."
+    },
+    "delete": {
+      "value": "Supprimer les permissions",
+      "description": "Permet de supprimer les permissions personnalisées."
+    }
+  },
+  "pages": {
+    "view": {
+      "value": "Voir les pages",
+      "description": "Permet de lister et consulter les pages."
+    },
+    "create": {
+      "value": "Créer des pages",
+      "description": "Permet de créer des pages."
+    },
+    "update": {
+      "value": "Modifier les pages",
+      "description": "Permet de modifier les pages et leur contenu."
+    },
+    "delete": {
+      "value": "Supprimer les pages",
+      "description": "Permet de supprimer des pages."
+    },
+    "publish": {
+      "value": "Publier les pages",
+      "description": "Permet de publier et dépublier des pages."
+    }
+  },
+  "templates": {
+    "view": {
+      "value": "Voir les modèles",
+      "description": "Permet de lister et consulter les modèles."
+    },
+    "create": {
+      "value": "Créer des modèles",
+      "description": "Permet de créer des modèles."
+    },
+    "update": {
+      "value": "Modifier les modèles",
+      "description": "Permet de modifier les modèles."
+    },
+    "delete": {
+      "value": "Supprimer les modèles",
+      "description": "Permet de supprimer des modèles."
+    }
+  },
+  "files": {
+    "view": {
+      "value": "Voir les fichiers",
+      "description": "Permet de parcourir la médiathèque."
+    },
+    "create": {
+      "value": "Téléverser des fichiers",
+      "description": "Permet de téléverser des fichiers dans la médiathèque."
+    },
+    "update": {
+      "value": "Modifier les fichiers",
+      "description": "Permet de modifier les métadonnées des fichiers."
+    },
+    "delete": {
+      "value": "Supprimer les fichiers",
+      "description": "Permet de supprimer des fichiers."
+    }
+  },
+  "folders": {
+    "view": {
+      "value": "Voir les dossiers",
+      "description": "Permet de parcourir les dossiers médias."
+    },
+    "create": {
+      "value": "Créer des dossiers",
+      "description": "Permet de créer des dossiers médias."
+    },
+    "update": {
+      "value": "Modifier les dossiers",
+      "description": "Permet de renommer et déplacer les dossiers médias."
+    },
+    "delete": {
+      "value": "Supprimer les dossiers",
+      "description": "Permet de supprimer des dossiers médias."
+    }
+  },
+  "settings": {
+    "maintenance": {
+      "value": "Basculer le mode maintenance",
+      "description": "Permet d'activer et de désactiver le mode maintenance."
+    }
+  },
+  "logs": {
+    "view": {
+      "value": "Voir les journaux",
+      "description": "Permet de consulter les journaux de l'application."
+    }
+  }
+}

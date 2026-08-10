@@ -1,3 +1,7 @@
 .adonisjs
 node_modules
 build
+
+# prettier-edge reformats these templates non-idempotently (each pass indents
+# the embedded CSS further), so prettier --check can never pass on them
+resources/views/emails/*.edge

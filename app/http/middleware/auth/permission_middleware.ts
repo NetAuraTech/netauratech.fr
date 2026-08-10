@@ -19,9 +19,9 @@ export default class PermissionMiddleware {
       return next()
     }
 
-    const hasPermission = await Promise.all(permissions.map((permission) => user.can(permission)))
+    const hasAnyPermission = await user.checkAny(permissions)
 
-    if (!hasPermission.some(Boolean)) {
+    if (!hasAnyPermission) {
       throw new ForbiddenException()
     }
 

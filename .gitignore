@@ -27,3 +27,10 @@ yarn-error.log
 
 
 storage/*
+
+# Agents
+.pi/*
+.pi-subagents/*
+.claude/*
+docs/plans
+memory/*

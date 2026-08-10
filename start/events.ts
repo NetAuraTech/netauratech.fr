@@ -17,5 +17,3 @@ emitter.on(events.account.InitiateEmailChange, [
 ])
 
 emitter.on(events.admin.InviteUser, [listeners.admin.SendInvitationEmail, 'handle'])
-
-emitter.on(events.page.ContactFormSubmitted, [listeners.page.SendContactFormEmail, 'handle'])

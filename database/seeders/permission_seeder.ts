@@ -9,16 +9,19 @@ export default class extends BaseSeeder {
       roles: ['view', 'create', 'update', 'delete', 'manage_permissions'],
       permissions: ['view', 'create', 'update', 'delete'],
       pages: ['view', 'create', 'update', 'delete', 'publish'],
-      templates: ['manage'],
-      files: ['view', 'upload', 'delete'],
+      templates: ['view', 'create', 'update', 'delete'],
+      files: ['view', 'create', 'update', 'delete'],
+      folders: ['view', 'create', 'update', 'delete'],
+      settings: ['maintenance'],
+      logs: ['view'],
     }
 
     const permissions = Object.entries(categories).flatMap(([category, actions]) =>
       actions.map((action) => ({
-        name: `permissions:${category}.${action}.value`,
+        name: `permissions.${category}.${action}.value`,
         slug: `${category}.${action}`,
-        category: `permissions:category.${category}`,
-        description: `permissions:${category}.${action}.description`,
+        category: `permissions.category.${category}`,
+        description: `permissions.${category}.${action}.description`,
         isSystem: true,
       }))
     )

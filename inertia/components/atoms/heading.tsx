@@ -32,7 +32,9 @@ interface HeadingProps {
 export function Heading(props: HeadingProps) {
   const { level, color = 'text-primary-deep', flex, children } = props
 
-  const Tag = `h${level}` as ElementType
+  // Fallback to h2 if level is somehow undefined
+  const safeLevel = level ?? 2
+  const Tag = `h${safeLevel}` as ElementType
 
   const levels = {
     1: 'text-[clamp(2.2rem,5vw,4.2rem)]',
@@ -43,7 +45,7 @@ export function Heading(props: HeadingProps) {
 
   return (
     <Tag
-      className={`${levels[level]} font-playfair leading-tight ${color}${flex ? ' flex gap-2 items-center' : ''}`}
+      className={`${levels[safeLevel]} font-playfair leading-tight ${color}${flex ? ' flex gap-2 items-center' : ''}`}
     >
       {children}
     </Tag>

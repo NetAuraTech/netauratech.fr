@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import { RoleRepository } from '#repositories/auth/role_repository'
+import Role from '#models/auth/role'
 
 test.group('RoleRepository', () => {
   const repo = new RoleRepository()
@@ -86,7 +87,27 @@ test.group('RoleRepository', () => {
   })
 
   test('getUserRole() and getAdminRole() return expected seeded roles', async ({ assert }) => {
-    // These roles should be created by the seeders during test setup
+    // No seeders run in tests — ensure the default roles exist idempotently
+    // instead of relying on data left by other suites.
+    await Role.updateOrCreate(
+      { slug: 'user' },
+      {
+        name: 'roles.user.value',
+        slug: 'user',
+        description: 'roles.user.description',
+        isSystem: true,
+      }
+    )
+    await Role.updateOrCreate(
+      { slug: 'admin' },
+      {
+        name: 'roles.admin.value',
+        slug: 'admin',
+        description: 'roles.admin.description',
+        isSystem: true,
+      }
+    )
+
     const userRole = await repo.getUserRole()
     assert.isNotNull(userRole)
     assert.equal(userRole!.slug, 'user')

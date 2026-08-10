@@ -10,9 +10,16 @@
   "E_ROW_NOT_FOUND": "The requested resource cannot be found.",
   "E_SLUG_EXISTS": "Slug \"{slug}\" is already taken.",
   "E_FILE_TOO_LARGE": "File exceeds the {limit}MB limit.",
+  "E_FILE_NOT_FOUND": "The file with id \"{id}\" cannot be found.",
   "E_INVALID_EXTENSION": "Extension \".${ext}\" is not allowed.",
   "E_INVALID_CREDENTIALS": "Authentication failed. Please try again.",
   "E_TOO_MANY_REQUESTS": "Too many attempts. Limit of {limit} requests reached. Please try again in {availableIn} minutes.",
   "E_UNAUTHORIZED": "You must be logged in to access this resource.",
-  "E_FORBIDDEN": "You do not have permission to access this resource."
+  "E_FORBIDDEN": "You do not have permission to access this resource.",
+  "E_INVALID_TEMPLATE_TYPE": "Only page templates can be applied to a full page.",
+  "E_MISSING_REVISION": "Revision {revisionId} not found.",
+  "E_MAINTENANCE": "The site is currently down for maintenance. Please try again in {retryAfter} minutes.",
+  "E_SYSTEM_ROLE_IMMUTABLE": "The system role \"{slug}\" cannot be modified or deleted.",
+  "E_SYSTEM_PERMISSION_IMMUTABLE": "The system permission \"{slug}\" cannot be modified or deleted.",
+  "E_API_CLIENT_URL_MISSING": "AUTH_API_CLIENT_URL is not configured but is required for OAuth API mode."
 }

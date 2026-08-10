@@ -262,7 +262,7 @@
   }
 
   .card {
-    @apply grid rounded-2xl bg-surface shadow-2xl overflow-hidden;
+    @apply flex flex-col rounded-2xl bg-surface shadow-2xl overflow-hidden;
   }
 
   .textarea {
@@ -320,7 +320,7 @@
       @apply min-h-screen transition-all ml-0 w-full bg-canvas;
 
       main {
-        @apply lg:ml-(--sidebar-width) lg:w-(--main-width) p-4;
+        @apply lg:ml-(--sidebar-width) lg:w-(--main-width) p-4 mt-0;
       }
     }
 

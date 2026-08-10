@@ -1,9 +1,9 @@
 import vine from '@vinejs/vine'
 import type Role from '#models/auth/role'
 import type User from '#models/auth/user'
+import { email } from '#validators/rules'
 
 const id = () => vine.number().exists({ table: 'users', column: 'id' })
-const email = () => vine.string().trim().toLowerCase().email().maxLength(254)
 const username = () => vine.string().trim().minLength(2).maxLength(255)
 
 export const listValidator = (ids: Role['slug'][]) =>
@@ -57,3 +57,5 @@ export const updateValidator = (user_id: User['id'], role_ids: Role['slug'][]) =
 export const deleteValidator = vine.create({
   id: id(),
 })
+
+export { restIdValidator } from '#validators/rest'

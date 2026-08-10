@@ -93,7 +93,7 @@ export function Card(props: CardProps) {
           )}
         </div>
       )}
-      <div className={padding}>{children}</div>
+      <div className={`flex-1 ${padding}`}>{children}</div>
       {footer && <div className="p-8 border-t border-solid border-edge bg-sunken">{footer}</div>}
     </div>
   )

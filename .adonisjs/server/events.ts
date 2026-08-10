@@ -7,7 +7,6 @@ import AccountInitiateEmailChange from '#events/account/initiate_email_change'
 import AdminInviteUser from '#events/admin/invite_user'
 import AuthForgotPassword from '#events/auth/forgot_password'
 import AuthUserRegistered from '#events/auth/user_registered'
-import PageContactFormSubmitted from '#events/page/contact_form_submitted'
 
 export const events = {
   account: {
@@ -19,8 +18,5 @@ export const events = {
   auth: {
     ForgotPassword: AuthForgotPassword,
     UserRegistered: AuthUserRegistered,
-  },
-  page: {
-    ContactFormSubmitted: PageContactFormSubmitted,
   },
 }

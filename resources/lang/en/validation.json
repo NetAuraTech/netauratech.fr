@@ -28,6 +28,7 @@
       "search": "Search",
       "select": "Selection",
       "role": "Role"
-    }
+    },
+    "slug_format": "{field} may only contain lowercase letters, numbers, dots, dashes and underscores"
   }
 }

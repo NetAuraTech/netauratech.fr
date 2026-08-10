@@ -28,6 +28,7 @@
       "search": "Recherche",
       "select": "Sélection",
       "role": "Rôle"
-    }
+    },
+    "slug_format": "{field} ne peut contenir que des lettres minuscules, des chiffres, des points, des tirets et des underscores"
   }
 }

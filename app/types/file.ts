@@ -26,9 +26,29 @@ export interface FileRef {
 }
 
 /**
+ * Coarse file category derived from the MIME type. Used by render helpers
+ * (e.g. `<FileImage>`) and by manual front pages to decide how to render a
+ * resolved file — images via the component, everything else directly from
+ * the same prop (e.g. a download link).
+ */
+export type FileType = 'image' | 'video' | 'audio' | 'pdf' | 'document' | 'other'
+
+/**
+ * The display intent declared at resolution time (user story 2). Locale is
+ * always resolved to a concrete value by the caller; `altKey` and
+ * `altOverride` are optional.
+ */
+export interface FileDisplayIntent {
+  locale: string
+  altKey: string | null
+  altOverride: string | null
+}
+
+/**
  * A fully resolved file object passed to the page renderer.
- * All async lookups (URL generation, alt resolution) are performed server-side
- * so React components receive plain data with no further DB or storage calls.
+ * All async lookups (URL generation, alt resolution, responsive variants) are
+ * performed server-side so React components receive plain data with no further
+ * DB or storage calls.
  */
 export interface ResolvedFile {
   id: number
@@ -37,6 +57,7 @@ export interface ResolvedFile {
   mimeType: string
   extension: string
   size: number
+  type: FileType
   alt: string
   width?: number
   height?: number

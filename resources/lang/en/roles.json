@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "value": "Administrator",
+    "description": "Full access to every feature, including system settings."
+  },
+  "user": {
+    "value": "User",
+    "description": "Standard account with no administrative rights."
+  }
+}

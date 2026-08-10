@@ -27,6 +27,7 @@ export default defineConfig({
     watch: {
       ignored: ['**/storage/**', '**/tmp/**'],
     },
+    allowedHosts: [new URL(process.env.APP_URL ?? 'http://localhost:3333').hostname],
   },
 
   build: {

@@ -22,7 +22,8 @@ export function useTranslation<T extends TranslationNodes>(
   format: (value: any, format: Format, lng: Lang, options?: Record<string, string>) => any
 } {
   const t = (path: Paths<T>, data?: Record<string, any>): string => {
-    const keys = (path as string).split('.')
+    if (!path || typeof path !== 'string') return data?.defaultValue ?? ''
+    const keys = path.split('.')
     let result: any = translations
     const count = data?.count
 

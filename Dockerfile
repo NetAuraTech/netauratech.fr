@@ -1,15 +1,17 @@
-FROM node:24-alpine AS base
+FROM node:25-alpine AS base
 
 # All deps stage
 FROM base AS deps
 WORKDIR /app
 ADD package.json package-lock.json ./
+ADD patches ./patches
 RUN npm ci
 
 # Production only deps stage
 FROM base AS production-deps
 WORKDIR /app
 ADD package.json package-lock.json ./
+ADD patches ./patches
 RUN npm ci --omit=dev
 
 # Build stage

@@ -1,5 +1,7 @@
+﻿import { transactionContext } from '#shared/context/transaction_context'
 import Role from '#models/auth/role'
 import { type FindOptions } from '#types/core'
+import { BaseRepository } from '#repositories/base_repository'
 
 /**
  * Handles all database operations for the {@link Role} model.
@@ -8,7 +10,7 @@ import { type FindOptions } from '#types/core'
  * callers never interact with the ORM directly, making the data layer easy
  * to test and swap.
  */
-export class RoleRepository {
+export class RoleRepository extends BaseRepository {
   /**
    * Finds a role by its primary key.
    *
@@ -19,7 +21,7 @@ export class RoleRepository {
    * const role = await roleRepository.findById(1)
    */
   async findById(id: number): Promise<Role | null> {
-    return await Role.find(id)
+    return await Role.query(this.client()).where('id', id).first()
   }
 
   /**
@@ -32,7 +34,7 @@ export class RoleRepository {
    * const roles = await roleRepository.findAll({ orderBy: 'name', limit: 10 })
    */
   async findAll(options?: FindOptions): Promise<Role[]> {
-    let query = Role.query()
+    let query = Role.query(this.client())
 
     if (options?.orderBy) {
       query = query.orderBy(options.orderBy, options.orderDirection || 'asc')
@@ -46,7 +48,7 @@ export class RoleRepository {
       query = query.offset(options.offset)
     }
 
-    return query
+    return await query
   }
 
   /**
@@ -61,7 +63,7 @@ export class RoleRepository {
    * const role = await roleRepository.findOne({ isSystem: true })
    */
   async findOne(criteria: Record<string, any>): Promise<Role | null> {
-    let query = Role.query()
+    let query = Role.query(this.client())
 
     Object.entries(criteria).forEach(([key, value]) => {
       query = query.where(key, value)
@@ -84,7 +86,7 @@ export class RoleRepository {
    * const roles = await roleRepository.findMany({ isSystem: false }, { orderBy: 'name' })
    */
   async findMany(criteria: Record<string, any>, options?: FindOptions): Promise<Role[]> {
-    let query = Role.query()
+    let query = Role.query(this.client())
 
     Object.entries(criteria).forEach(([key, value]) => {
       query = query.where(key, value)
@@ -102,7 +104,7 @@ export class RoleRepository {
       query = query.offset(options.offset)
     }
 
-    return query
+    return await query
   }
 
   /**
@@ -115,7 +117,7 @@ export class RoleRepository {
    * const role = await roleRepository.findBySlug('admin')
    */
   async findBySlug(slug: string): Promise<Role | null> {
-    return await Role.findBy('slug', slug)
+    return await Role.query(this.client()).where('slug', slug).first()
   }
 
   /**
@@ -128,7 +130,7 @@ export class RoleRepository {
    * const role = await roleRepository.findByName('Administrator')
    */
   async findByName(name: string): Promise<Role | null> {
-    return await Role.findBy('name', name)
+    return await Role.query(this.client()).where('name', name).first()
   }
 
   /**
@@ -141,7 +143,7 @@ export class RoleRepository {
    * const role = await roleRepository.create({ name: 'Editor', slug: 'editor' })
    */
   async create(data: Partial<Role>): Promise<Role> {
-    return await Role.create(data as any)
+    return Role.create(data as any, this.client())
   }
 
   /**
@@ -157,13 +159,11 @@ export class RoleRepository {
   async update(id: number, data: Partial<Role>): Promise<Role | null> {
     const role = await this.findById(id)
 
-    if (!role) {
-      return null
-    }
+    if (!role) return null
 
     role.merge(data as any)
+    await transactionContext.merge(role)
     await role.save()
-
     return role
   }
 
@@ -179,9 +179,7 @@ export class RoleRepository {
   async delete(id: number): Promise<boolean> {
     const role = await this.findById(id)
 
-    if (!role) {
-      return false
-    }
+    if (!role) return false
 
     await role.delete()
     return true
@@ -201,7 +199,7 @@ export class RoleRepository {
    * const systemRoles = await roleRepository.count({ isSystem: true })
    */
   async count(criteria?: Record<string, any>): Promise<number> {
-    let query = Role.query()
+    let query = Role.query(this.client())
 
     if (criteria) {
       Object.entries(criteria).forEach(([key, value]) => {
@@ -281,6 +279,6 @@ export class RoleRepository {
    * const role = await roleRepository.findByIdOrFail(1)
    */
   async findByIdOrFail(id: number): Promise<Role> {
-    return await Role.findOrFail(id)
+    return await Role.query(this.client()).where('id', id).firstOrFail()
   }
 }

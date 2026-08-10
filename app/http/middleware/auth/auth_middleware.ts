@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
-import { urlFor } from '@adonisjs/core/services/url_builder'
+import { routePath } from '#helpers/router/route_path'
 
 /**
  * Auth middleware is used authenticate HTTP requests and deny
@@ -9,9 +9,12 @@ import { urlFor } from '@adonisjs/core/services/url_builder'
  */
 export default class AuthMiddleware {
   /**
-   * The URL to redirect to, when authentication fails
+   * The URL to redirect to, when authentication fails. Only meaningful when
+   * a session login page is registered (`full`/`inertia` flavors); the
+   * headless `api` flavor leaves it unset and token failures surface as
+   * JSON 401s instead of a redirect.
    */
-  redirectTo = urlFor('auth.session.render')
+  redirectTo = routePath('auth.session.render') ?? undefined
 
   async handle(
     ctx: HttpContext,

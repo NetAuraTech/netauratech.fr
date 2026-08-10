@@ -1,6 +1,6 @@
 import { BaseCommand, args, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import BackupService from '#services/backup/backup_service'
+import { RestoreBackupAction } from '#actions/backup/restore_backup_action'
 
 /**
  * Ace command that restores the database from a backup archive stored in
@@ -44,11 +44,11 @@ export default class BackupRestore extends BaseCommand {
   declare force: boolean
 
   async run() {
-    const backupService = await this.app.container.make(BackupService)
+    const restoreBackupAction = await this.app.container.make(RestoreBackupAction)
 
     if (!this.force) {
-      this.logger.warning('⚠️  WARNING: This will REPLACE all current database data!')
-      this.logger.warning(`⚠️  Backup file: ${this.filename}`)
+      this.logger.warning('??  WARNING: This will REPLACE all current database data!')
+      this.logger.warning(`??  Backup file: ${this.filename}`)
       this.logger.warning('')
 
       const confirmed = await this.prompt.confirm('Are you sure you want to restore this backup?', {
@@ -65,13 +65,13 @@ export default class BackupRestore extends BaseCommand {
     this.logger.info(`  File: ${this.filename}`)
 
     try {
-      const result = await backupService.restore(this.filename)
+      const result = await restoreBackupAction.execute({ filename: this.filename })
 
       if (result.success) {
-        this.logger.success('✓ Database restored successfully!')
-        this.logger.warning('⚠️  Please restart your application.')
+        this.logger.success('? Database restored successfully!')
+        this.logger.warning('??  Please restart your application.')
       } else {
-        this.logger.error('✗ Restoration failed!')
+        this.logger.error('? Restoration failed!')
         this.logger.error(`  Error: ${result.error}`)
         this.exitCode = 1
       }

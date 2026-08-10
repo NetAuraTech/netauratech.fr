@@ -1,39 +1,36 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import { AccountService } from '#services/account/account_service'
 import { changeEmailValidator } from '#validators/account'
 import { FullToken } from '#types/core'
 import { regenerateCsrfToken } from '#helpers/auth/crsf'
+import { ConfirmEmailChangeAction } from '#actions/account/confirm_email_change_action'
+import { I18nService } from '#services/i18n_service'
+import { buildEmailChangePayload } from '#helpers/i18n_payloads/email_change'
 
 @inject()
 export default class EmailChangeController {
-  constructor(protected accountService: AccountService) {}
+  constructor(
+    protected i18n: I18nService,
+    protected confirmEmailChangeAction: ConfirmEmailChangeAction
+  ) {}
 
   async render(ctx: HttpContext) {
-    const { inertia, params, i18n } = ctx
+    const { inertia, params } = ctx
 
     return inertia.render('settings/account/front/email_change', {
       token: params.token,
-      translations: {
-        title: i18n.t('settings.email.change.title'),
-        sub_title: i18n.t('settings.email.change.sub_title'),
-        submit: i18n.t('settings.email.change.submit'),
-        cancel: i18n.t('settings.email.change.cancel'),
-        token: i18n.t('settings.email.change.token'),
-        info: {
-          title: i18n.t('settings.email.change.info.title'),
-          message: i18n.t('settings.email.change.info.message'),
-        },
-      },
+      translations: buildEmailChangePayload(this.i18n),
     })
   }
 
   async execute(ctx: HttpContext) {
-    const { request, response, session, auth, i18n } = ctx
+    const { request, response, session, auth } = ctx
 
-    const payload = await changeEmailValidator.validate(request.all())
+    await changeEmailValidator.validate(request.all())
 
-    const updated = await this.accountService.confirmEmailChange(payload.token as FullToken)
+    const updated = await this.confirmEmailChangeAction.execute({
+      token: request.input('token') as FullToken,
+    })
 
     if (!auth.user || auth.user.id !== updated.id) {
       await auth.use('web').login(updated)
@@ -41,7 +38,7 @@ export default class EmailChangeController {
 
     regenerateCsrfToken(ctx)
 
-    session.flash('success', i18n.t('settings.email.change.success'))
+    session.flash('success', this.i18n.translate('settings.email.change.success'))
 
     return response.redirect().toRoute('settings.account.render')
   }

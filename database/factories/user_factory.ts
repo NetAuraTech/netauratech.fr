@@ -3,11 +3,20 @@ import User from '#models/auth/user'
 import Role from '#models/auth/role'
 import { DateTime } from 'luxon'
 
+/**
+ * Monotonic sequences guarantee unique defaults within a test run: the unit
+ * suite does not truncate between tests, and faker pools collide on the
+ * unique username/email/name/slug columns (birthday paradox).
+ */
+let userSequence = 0
+let roleSequence = 0
+
 export const UserFactory = factory
-  .define(User, async ({ faker }) => {
+  .define(User, async () => {
+    userSequence++
     return {
-      username: faker.internet.username(),
-      email: faker.internet.email().toLowerCase(),
+      username: `user_${userSequence}`,
+      email: `user_${userSequence}@example.com`,
       password: 'Password123!',
       emailVerifiedAt: DateTime.now(),
     } as unknown as Partial<User>
@@ -16,10 +25,11 @@ export const UserFactory = factory
   .build()
 
 export const RoleFactory = factory
-  .define(Role, async ({ faker }) => {
+  .define(Role, async () => {
+    roleSequence++
     return {
-      name: faker.word.noun(),
-      slug: faker.helpers.slugify(faker.word.noun()).toLowerCase(),
+      name: `Role ${roleSequence}`,
+      slug: `role-${roleSequence}`,
       isSystem: false,
     }
   })

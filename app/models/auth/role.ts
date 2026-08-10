@@ -62,13 +62,28 @@ export default class Role extends RoleSchema {
 
   /**
    * Sync permissions (replace all)
+   *
+   * Computes the attach/detach diff explicitly instead of relying on Lucid's
+   * `sync()`, whose diff breaks when the driver returns pivot ids as strings
+   * (e.g. bigint columns over pg) — leading to duplicate pivot inserts.
    */
   async syncPermissions(permissionIds: number[]): Promise<void> {
-    const pivotData: Record<number, Record<string, never>> = {}
-    permissionIds.forEach((id) => {
-      pivotData[id] = {}
-    })
+    const existing = await (this as Role).related('permissions').query().select('permissions.id')
+    const existingIds = existing.map((permission) => permission.id)
 
-    await (this as Role).related('permissions').sync(pivotData, true)
+    const toDetach = existingIds.filter((id) => !permissionIds.includes(id))
+    const toAttach = permissionIds.filter((id) => !existingIds.includes(id))
+
+    if (toDetach.length > 0) {
+      await (this as Role).related('permissions').detach(toDetach)
+    }
+
+    if (toAttach.length > 0) {
+      const pivotData: Record<number, Record<string, never>> = {}
+      toAttach.forEach((id) => {
+        pivotData[id] = {}
+      })
+      await (this as Role).related('permissions').attach(pivotData)
+    }
   }
 }

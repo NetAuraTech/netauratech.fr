@@ -2,7 +2,6 @@ import { ChangeEvent, CSSProperties, ReactNode, useEffect, useRef, useState } fr
 import { FileManager } from '~/components/organisms/file_manager'
 import { Data } from '@generated/data'
 import { Icon } from '~/components/atoms/icon'
-import { urlFor } from '~/client'
 
 interface ImagePickerProps {
   /** The `name` and `id` attribute of the underlying `<input>`. */
@@ -50,7 +49,7 @@ export function ImagePicker(props: ImagePickerProps) {
 
   const handleFetch = async () => {
     if (defaultValue) {
-      const res = await fetch(urlFor('api.admin.file.find', { id: defaultValue }), {
+      const res = await fetch(`/api/v1/admin/files/${defaultValue}`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -58,7 +57,7 @@ export function ImagePicker(props: ImagePickerProps) {
       })
       const data = await res.json()
 
-      setCurrentFile(data.file)
+      setCurrentFile(data.data)
     }
   }
 

@@ -6,7 +6,7 @@ import type { Data } from '@generated/data'
 import { Field } from '~/components/molecules/field'
 import { SelectOption } from '~/components/atoms/select_option'
 import { toast } from 'sonner'
-import type { CmsFilesTranslations } from '#types/translations'
+import type { AdminFilesTranslations } from '#types/translations'
 import { locales, useTranslation } from '~/hooks/use_translation'
 import { usePage } from '@inertiajs/react'
 import { SharedProps } from '@adonisjs/inertia/types'
@@ -20,7 +20,7 @@ interface FileAlt {
 
 interface FileAltEditorProps {
   file: Data.File
-  translations: CmsFilesTranslations
+  translations: AdminFilesTranslations
 }
 
 /**
@@ -39,7 +39,7 @@ export function FileAltEditor(props: FileAltEditorProps) {
   const { file, translations } = props
   const [adding, setAdding] = useState(false)
   const [alts, setAlts] = useState<FileAlt[]>([])
-  const { t } = useTranslation<CmsFilesTranslations>(translations)
+  const { t } = useTranslation<AdminFilesTranslations>(translations)
 
   const pageProps = usePage<SharedProps>().props
 
@@ -226,10 +226,10 @@ const AltRow = (props: {
   rowKey: (locale: string, key: string) => string
   handleSubmit: (event: SubmitEvent<HTMLFormElement>, callback: (value: boolean) => void) => void
   handleDelete: (event: SubmitEvent<HTMLFormElement>) => void
-  translations: CmsFilesTranslations
+  translations: AdminFilesTranslations
 }) => {
   const { file, alt, rowKey, handleSubmit, handleDelete, translations } = props
-  const { t } = useTranslation<CmsFilesTranslations>(translations)
+  const { t } = useTranslation<AdminFilesTranslations>(translations)
   const k = rowKey(alt.locale, alt.key)
   const [isEditing, setIsEditing] = useState<boolean>(false)
 

@@ -248,7 +248,7 @@ export type EmailChangeTranslations = {
   }
 }
 
-export type CmsUsersIndexTranslations = {
+export type AdminUsersIndexTranslations = {
   title: string
   action: string
   search: {
@@ -279,7 +279,7 @@ export type CmsUsersIndexTranslations = {
   }
 }
 
-export type CmsUsersShowTranslations = {
+export type AdminUsersShowTranslations = {
   title: string
   info: {
     value: string
@@ -318,7 +318,7 @@ export type CmsUsersShowTranslations = {
   }
 }
 
-export type CmsUsersFormTranslations = {
+export type AdminUsersFormTranslations = {
   title: {
     create: string
     edit: string
@@ -342,7 +342,7 @@ export type CmsUsersFormTranslations = {
   submit: string
 }
 
-export type CmsFilesTranslations = {
+export type AdminFilesTranslations = {
   title: string
   action: {
     upload: string
@@ -417,7 +417,7 @@ export type CmsFilesTranslations = {
   }
 }
 
-export type CmsFileFoldersTranslations = {
+export type AdminFileFoldersTranslations = {
   title: string
   action: string
   browse: string
@@ -443,11 +443,22 @@ export type CmsFileFoldersTranslations = {
   }
 }
 
-export type CmsTemplatesTranslations = {
+export type AdminTemplatesTranslations = {
   title: string
+  actions: {
+    edit: string
+    regenerate: string
+  }
+  create_guidance: {
+    value: string
+    from_page: string
+  }
   empty: {
     value: string
     help: string
+  }
+  thumbnail: {
+    placeholder: string
   }
   search: {
     value: string
@@ -466,7 +477,32 @@ export type CmsTemplatesTranslations = {
   }
 }
 
-export type CmsPagesIndexTranslations = {
+export type AdminTemplatesEditTranslations = {
+  title: string
+  back: string
+  form: {
+    name: string
+    description: string
+    thumbnail: {
+      value: string
+      replace: string
+      remove: string
+      regenerate: string
+      regenerating: string
+      placeholder: string
+    }
+    submit: string
+    cancel: string
+  }
+  preview: {
+    value: string
+    empty: string
+    block: string
+    page: string
+  }
+}
+
+export type AdminPagesIndexTranslations = {
   title: string
   action: string
   search: {
@@ -501,7 +537,7 @@ export type CmsPagesIndexTranslations = {
   }
 }
 
-export type CmsPagesCreateTranslations = {
+export type AdminPagesCreateTranslations = {
   title: string
   action: string
   details: string
@@ -528,7 +564,7 @@ export type CmsPagesCreateTranslations = {
   submit: string
 }
 
-export type CmsPagesShowTranslations = {
+export type AdminPagesShowTranslations = {
   title: string
   actions: {
     back: string
@@ -577,7 +613,7 @@ export type CmsPagesShowTranslations = {
   default: string
 }
 
-export type CmsPagesRevisionTranslations = {
+export type AdminPagesRevisionTranslations = {
   title: string
   actions: {
     value: string
@@ -602,6 +638,119 @@ export type CmsPagesRevisionTranslations = {
   latest: string
 }
 
+export type PageEditorTranslations = {
+  status: {
+    value: string
+    draft: string
+    published: string
+    archived: string
+  }
+  mode: {
+    editor: string
+    split: string
+    preview: string
+  }
+  toolbar: {
+    apply_template: string
+    save_as_template: string
+    unpublish: string
+    publish: string
+    revisions: string
+  }
+  sidebar: {
+    details: string
+    seo: string
+  }
+  form: {
+    title: {
+      value: string
+      placeholder: string
+      slug_placeholder: string
+    }
+    meta_title: {
+      value: string
+      placeholder: string
+    }
+    meta_description: {
+      value: string
+      placeholder: string
+    }
+  }
+  save: {
+    button: string
+    saving: string
+    saved: string
+    retry: string
+  }
+  locale: {
+    add: string
+    new_translation: string
+    select: string
+    empty_content: string
+    copy_from: string
+    add_button: string
+  }
+  blocktree: {
+    select_to_configure: string
+    insert_template: string
+    add_block: string
+    save_as_template: string
+  }
+  block_picker: {
+    title: string
+    search_placeholder: string
+    no_results: string
+  }
+  template_picker: {
+    title: string
+    empty: string
+    type_placeholder: string
+    page: string
+    block: string
+  }
+  save_page_template: {
+    title: string
+    name_label: string
+    name_placeholder: string
+    submit: string
+    error: string
+    reminder: string
+  }
+  apply_page_template: {
+    title: string
+    warning: string
+    apply_button: string
+  }
+  save_block_template: {
+    title: string
+    name_label: string
+    name_placeholder: string
+    submit: string
+    exists_warning: string
+    overwrite: string
+    cancel: string
+  }
+  blocks: {
+    section: { label: string; description: string }
+    grid: { label: string; description: string }
+    flex: { label: string; description: string }
+    title: { label: string; description: string }
+    paragraph: { label: string; description: string }
+    button: { label: string; description: string }
+    separator: { label: string; description: string }
+    icon: { label: string; description: string }
+    form: { label: string; description: string }
+    field: { label: string; description: string }
+    htmltext: { label: string; description: string }
+    image: { label: string; description: string }
+    video: { label: string; description: string }
+    carousel: { label: string; description: string }
+    list: { label: string; description: string }
+    quote: { label: string; description: string }
+    iframe: { label: string; description: string }
+  }
+}
+
 export type CommonTranslations = {
   pagination: {
     showing: string
@@ -615,17 +764,299 @@ export type CommonTranslations = {
     max_length: string
     matches: string
     one_of: string
+    slug_format: string
   }
 }
 
-export type CmsTranslations = {
-  category: {
-    content: string
-    access_control: string
+export type AdminDashboardTranslations = {
+  title: string
+  cards: {
+    users: string
+    pages: string
+    translations: string
+    files: string
+    templates: string
+    published_locales: string
+    folders: string
+    no_role: string
   }
-  dashboard: string
-  pages: string
-  templates: string
-  files: string
-  users: string
+  status: {
+    draft: string
+    published: string
+    archived: string
+  }
+  recent: {
+    published_pages: string
+    uploads: string
+    empty: string
+  }
+  view_all: string
+}
+
+export type AdminRolesIndexTranslations = {
+  title: string
+  search: {
+    value: string
+    placeholder: string
+    filter: string
+  }
+  create: {
+    title: string
+  }
+  table: {
+    name: string
+    slug: string
+    permissions: string
+    users: string
+  }
+  actions: {
+    value: string
+    show: string
+    edit: string
+    delete: string
+  }
+  delete: {
+    confirm: string
+  }
+  system: {
+    value: string
+    hint: string
+  }
+  empty: string
+  roles: TranslationNodes
+}
+
+export type AdminRolesFormTranslations = {
+  title: {
+    create: string
+    edit: string
+  }
+  name: {
+    value: string
+    placeholder: string
+  }
+  slug: {
+    value: string
+    placeholder: string
+  }
+  description: {
+    value: string
+    placeholder: string
+  }
+  submit: string
+  actions: {
+    list: string
+  }
+  permissions: {
+    value: string
+    system_hint: string
+    categories: TranslationNodes
+    items: TranslationNodes
+  }
+}
+
+export type AdminRolesShowTranslations = {
+  title: string
+  name: {
+    value: string
+  }
+  slug: {
+    value: string
+  }
+  description: {
+    value: string
+  }
+  system: {
+    value: string
+    hint: string
+  }
+  users: {
+    value: string
+    empty: string
+    table: {
+      username: string
+      email: string
+    }
+    actions: string
+    show: string
+  }
+  permissions: {
+    value: string
+    categories: TranslationNodes
+    items: TranslationNodes
+  }
+  actions: {
+    list: string
+    edit: string
+    delete: string
+  }
+  delete: {
+    confirm: string
+  }
+  roles: TranslationNodes
+}
+
+export type AdminPermissionsIndexTranslations = {
+  title: string
+  create: {
+    title: string
+  }
+  table: {
+    name: string
+    slug: string
+    description: string
+  }
+  actions: {
+    value: string
+    edit: string
+    delete: string
+  }
+  delete: {
+    confirm: string
+  }
+  system: {
+    value: string
+    hint: string
+  }
+  empty: string
+  categories: TranslationNodes
+  items: TranslationNodes
+}
+
+export type AdminPermissionsFormTranslations = {
+  title: {
+    create: string
+    edit: string
+  }
+  name: {
+    value: string
+    placeholder: string
+  }
+  slug: {
+    value: string
+    placeholder: string
+  }
+  category: {
+    value: string
+    placeholder: string
+  }
+  description: {
+    value: string
+    placeholder: string
+  }
+  submit: string
+  actions: {
+    list: string
+  }
+}
+
+export type AdminLogsIndexTranslations = {
+  title: string
+  empty: string
+  logged_on: string
+  search: {
+    value: string
+    placeholder: string
+    filter: string
+  }
+  level: {
+    value: string
+    placeholder: string
+    debug: string
+    info: string
+    warn: string
+    error: string
+    fatal: string
+  }
+  category: {
+    value: string
+    placeholder: string
+    system: string
+    security: string
+    business: string
+    auth: string
+    api: string
+    database: string
+    performance: string
+  }
+  date: {
+    from: string
+    to: string
+  }
+  context: {
+    value: string
+    empty: string
+    view: string
+  }
+  columns: {
+    level: string
+    category: string
+    message: string
+    actor: string
+    date: string
+  }
+}
+
+export type MaintenanceTranslations = {
+  title: string
+  default_message: string
+  retry_in: string
+  retry_now: string
+}
+
+export type AdminMaintenanceTranslations = {
+  title: string
+  sub_title: string
+  status: {
+    label: string
+    inactive: string
+    active_redis: string
+    active_memory: string
+  }
+  source: {
+    redis: string
+    memory: string
+    memory_warning: string
+    redis_unavailable: string
+  }
+  toggle: {
+    label: string
+    enable: string
+    disable: string
+    is_enabled: string
+    is_disabled: string
+  }
+  message: {
+    label: string
+    placeholder: string
+    value: string
+  }
+  allowed_ips: {
+    label: string
+    placeholder: string
+    help: string
+  }
+  schedule: {
+    title: string
+    enable: string
+    start: string
+    end: string
+    help: string
+  }
+  submit: string
+  memory: {
+    title: string
+    description: string
+  }
+  redis_down: {
+    title: string
+    description: string
+    help: string
+  }
+}
+
+/** Translations for the hand-written front home page (`core/front/home`). */
+export type HomeTranslations = {
+  welcome: string
+  tagline: string
 }
