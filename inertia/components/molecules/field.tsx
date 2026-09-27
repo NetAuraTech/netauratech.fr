@@ -164,12 +164,12 @@ export function Field(props: FieldProps) {
   const Component = getComponentFromType(type)
 
   const variants = {
-    inline: 'flex items-center gap-2',
-    grid: 'grid gap-2',
+    inline: 'field__flex',
+    grid: 'field__grid',
   }
 
   return (
-    <div className={`grid`}>
+    <div className="field">
       <div className={`${variants[variant]}`}>
         {!isInline && <Label label={label} htmlFor={name} required={props.required} />}
         <Component
@@ -182,12 +182,12 @@ export function Field(props: FieldProps) {
         {isInline && <Label label={label} htmlFor={name} required={props.required} />}
       </div>
       {errorMessage && (
-        <Paragraph variant="error" spacing="sm">
+        <Paragraph className="paragraph__error" spacing="sm">
           {errorMessage}
         </Paragraph>
       )}
       {helpText && (
-        <Paragraph variant="muted" spacing={errorMessage ? 'xs' : 'sm'}>
+        <Paragraph className="paragraph__muted" spacing={errorMessage ? 'xs' : 'sm'}>
           {helpText}
         </Paragraph>
       )}

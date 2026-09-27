@@ -19,6 +19,10 @@ export interface ApiDefinition {
   }
   front: {
     home: typeof routes['front.home']
+    services: typeof routes['front.services']
+    projects: typeof routes['front.projects'] & {
+      show: typeof routes['front.projects.show']
+    }
   }
   auth: {
     session: {

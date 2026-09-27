@@ -79,6 +79,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/core/front/home_controller').default['render']>>>
     }
   }
+  'front.services': {
+    methods: ["GET","HEAD"]
+    pattern: '/services'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/core/front/services_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/core/front/services_controller').default['render']>>>
+    }
+  }
+  'front.projects': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/core/front/projects_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/core/front/projects_controller').default['render']>>>
+    }
+  }
+  'front.projects.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets/:slug'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { slug: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/core/front/project_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/core/front/project_controller').default['render']>>>
+    }
+  }
   'auth.session.render': {
     methods: ["GET","HEAD"]
     pattern: '/login'

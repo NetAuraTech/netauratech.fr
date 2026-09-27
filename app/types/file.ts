@@ -49,8 +49,12 @@ export interface FileDisplayIntent {
  * All async lookups (URL generation, alt resolution, responsive variants) are
  * performed server-side so React components receive plain data with no further
  * DB or storage calls.
+ *
+ * Declared as an object `type` (not an `interface`) so it gets an implicit
+ * index signature and stays assignable to the `JSONDataTypes` contract the
+ * Inertia page props must satisfy.
  */
-export interface ResolvedFile {
+export type ResolvedFile = {
   id: number
   url: string
   filename: string

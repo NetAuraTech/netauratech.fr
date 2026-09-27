@@ -77,7 +77,7 @@ Match the block/domain vocabulary from `CONTEXT.md` (Block, Template, Page) rath
 
 ## Component Creation Checklist
 
-- Search `inertia/components/{atoms,molecules,organisms}` for an existing pattern to extend before creating a new one.
+- Prefer composing existing `inertia/components/{atoms,molecules,organisms}` over creating elements from scratch. Create a new component only when nothing covers the need and the element is reusable across surfaces; check `cms/` before touching CMS visuals.
 - Pick the category by responsibility, not visual size.
 - Define props around content structure, not one page's current data.
 - If creating a new block type, add both the block renderer and the editor, and register it wherever block types are enumerated (check `cms/builder/block_types.ts`).

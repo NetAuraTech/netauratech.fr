@@ -1,5 +1,5 @@
 import { router, usePage } from '@inertiajs/react'
-import { ReactNode, MouseEvent, useState, useEffect } from 'react'
+import { ReactNode, MouseEvent, useState, useEffect, ElementType } from 'react'
 import type { FontSize } from '#types/font'
 import { getFontSizeClass } from '~/utils/font'
 import { Link } from '@adonisjs/inertia/react'
@@ -26,7 +26,15 @@ type NavLinkBaseProps = {
    * - `'pagination'` — button-shaped link used inside `<Pagination>`.
    * - `'admin_nav'` — button-shaped link used inside Administration.
    */
-  variant?: 'link' | 'nav' | 'setting_nav' | 'pagination' | 'admin_nav' | 'external' | 'footer'
+  variant?:
+    | 'link'
+    | 'nav'
+    | 'setting_nav'
+    | 'pagination'
+    | 'admin_nav'
+    | 'external'
+    | 'footer'
+    | 'front'
   fitContent?: boolean
   /** Disables pointer events and applies a reduced-opacity style. */
   disabled?: boolean
@@ -79,6 +87,8 @@ export const variants = {
   external:
     'text-secondary hover:text-secondary-light font-semibold font-cormorant tracking-wide italic text-lg',
   footer: 'text-ink-inverted hover:text-primary-light text-sm flex items-center',
+  front:
+    'text-ink-inverted/70 hover:text-ink-inverted current:text-primary-soft text-[11px] uppercase tracking-[0.2em]',
 }
 
 /**
@@ -167,8 +177,10 @@ export function NavLink<R extends NonNullable<LinkProps['route']>>(props: NavLin
           } as unknown as LinkProps<R>)
   }
 
+  const Tag = href ? ('a' as ElementType) : Link
+
   return (
-    <Link
+    <Tag
       name={name}
       id={name}
       {...linkProps}
@@ -179,6 +191,6 @@ export function NavLink<R extends NonNullable<LinkProps['route']>>(props: NavLin
     >
       {children}
       {label}
-    </Link>
+    </Tag>
   )
 }

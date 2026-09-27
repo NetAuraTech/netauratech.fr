@@ -52,9 +52,7 @@ export default function MaintenancePage(props: PageProps) {
             🛠️
           </div>
           <Heading level={1}>{t('title')}</Heading>
-          <Paragraph variant="muted" className="mb-8">
-            {message || t('default_message')}
-          </Paragraph>
+          <Paragraph className="mb-8 paragraph__muted">{message || t('default_message')}</Paragraph>
           <div className="flex flex-col items-center gap-4 mb-8">
             <Badge variant="warning" className="text-sm">
               {t('retry_in')} {formatTime(secondsRemaining)}

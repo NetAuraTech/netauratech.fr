@@ -23,8 +23,8 @@ interface SelectProps {
  * Styled select input.
  *
  * Applies the `select` utility class from the design system, which inherits
- * all `input` styles (background, border, focus ring, etc.) and additionally
- * configures the native picker appearance.
+ * the `input` boxed style and additionally configures the native picker
+ * appearance.
  *
  * The `name` prop is used for both `name` and `id` so that a sibling
  * `<Label>` with the matching `htmlFor` associates correctly.

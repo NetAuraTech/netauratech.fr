@@ -1,7 +1,8 @@
-import { ReactNode } from 'react'
+import { ReactNode, useRef } from 'react'
 import { urlFor } from '~/client'
 import type { LinkProps, LinkParams } from '@adonisjs/inertia/react'
 import { Link } from '@adonisjs/inertia/react'
+import { useButtonText } from '~/hooks/animations/use_button_text'
 
 interface ButtonBaseProps {
   /** Shows a spinning loader and disables the button while `true`. */
@@ -72,23 +73,6 @@ type ButtonProps<R extends NonNullable<LinkProps['route']>> =
   | ButtonRouteProps<R>
   | ButtonNoRouteProps
 
-export const variants = {
-  primary: 'bg-primary text-ink-inverted hover:bg-primary-deep',
-  secondary: 'bg-secondary text-ink-inverted hover:bg-secondary-deep',
-  danger: 'bg-danger text-ink-inverted hover:opacity-90',
-  success: 'bg-success text-ink-inverted hover:opacity-90',
-  outline:
-    'border-2 border-solid border-primary text-primary hover:bg-primary hover:text-ink-inverted',
-  social: 'bg-surface border border-solid border-edge hover:border-edge-strong shadow text-ink',
-  icon: 'hover:bg-primary-soft hover:text-ink-inverted p-2',
-  icon_success: 'bg-success-soft text-success hover:bg-success hover:text-ink-inverted p-2',
-  icon_danger: 'bg-danger-soft text-danger hover:bg-danger hover:text-ink-inverted p-2',
-  icon_warning: 'bg-warning-soft text-warning hover:bg-warning hover:text-ink-inverted p-2',
-  icon_info: 'bg-info-soft text-info hover:bg-info hover:text-ink-inverted p-2',
-  link_muted: 'text-ink-muted hover:text-primary p-0 font-normal',
-  link_secondary: 'text-secondary hover:text-secondary-light  p-0',
-}
-
 /**
  * Polymorphic button component that renders as a `<button>`, an Inertia
  * `<Link>`, or a plain `<a>` depending on the supplied props.
@@ -130,6 +114,9 @@ export function Button<R extends NonNullable<LinkProps['route']>>(props: ButtonP
     ...buttonProps
   } = props
 
+  const buttonRef = useRef<HTMLElement>(null)
+  useButtonText(buttonRef)
+
   const state = loading || disabled ? 'disabled' : 'active'
   const size = fitContent ? 'fit' : 'full'
 
@@ -167,11 +154,13 @@ export function Button<R extends NonNullable<LinkProps['route']>>(props: ButtonP
           />
         </svg>
       )}
-      {children}
+      <span data-roll className="inline-block overflow-hidden whitespace-nowrap">
+        {children}
+      </span>
     </>
   )
 
-  const classNames = ['button', variants[variant], states[state], sizes[size]]
+  const classNames = ['button', `button__${variant}`, states[state], sizes[size]]
     .filter(Boolean)
     .join(' ')
 
@@ -179,6 +168,9 @@ export function Button<R extends NonNullable<LinkProps['route']>>(props: ButtonP
     if (external) {
       return (
         <a
+          ref={(el) => {
+            buttonRef.current = el
+          }}
           href={props.href ?? urlFor(route as any, routeParams as any)}
           className={classNames}
           title={title}
@@ -190,6 +182,7 @@ export function Button<R extends NonNullable<LinkProps['route']>>(props: ButtonP
 
     return (
       <Link
+        ref={buttonRef}
         href={props.href ?? urlFor(route as any, routeParams as any)}
         className={classNames}
         onClick={onClick}
@@ -203,10 +196,13 @@ export function Button<R extends NonNullable<LinkProps['route']>>(props: ButtonP
 
   return (
     <button
+      ref={(el) => {
+        buttonRef.current = el
+      }}
       disabled={loading || disabled}
       type={type}
       onClick={onClick}
-      className={`button ${variants[variant]} ${states[state]} ${sizes[size]}`}
+      className={classNames}
       title={title}
       {...buttonProps}
     >

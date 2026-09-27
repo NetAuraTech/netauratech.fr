@@ -18,8 +18,8 @@ interface CheckboxProps {
  * Styled checkbox input.
  *
  * Applies the `checkbox` utility class from the design system, which sets
- * the secondary color to `accent` and handles focus styles. The `name` prop is
- * used for both the `name` and `id` attributes so that a sibling `<Label>`
+ * the primary color as the `accent` and handles focus styles. The `name` prop
+ * is used for both the `name` and `id` attributes so that a sibling `<Label>`
  * with the matching `htmlFor` associates correctly.
  *
  * @example
@@ -41,7 +41,7 @@ export function Checkbox(props: CheckboxProps) {
       required={required}
       onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
       onBlur={onBlur}
-      className="checkbox accent-secondary focus:border-secondary"
+      className="checkbox accent-primary focus:border-primary"
       {...inputProps}
     />
   )

@@ -35,10 +35,10 @@ interface SectionProps {
  * </Section>
  */
 export function Section(props: SectionProps) {
-  const { children, className = 'py-8', ...sectionProps } = props
+  const { children, className = '', ...sectionProps } = props
 
   return (
-    <section {...sectionProps} className={className}>
+    <section {...sectionProps} className={`section ${className}`}>
       {children}
     </section>
   )

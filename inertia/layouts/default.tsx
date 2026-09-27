@@ -16,6 +16,12 @@ export default function Layout(props: LayoutProps) {
   const { children } = props
   const { props: pageProps, url } = usePage<SharedProps>()
   const { app_name, app_url } = pageProps
+  const isFront = url === '/'
+  // The projects listing is a sealed frame on desktop: only the list scrolls, so
+  // the footer is kept off the desktop layout (reference behaviour) and is
+  // shown again in the normal document flow on smaller screens. Single project
+  // pages are regular scrolling editorial pages and keep the normal footer.
+  const isProjectsFrame = url === '/projets'
 
   useEffect(() => {
     toast.dismiss()
@@ -61,10 +67,24 @@ export default function Layout(props: LayoutProps) {
         <meta name="twitter:image:alt" content={`${app_name} - ${image_alt}`} />
       </Head>
       <>
+        {isFront && (
+          <style>{`body, #page-wrapper, #site { background: #050505 !important; }`}</style>
+        )}
         <Header />
         <Toaster position="top-right" richColors />
         {children}
-        <Footer />
+        {isProjectsFrame ? (
+          <>
+            <div className="lg:hidden">
+              <Footer />
+            </div>
+            <div className="fixed inset-x-0 bottom-0 z-[60] hidden lg:block">
+              <Footer />
+            </div>
+          </>
+        ) : (
+          <Footer />
+        )}
       </>
     </>
   )

@@ -85,7 +85,7 @@ export function Card(props: CardProps) {
             <div>
               {title && <Heading level={3}>{title}</Heading>}
               {subtitle && (
-                <Paragraph variant="muted" spacing="sm">
+                <Paragraph className="paragraph__muted" spacing="sm">
                   {subtitle}
                 </Paragraph>
               )}

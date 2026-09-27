@@ -17,9 +17,11 @@ interface InputProps {
 /**
  * Base text input component.
  *
- * Applies the `input` utility class from the design system, which covers
- * background (`bg-sunken`), text color (`text-ink`), border (`border-edge`),
- * placeholder color (`text-ink-subtle`), disabled state, and focus ring.
+ * Applies the `input` utility class from the design system, which covers the
+ * boxed editorial style: transparent background, full hairline border, light
+ * text (`text-ink-inverted`), placeholder color, disabled state and a purple
+ * focus border. Inside a `<Card>` the utility flips to the light-surface look
+ * (`text-ink`, `border-edge`).
  *
  * The `name` prop is used for both `name` and `id` so that a sibling
  * `<Label>` with the matching `htmlFor` associates correctly.

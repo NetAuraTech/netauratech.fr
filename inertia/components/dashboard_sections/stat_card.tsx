@@ -33,7 +33,7 @@ export function StatCard({ icon, label, value, route, children }: StatCardProps)
           <Icon name={icon} size={28} className="text-ink-muted shrink-0" />
           <div className="flex items-baseline gap-2">
             <p className="text-3xl font-bold leading-none">{value}</p>
-            <Paragraph variant="muted" spacing="xs">
+            <Paragraph className="paragraph__muted" spacing="xs">
               {label}
             </Paragraph>
           </div>

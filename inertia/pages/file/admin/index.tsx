@@ -1,4 +1,4 @@
-import { Button, variants as button_variants } from '~/components/atoms/button'
+import { Button } from '~/components/atoms/button'
 import { AdminMain } from '~/components/organisms/admin/admin_main'
 import { Paginated } from '~/types/paginated'
 import { useMenu } from '~/hooks/use_admin'
@@ -278,7 +278,7 @@ export default function FilesIndexPage(props: Props) {
                     <div className="pt-1 flex flex-col gap-1">
                       <div className="flex items-center justify-between w-full py-4 gap-2">
                         <a
-                          className={`button ${button_variants['icon_info']}`}
+                          className={`button button__icon_info`}
                           href={selectedFile.url}
                           target="_blank"
                           rel="noopener noreferrer"

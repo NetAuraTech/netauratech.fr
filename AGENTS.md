@@ -6,16 +6,16 @@
 
 ## Stack
 
-| Layer     | Technology                                                                              |
-| --------- | --------------------------------------------------------------------------------------- |
-| Backend   | AdonisJS v7, Lucid ORM, VineJS                                                          |
-| Frontend  | React 19, Inertia.js, Tailwind CSS v4                                                   |
-| Language  | TypeScript 5.9                                                                          |
-| Database  | PostgreSQL (primary), SQLite (dev)                                                      |
-| Cache     | Redis                                                                                   |
-| Auth      | Session-based (@adonisjs/auth), OAuth (Ally), opt-in API tokens (`AUTH_GUARD_API=true`) |
-| Storage   | @adonisjs/drive (local, S3, R2)                                                         |
-| Testing   | Japa (backend), Vitest (frontend)                                                       |
+| Layer    | Technology                                                                              |
+| -------- | --------------------------------------------------------------------------------------- |
+| Backend  | AdonisJS v7, Lucid ORM, VineJS                                                          |
+| Frontend | React 19, Inertia.js, Tailwind CSS v4                                                   |
+| Language | TypeScript 5.9                                                                          |
+| Database | PostgreSQL (primary), SQLite (dev)                                                      |
+| Cache    | Redis                                                                                   |
+| Auth     | Session-based (@adonisjs/auth), OAuth (Ally), opt-in API tokens (`AUTH_GUARD_API=true`) |
+| Storage  | @adonisjs/drive (local, S3, R2)                                                         |
+| Testing  | Japa (backend), Vitest (frontend)                                                       |
 
 ## Working Agreements
 
@@ -70,22 +70,27 @@ presence. English stays the language of the repo, its docs and its issues; the
 site's own content is French.
 
 The public surface is hand-written Inertia pages with no content persistence:
-projects live as one static route each, services as static content, and contact
-goes out by email.
+projects are content-driven from `content/projects/`, services as static
+content, and contact goes out by email.
 
 ### Public pages
 
 - `/` — landing: pitch, previews of projects and services, contact form.
 - `/projets` — portfolio listing of project pages.
-- `/projets/:slug` — one static page per project, each its own `front.*` route.
+- `/projets/:slug` — one page per project, served by the single
+  `front.projects.show` route.
 - `/services` — the Service grid plus editorial copy.
 
 ### Adding a project
 
-No model, no migration. Register a parameter-free GET route named `front.*` for
-the project's literal path (the route sitemap collector indexes it
-automatically), wire a controller that renders a hand-written Inertia page, and
-serve its visuals from the backend file module rather than committing images.
+No model, no migration, no route, no controller. Add a markdown source in
+`content/projects/{slug}.md` with the `cover`, `rubrique`, `title` and `note`
+frontmatter fields: `SiteContentService` parses it, the shared
+`ProjectController` serves it on `/projets/{slug}`, and the
+`ProjectSitemapCollector` indexes it in the sitemap automatically. Structure
+the story with the `:::` block syntax — see `docs/agents/project-content.md`
+for every block type and its authoring format. Serve the
+project's visuals from the backend file module rather than committing images.
 
 ### Contact
 

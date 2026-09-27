@@ -10,6 +10,9 @@ export type ScannedRoutes = {
     'sitemap.show': { paramsTuple?: []; params?: {} }
     'robots.show': { paramsTuple?: []; params?: {} }
     'front.home': { paramsTuple?: []; params?: {} }
+    'front.services': { paramsTuple?: []; params?: {} }
+    'front.projects': { paramsTuple?: []; params?: {} }
+    'front.projects.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.session.execute': { paramsTuple?: []; params?: {} }
     'auth.register.render': { paramsTuple?: []; params?: {} }
@@ -110,6 +113,9 @@ export type ScannedRoutes = {
     'sitemap.show': { paramsTuple?: []; params?: {} }
     'robots.show': { paramsTuple?: []; params?: {} }
     'front.home': { paramsTuple?: []; params?: {} }
+    'front.services': { paramsTuple?: []; params?: {} }
+    'front.projects': { paramsTuple?: []; params?: {} }
+    'front.projects.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.register.render': { paramsTuple?: []; params?: {} }
     'auth.forgot_password.render': { paramsTuple?: []; params?: {} }
@@ -161,6 +167,9 @@ export type ScannedRoutes = {
     'sitemap.show': { paramsTuple?: []; params?: {} }
     'robots.show': { paramsTuple?: []; params?: {} }
     'front.home': { paramsTuple?: []; params?: {} }
+    'front.services': { paramsTuple?: []; params?: {} }
+    'front.projects': { paramsTuple?: []; params?: {} }
+    'front.projects.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.register.render': { paramsTuple?: []; params?: {} }
     'auth.forgot_password.render': { paramsTuple?: []; params?: {} }

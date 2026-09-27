@@ -44,8 +44,8 @@ export default function FileFoldersPage(props: PageProps) {
           </CanAccess>
           {roots.length === 0 ? (
             <div className="text-center py-16 rounded-xl border border-dashed border-edge">
-              <Paragraph variant="muted">{t('empty.value')}</Paragraph>
-              <Paragraph variant="subtle">{t('empty.help')}</Paragraph>
+              <Paragraph className="paragraph__muted">{t('empty.value')}</Paragraph>
+              <Paragraph className="paragraph__subtle">{t('empty.help')}</Paragraph>
             </div>
           ) : (
             <div className="grid gap-2">

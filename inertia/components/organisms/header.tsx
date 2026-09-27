@@ -34,10 +34,10 @@ export function Header() {
   const isExpanded = isMenuOpen ? 'true' : 'false'
 
   return (
-    <header className="header" data-state={menuState} aria-expanded={isExpanded}>
+    <header className={`header header--dark`} data-state={menuState} aria-expanded={isExpanded}>
       <Link
         href="/"
-        className="header__logo font-semibold tracking-wide text-xl font-cormorant"
+        className={`header__logo font-semibold tracking-wide text-xl font-news text-ink-inverted`}
         onClick={closeMenu}
       >
         {pageProps.app_name}
@@ -49,10 +49,19 @@ export function Header() {
         data-state={menuState}
         aria-expanded={isExpanded}
       >
-        <NavLink href="/" label="Home" variant="nav" onClick={closeMenu} />
+        <NavLink href="/" label="Accueil" variant={'front'} onClick={closeMenu} />
+        <NavLink route="front.projects" label="Projets" variant={'front'} onClick={closeMenu} />
+        <NavLink route="front.services" label="Services" variant={'front'} onClick={closeMenu} />
+        <NavLink
+          route="front.home"
+          anchor="contact"
+          label="Contact"
+          variant={'front'}
+          onClick={closeMenu}
+        />
       </nav>
       <button
-        className="header__burger md:display-hidden"
+        className={`header__burger text-ink-inverted`}
         aria-controls="primary-navigation"
         aria-expanded={isExpanded}
         data-state={menuState}

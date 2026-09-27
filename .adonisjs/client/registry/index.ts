@@ -42,6 +42,24 @@ const routes = {
     tokens: [{"old":"/","type":0,"val":"/","end":""}],
     types: placeholder as Registry['front.home']['types'],
   },
+  'front.services': {
+    methods: ["GET","HEAD"],
+    pattern: '/services',
+    tokens: [{"old":"/services","type":0,"val":"services","end":""}],
+    types: placeholder as Registry['front.services']['types'],
+  },
+  'front.projects': {
+    methods: ["GET","HEAD"],
+    pattern: '/projets',
+    tokens: [{"old":"/projets","type":0,"val":"projets","end":""}],
+    types: placeholder as Registry['front.projects']['types'],
+  },
+  'front.projects.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/projets/:slug',
+    tokens: [{"old":"/projets/:slug","type":0,"val":"projets","end":""},{"old":"/projets/:slug","type":1,"val":"slug","end":""}],
+    types: placeholder as Registry['front.projects.show']['types'],
+  },
   'auth.session.render': {
     methods: ["GET","HEAD"],
     pattern: '/login',

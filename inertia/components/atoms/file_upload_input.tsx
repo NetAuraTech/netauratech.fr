@@ -218,17 +218,19 @@ export function FileUploadInput(props: FileUploadInputProps) {
             </div>
             <div className="text-center space-y-1">
               {sizeError ? (
-                <Paragraph variant="error">
+                <Paragraph className="paragraph__error">
                   {t('upload.error.size', {
                     max: humanSize(maxSize ?? 0),
                   })}
                 </Paragraph>
               ) : (
                 <>
-                  <Paragraph variant="ink">{t('upload.help')}</Paragraph>
-                  {accept && <Paragraph variant="muted">{accept.replace(/,/g, ', ')}</Paragraph>}
+                  <Paragraph>{t('upload.help')}</Paragraph>
+                  {accept && (
+                    <Paragraph className="paragraph__muted">{accept.replace(/,/g, ', ')}</Paragraph>
+                  )}
                   {maxSize && (
-                    <Paragraph variant="muted">
+                    <Paragraph className="paragraph__muted">
                       {t('upload.max_size', {
                         size: humanSize(maxSize),
                       })}
@@ -252,7 +254,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
           </>
         )}
       </div>
-      {hint && !sizeError && <Paragraph variant="muted">{hint}</Paragraph>}
+      {hint && !sizeError && <Paragraph className="paragraph__muted">{hint}</Paragraph>}
     </div>
   )
 }

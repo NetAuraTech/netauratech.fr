@@ -200,7 +200,7 @@ export function FileAltEditor(props: FileAltEditorProps) {
         </Form>
       )}
       {alts.length === 0 && !adding ? (
-        <Paragraph variant="muted">{t('alts.empty')}</Paragraph>
+        <Paragraph className="paragraph__muted">{t('alts.empty')}</Paragraph>
       ) : (
         <div className="grid gap-1">
           {alts.map((alt) => (

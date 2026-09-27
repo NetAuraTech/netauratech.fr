@@ -83,7 +83,7 @@ export default function MaintenancePage(props: PageProps) {
           <div className="flex items-center gap-4 flex-wrap">
             <Label label={t('status.label')} htmlFor="maintenance-status" />
             {getStatusBadge()}
-            <Paragraph variant="muted" spacing="xs">
+            <Paragraph className="paragraph__muted" spacing="xs">
               {getSourceText()}
             </Paragraph>
             {!redisAvailable && (
@@ -147,14 +147,14 @@ export default function MaintenancePage(props: PageProps) {
                   placeholder={t('allowed_ips.placeholder')}
                   rows={6}
                 />
-                <Paragraph variant="muted" className="text-sm" spacing="xs">
+                <Paragraph className="text-sm paragraph__muted" spacing="xs">
                   {t('allowed_ips.help')}
                 </Paragraph>
 
                 <hr className="border-edge" />
 
                 <Heading level={4}>{t('schedule.title')}</Heading>
-                <Paragraph variant="muted" spacing="xs">
+                <Paragraph className="paragraph__muted" spacing="xs">
                   {t('schedule.help')}
                 </Paragraph>
 
@@ -194,7 +194,7 @@ export default function MaintenancePage(props: PageProps) {
           {memoryConfig && memoryConfig.enabled && (
             <Card className="bg-amber-50 border-amber-200">
               <Heading level={4}>{t('memory.title')}</Heading>
-              <Paragraph variant="muted" spacing="xs">
+              <Paragraph className="paragraph__muted" spacing="xs">
                 {t('memory.description')}
               </Paragraph>
               <div className="grid gap-2 mt-4 text-sm">
@@ -208,10 +208,10 @@ export default function MaintenancePage(props: PageProps) {
           {!redisAvailable && (
             <Card className="bg-red-50 border-red-200">
               <Heading level={4}>{t('redis_down.title')}</Heading>
-              <Paragraph variant="muted" spacing="xs">
+              <Paragraph className="paragraph__muted" spacing="xs">
                 {t('redis_down.description')}
               </Paragraph>
-              <Paragraph variant="muted" className="text-sm" spacing="xs">
+              <Paragraph className="text-sm paragraph__muted" spacing="xs">
                 {t('redis_down.help')}
               </Paragraph>
             </Card>

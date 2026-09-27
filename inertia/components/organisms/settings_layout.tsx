@@ -61,7 +61,7 @@ export function SettingsLayout(props: PageProps) {
         <div className="container">
           <div className="text-center mb-8">
             <Heading level={1}>{t('header.title')}</Heading>
-            <Paragraph variant="muted" spacing="sm">
+            <Paragraph className="paragraph__muted" spacing="sm">
               {t('header.sub_title')}
             </Paragraph>
           </div>

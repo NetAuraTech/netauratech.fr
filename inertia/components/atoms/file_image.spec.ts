@@ -68,6 +68,15 @@ describe('FileImage', () => {
     expect(html).not.toContain('srcSet')
   })
 
+  it('renders the original file without srcset when original is set', () => {
+    const html = renderToStaticMarkup(
+      createElement(FileImage, { file: makeFile(), original: true })
+    )
+
+    expect(html).toContain('src="https://cdn.example.com/hero.jpg"')
+    expect(html).not.toContain('srcSet')
+  })
+
   it('falls back to default dimensions when width/height are missing', () => {
     const html = renderToStaticMarkup(
       createElement(FileImage, { file: makeFile({ width: undefined, height: undefined }) })

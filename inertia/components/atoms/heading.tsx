@@ -1,4 +1,4 @@
-import { ReactNode, ElementType } from 'react'
+import { ReactNode, ElementType, Ref } from 'react'
 
 interface HeadingProps {
   /**
@@ -15,6 +15,13 @@ interface HeadingProps {
    */
   color?: string
   flex?: boolean
+  /**
+   * Extra Tailwind classes appended after the size and color classes. Utility
+   * classes win over the level defaults (utilities outrank the component
+   * layer), so e.g. a custom `text-[...]` overrides the level's font size.
+   */
+  className?: string
+  ref?: Ref<HTMLHeadingElement> | undefined
   children: ReactNode
 }
 
@@ -30,22 +37,16 @@ interface HeadingProps {
  * <Heading level={3} color="text-ink-muted">Section subtitle</Heading>
  */
 export function Heading(props: HeadingProps) {
-  const { level, color = 'text-primary-deep', flex, children } = props
+  const { level, color = 'text-ink-inverted', flex, className = '', ref, children } = props
 
   // Fallback to h2 if level is somehow undefined
   const safeLevel = level ?? 2
   const Tag = `h${safeLevel}` as ElementType
 
-  const levels = {
-    1: 'text-[clamp(2.2rem,5vw,4.2rem)]',
-    2: 'text-[clamp(1.8rem,4vw,2.4rem)]',
-    3: 'text-[clamp(1.6rem,3vw,1.9rem)]',
-    4: 'text-base',
-  }
-
   return (
     <Tag
-      className={`${levels[safeLevel]} font-playfair leading-tight ${color}${flex ? ' flex gap-2 items-center' : ''}`}
+      className={`heading heading__${safeLevel} ${color}${flex ? ' heading__flex' : ''} ${className}`}
+      ref={ref}
     >
       {children}
     </Tag>

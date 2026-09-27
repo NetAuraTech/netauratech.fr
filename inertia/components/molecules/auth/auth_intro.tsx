@@ -52,7 +52,7 @@ export function AuthIntro(props: AuthIntroProps) {
         </svg>
       </div>
       <Heading level={1}>{title}</Heading>
-      <Paragraph variant="muted">{text}</Paragraph>
+      <Paragraph className="paragraph__muted">{text}</Paragraph>
     </div>
   )
 }

@@ -16,4 +16,7 @@ import { controllers } from '#generated/controllers'
 
 export function registerFrontRoutes(): void {
   router.get('/', [controllers.core.front.Home, 'render']).as('front.home')
+  router.get('/services', [controllers.core.front.Services, 'render']).as('front.services')
+  router.get('/projets', [controllers.core.front.Projects, 'render']).as('front.projects')
+  router.get('/projets/:slug', [controllers.core.front.Project, 'render']).as('front.projects.show')
 }

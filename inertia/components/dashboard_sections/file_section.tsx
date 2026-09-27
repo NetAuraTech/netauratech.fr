@@ -28,7 +28,7 @@ function FileStatCard({ stats, translations }: DashboardSectionCardProps) {
         value={file.files}
         route="admin.files.render"
       >
-        <Paragraph variant="muted" spacing="sm">
+        <Paragraph className="paragraph__muted" spacing="sm">
           {`${t('cards.folders')}: ${file.fileFolders}`}
         </Paragraph>
         {file.filesByFolder.length > 0 && (
@@ -59,7 +59,7 @@ function FileRecentCard({ stats, translations, formatDate }: DashboardSectionCar
         viewAllLabel={t('view_all')}
       >
         {file.recentFiles.length === 0 ? (
-          <Paragraph variant="muted" spacing="xs" className="p-6">
+          <Paragraph spacing="xs" className="p-6 paragraph__muted">
             {t('recent.empty')}
           </Paragraph>
         ) : (
