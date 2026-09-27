@@ -40,7 +40,7 @@ export class ImageOptimizerService {
    */
   public async optimize(
     file: File,
-    widths: number[] = [400, 800, 1200]
+    widths: number[] = [400, 800, 1200, 1600]
   ): Promise<OptimizedImageResult> {
     const result: OptimizedImageResult = {
       variants: {},
