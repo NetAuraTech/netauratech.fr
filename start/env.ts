@@ -99,7 +99,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for Backup Configuration
   |----------------------------------------------------------
   */
-  BACKUP_STORAGE_DISK: Env.schema.enum.optional(['fs', 's3', 'r2'] as const),
+  BACKUP_STORAGE_DISK: Env.schema.enum.optional(['fs', 's3', 'r2', 'r2-backup'] as const),
   BACKUP_TIME: Env.schema.string.optional(),
   BACKUP_ENCRYPTION_ENABLED: Env.schema.boolean.optional(),
 
@@ -153,6 +153,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   R2_SECRET: Env.schema.string.optional(),
   R2_BUCKET: Env.schema.string.optional(),
   R2_ENDPOINT: Env.schema.string.optional(),
+  R2_PUBLIC_URL: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------

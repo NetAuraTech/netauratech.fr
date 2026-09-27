@@ -31,7 +31,7 @@ const backupConfig = {
    * All backup files are stored under the `backup/` prefix.
    */
   storage: {
-    disk: env.get('BACKUP_STORAGE_DISK', 'fs') as 'fs' | 's3' | 'r2',
+    disk: env.get('BACKUP_STORAGE_DISK', 'fs') as 'fs' | 's3' | 'r2' | 'r2-backup',
     prefix: 'backup',
   },
 
