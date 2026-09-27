@@ -32,5 +32,6 @@ storage/*
 .pi/*
 .pi-subagents/*
 .claude/*
+.impeccable/*
 docs/plans
 memory/*
