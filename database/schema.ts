@@ -8,7 +8,18 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
+  static $columns = [
+    'abilities',
+    'createdAt',
+    'expiresAt',
+    'hash',
+    'id',
+    'lastUsedAt',
+    'name',
+    'tokenableId',
+    'type',
+    'updatedAt',
+  ] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -67,7 +78,20 @@ export class FileFolderSchema extends BaseModel {
 }
 
 export class FileSchema extends BaseModel {
-  static $columns = ['createdAt', 'disk', 'extension', 'filename', 'folderId', 'id', 'mimeType', 'originalName', 'path', 'size', 'updatedAt', 'uploadedBy'] as const
+  static $columns = [
+    'createdAt',
+    'disk',
+    'extension',
+    'filename',
+    'folderId',
+    'id',
+    'mimeType',
+    'originalName',
+    'path',
+    'size',
+    'updatedAt',
+    'uploadedBy',
+  ] as const
   $columns = FileSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -96,7 +120,20 @@ export class FileSchema extends BaseModel {
 }
 
 export class LogEntrySchema extends BaseModel {
-  static $columns = ['actorEmail', 'actorId', 'category', 'context', 'createdAt', 'error', 'id', 'ip', 'level', 'message', 'requestId', 'userAgent'] as const
+  static $columns = [
+    'actorEmail',
+    'actorId',
+    'category',
+    'context',
+    'createdAt',
+    'error',
+    'id',
+    'ip',
+    'level',
+    'message',
+    'requestId',
+    'userAgent',
+  ] as const
   $columns = LogEntrySchema.$columns
   @column()
   declare actorEmail: string | null
@@ -125,7 +162,16 @@ export class LogEntrySchema extends BaseModel {
 }
 
 export class PermissionSchema extends BaseModel {
-  static $columns = ['category', 'createdAt', 'description', 'id', 'isSystem', 'name', 'slug', 'updatedAt'] as const
+  static $columns = [
+    'category',
+    'createdAt',
+    'description',
+    'id',
+    'isSystem',
+    'name',
+    'slug',
+    'updatedAt',
+  ] as const
   $columns = PermissionSchema.$columns
   @column()
   declare category: string
@@ -176,7 +222,15 @@ export class RolePermissionSchema extends BaseModel {
 }
 
 export class RoleSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'isSystem', 'name', 'slug', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'description',
+    'id',
+    'isSystem',
+    'name',
+    'slug',
+    'updatedAt',
+  ] as const
   $columns = RoleSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -195,7 +249,17 @@ export class RoleSchema extends BaseModel {
 }
 
 export class TokenSchema extends BaseModel {
-  static $columns = ['attempts', 'createdAt', 'expiresAt', 'id', 'selector', 'token', 'type', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'attempts',
+    'createdAt',
+    'expiresAt',
+    'id',
+    'selector',
+    'token',
+    'type',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = TokenSchema.$columns
   @column()
   declare attempts: number
@@ -235,7 +299,20 @@ export class UserPreferenceSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'emailVerifiedAt', 'facebookId', 'githubId', 'googleId', 'id', 'password', 'pendingEmail', 'roleId', 'updatedAt', 'username'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'emailVerifiedAt',
+    'facebookId',
+    'githubId',
+    'googleId',
+    'id',
+    'password',
+    'pendingEmail',
+    'roleId',
+    'updatedAt',
+    'username',
+  ] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
