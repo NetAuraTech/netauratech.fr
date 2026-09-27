@@ -17,13 +17,15 @@ test.group('DumpHelper', (group) => {
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
 
     const mockProcess = {
-      on: sinon.stub(),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     }
-    // Simulate successful exit — on('close', cb) invokes callback with code 0
-    mockProcess.on.callsArgWith(1, 0)
 
     const spawnStub = sinon.stub().returns(mockProcess)
+
+    const sanitizeStub = sinon.stub().resolves()
 
     await createDatabaseDump(
       {
@@ -34,7 +36,8 @@ test.group('DumpHelper', (group) => {
         password: 'secret',
         outputPath: '/tmp/dump.sql',
       },
-      spawnStub
+      spawnStub,
+      sanitizeStub
     )
 
     assert.isTrue(spawnStub.calledOnce)
@@ -58,10 +61,14 @@ test.group('DumpHelper', (group) => {
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
 
     const mockProcess = {
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     }
     const spawnStub = sinon.stub().returns(mockProcess)
+
+    const sanitizeStub = sinon.stub().resolves()
 
     await createDatabaseDump(
       {
@@ -73,7 +80,8 @@ test.group('DumpHelper', (group) => {
         outputPath: '/tmp/dump.sql',
         tables: ['users', 'posts'],
       },
-      spawnStub
+      spawnStub,
+      sanitizeStub
     )
 
     const [, args] = spawnStub.firstCall.args
@@ -88,10 +96,14 @@ test.group('DumpHelper', (group) => {
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
 
     const mockProcess = {
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     }
     const spawnStub = sinon.stub().returns(mockProcess)
+
+    const sanitizeStub = sinon.stub().resolves()
 
     await createDatabaseDump(
       {
@@ -102,7 +114,8 @@ test.group('DumpHelper', (group) => {
         password: 'super-secret',
         outputPath: '/tmp/dump.sql',
       },
-      spawnStub
+      spawnStub,
+      sanitizeStub
     )
 
     const [, , opts] = spawnStub.firstCall.args
@@ -168,5 +181,124 @@ test.group('DumpHelper', (group) => {
         ),
       /ENOENT/
     )
+  })
+
+  test('createDatabaseDump sanitizes the dump file after success', async ({ assert }) => {
+    const { createDatabaseDump } = await import('#services/backup/dump_helper')
+
+    const mockProcess = {
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
+      stderr: { on: sinon.stub() },
+    }
+    const spawnStub = sinon.stub().returns(mockProcess)
+    const sanitizeStub = sinon.stub().resolves()
+
+    await createDatabaseDump(
+      {
+        host: 'localhost',
+        port: 5432,
+        user: 'postgres',
+        database: 'mydb',
+        password: 'secret',
+        outputPath: '/tmp/dump.sql',
+      },
+      spawnStub,
+      sanitizeStub
+    )
+
+    assert.isTrue(sanitizeStub.calledOnce)
+    assert.equal(sanitizeStub.firstCall.args[0], '/tmp/dump.sql')
+  })
+
+  test('createDatabaseDump skips sanitization when disabled', async ({ assert }) => {
+    const { createDatabaseDump } = await import('#services/backup/dump_helper')
+
+    const mockProcess = {
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
+      stderr: { on: sinon.stub() },
+    }
+    const spawnStub = sinon.stub().returns(mockProcess)
+    const sanitizeStub = sinon.stub().resolves()
+
+    await createDatabaseDump(
+      {
+        host: 'localhost',
+        port: 5432,
+        user: 'postgres',
+        database: 'mydb',
+        password: 'secret',
+        outputPath: '/tmp/dump.sql',
+        sanitizeApostrophes: false,
+      },
+      spawnStub,
+      sanitizeStub
+    )
+
+    assert.isTrue(sanitizeStub.notCalled)
+  })
+
+  test('createDatabaseDump rejects when sanitization fails', async ({ assert }) => {
+    const { createDatabaseDump } = await import('#services/backup/dump_helper')
+
+    const mockProcess = {
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
+      stderr: { on: sinon.stub() },
+    }
+    const spawnStub = sinon.stub().returns(mockProcess)
+    const sanitizeStub = sinon.stub().rejects(new Error('ENOENT: no such file'))
+
+    await assert.rejects(
+      () =>
+        createDatabaseDump(
+          {
+            host: 'localhost',
+            port: 5432,
+            user: 'postgres',
+            database: 'mydb',
+            password: 'secret',
+            outputPath: '/tmp/dump.sql',
+          },
+          spawnStub,
+          sanitizeStub
+        ),
+      /ENOENT/
+    )
+  })
+
+  test('sanitizeDumpForApostrophes wraps COPY fields containing a single quote', async ({
+    assert,
+  }) => {
+    const { sanitizeDumpForApostrophes } = await import('#services/backup/dump_helper')
+
+    const input = [
+      '--',
+      'COPY public.file_alts (id, language_code, alt) FROM stdin;',
+      "1\tfr\tPage d'accueil du site",
+      '2\ten\tPlain text',
+      '3\tfr\tValue with \' and "quotes"',
+      '4\tfr\tValue with "quotes"',
+      '\\N\tfr\tNULL field',
+      '\\restrict some-token',
+      '\\.',
+      'SET standard_conforming_strings = on;',
+    ].join('\n')
+
+    const output = sanitizeDumpForApostrophes(input)
+
+    const lines = output.split('\n')
+    assert.equal(lines[2], '1\tfr\t"Page d\'accueil du site"')
+    assert.equal(lines[3], '2\ten\tPlain text')
+    assert.equal(lines[4], '3\tfr\t"Value with \' and ""quotes"""')
+    assert.equal(lines[5], '4\tfr\tValue with "quotes"')
+    assert.equal(lines[6], '\\N\tfr\tNULL field')
+    assert.equal(lines[7], '\\restrict some-token')
+    assert.equal(lines[8], '\\.')
+    assert.equal(lines[9], 'SET standard_conforming_strings = on;')
   })
 })

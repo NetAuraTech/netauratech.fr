@@ -1,4 +1,4 @@
-﻿import { inject } from '@adonisjs/core'
+import { inject } from '@adonisjs/core'
 import drive from '@adonisjs/drive/services/main'
 import backupConfig from '#config/backup'
 import { spawn, type ChildProcess } from 'node:child_process'
@@ -136,6 +136,9 @@ export class RestoreBackupAction {
         env.get('PG_USER')!,
         '-d',
         env.get('PG_DB_NAME')!,
+        '-v',
+        'ON_ERROR_STOP=1',
+        '-1',
         '-f',
         sqlPath,
       ]

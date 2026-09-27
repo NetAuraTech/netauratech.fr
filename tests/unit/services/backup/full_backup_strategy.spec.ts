@@ -20,8 +20,11 @@ test.group('FullBackupStrategy', (group) => {
     } as any
 
     // Mock spawn for pg_dump
+    const sanitizeStub = sinon.stub().resolves()
     const spawnStub = sinon.stub().returns({
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     })
 
@@ -29,7 +32,7 @@ test.group('FullBackupStrategy', (group) => {
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
     const createDumpStub = sinon
       .stub()
-      .callsFake((options) => createDatabaseDump(options, spawnStub))
+      .callsFake((options) => createDatabaseDump(options, spawnStub, sanitizeStub))
 
     // Mock SnapshotHelper methods
     const snapshotHelperMock = {
@@ -142,14 +145,17 @@ test.group('FullBackupStrategy', (group) => {
   test('execute() calls compress then encrypt in sequence', async ({ assert }) => {
     const logService = { info: sinon.stub(), error: sinon.stub() } as any
 
+    const sanitizeStub = sinon.stub().resolves()
     const spawnStub = sinon.stub().returns({
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     })
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
     const createDumpStub = sinon
       .stub()
-      .callsFake((options) => createDatabaseDump(options, spawnStub))
+      .callsFake((options) => createDatabaseDump(options, spawnStub, sanitizeStub))
 
     const compressStub = sinon.stub().resolves('/tmp/d.sql.gz')
     const encryptStub = sinon.stub().resolves('/tmp/d.sql.gz.enc')
@@ -193,14 +199,17 @@ test.group('FullBackupStrategy', (group) => {
   test('execute() uploads encrypted file and manifest', async ({ assert }) => {
     const logService = { info: sinon.stub(), error: sinon.stub() } as any
 
+    const sanitizeStub = sinon.stub().resolves()
     const spawnStub = sinon.stub().returns({
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     })
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
     const createDumpStub = sinon
       .stub()
-      .callsFake((options) => createDatabaseDump(options, spawnStub))
+      .callsFake((options) => createDatabaseDump(options, spawnStub, sanitizeStub))
 
     const snapshotHelperMock = {
       compress: sinon.stub().resolves('/tmp/d.sql.gz'),
@@ -249,14 +258,17 @@ test.group('FullBackupStrategy', (group) => {
   test('execute() logs success with metadata', async ({ assert }) => {
     const logService = { info: sinon.stub(), error: sinon.stub() } as any
 
+    const sanitizeStub = sinon.stub().resolves()
     const spawnStub = sinon.stub().returns({
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     })
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
     const createDumpStub = sinon
       .stub()
-      .callsFake((options) => createDatabaseDump(options, spawnStub))
+      .callsFake((options) => createDatabaseDump(options, spawnStub, sanitizeStub))
 
     const snapshotHelperMock = {
       compress: sinon.stub().resolves('/tmp/d.sql.gz'),
@@ -304,14 +316,17 @@ test.group('FullBackupStrategy', (group) => {
   test('execute() cleans up all temp files after success', async ({ assert }) => {
     const logService = { info: sinon.stub(), error: sinon.stub() } as any
 
+    const sanitizeStub = sinon.stub().resolves()
     const spawnStub = sinon.stub().returns({
-      on: sinon.stub().callsArgWith(1, 0),
+      on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+        if (event === 'close') cb(0)
+      }),
       stderr: { on: sinon.stub() },
     })
     const { createDatabaseDump } = await import('#services/backup/dump_helper')
     const createDumpStub = sinon
       .stub()
-      .callsFake((options) => createDatabaseDump(options, spawnStub))
+      .callsFake((options) => createDatabaseDump(options, spawnStub, sanitizeStub))
 
     const snapshotHelperMock = {
       compress: sinon.stub().resolves('/tmp/d.sql.gz'),
