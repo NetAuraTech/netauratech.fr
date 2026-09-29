@@ -1,9 +1,8 @@
 ---
 name: NetAuraTech
-description: Site studio de développeur web — noir profond, grotesque éditorial, un accent mauve électrique.
+description: Web developer studio site — deep black, editorial grotesque, one electric-mauve accent.
 colors:
   ground: 'oklch(0.15 0.012 292)'
-  ground-solid: '#050505'
   paper: 'oklch(0.948 0.012 88)'
   paper-deep: 'oklch(0.912 0.015 88)'
   ink: 'oklch(0.22 0.015 292)'
@@ -18,31 +17,31 @@ colors:
   hairline-tile: 'rgba(255,255,255,0.10)'
 typography:
   display:
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: 'clamp(2.7rem, 8vw, 6.5rem)'
     fontWeight: 400
     lineHeight: 1.02
     letterSpacing: '-0.03em'
   headline:
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: 'clamp(2rem, 5vw, 4rem)'
     fontWeight: 400
     lineHeight: 1.02
     letterSpacing: '-0.03em'
   title:
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: 'clamp(2rem, 6vw, 4.7rem)'
     fontWeight: 500
     lineHeight: 1.02
     letterSpacing: '-0.02em'
   body:
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: '1rem'
-    fontWeight: 300
+    fontWeight: 400
     lineHeight: 1.625
     letterSpacing: 'normal'
   label:
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: '0.6875rem'
     fontWeight: 400
     lineHeight: 1.2
@@ -57,7 +56,7 @@ components:
     textTransform: 'uppercase'
   plate-title:
     color: 'oklch(0.948 0.012 88)'
-    fontFamily: 'Space Grotesk, Inter, sans-serif'
+    fontFamily: 'Space Grotesk, sans-serif'
     fontSize: 'clamp(2rem, 6vw, 4.7rem)'
 ---
 
@@ -65,140 +64,140 @@ components:
 
 ## Overview
 
-**Creative North Star: "L'Atelier de Précision"**
+**Creative North Star: "The Precision Atelier"**
 
-NetAuraTech est un atelier de développement web, et son site parle dans la langue de l'atelier : fond noir profond, grotesque éditorial précis, un seul accent coloré — le mauve électrique — et le travail mis en avant en grand. L'identité s'inspire du langage noir-blanc des studios primés (référence : 375.studio) : la page reste noire, la typographie porte presque tout, et les images des projets emplissent l'écran.
+NetAuraTech is a web development atelier, and its site speaks the atelier's language: a deep black ground, a precise editorial grotesque, a single color accent — electric mauve — and the work shown large. The identity borrows the black-and-white vocabulary of award-winning studios (reference: 375.studio): the page stays black, typography carries almost everything, and project imagery fills the screen.
 
-Le système est volontairement monochrome + un accent. Le noir n'est pas un fond neutre mais la matière de l'atelier ; le blanc papier n'existe que pour le texte dans le noir ; le mauve électrique n'apparaît que pour les mots italiques des titres, les puces-signes, les numéros d'index et les survols. Les sections à fond clair (ivoire) sont bannies : la surface entière vit sur `#050505`.
+The system is deliberately monochrome plus one accent. Black is not a neutral backdrop but the material of the atelier; paper white exists only as ink on black; electric mauve appears only for emphasized title words, sign-bullets, index numbers and hovers. Light (ivory) sections are banned: the entire surface lives on the canvas black `oklch(0.15 0.012 292)`.
 
-La densité est aérée et éditoriale : gros titres clampés serrés en tracking négatif, micro-liens espacés 0.25em, hairline 1px qui séparent les éléments plutôt que des cartes à ombres. La verticalité importe : chaque œuvre de projet occupe un plein écran (~86vh), image landscape plein bord, titre superposé en bas.
+The density is airy and editorial: large clamp-sized titles with tight negative tracking, 0.25em-spaced micro-links, 1px hairlines separating elements instead of shadowed cards. Verticality matters: each project piece occupies a full screen (~86vh), edge-to-edge landscape image, title overlaid at the bottom.
 
 **Key Characteristics:**
 
-- Fond d'atelier noir pur (`#050505`), un seul accent couleur par écran.
-- Grotesque éditorial (Space Grotesk), titres énormes serrés, mots italiques accentués.
-- Le travail d'abord : plaques projets plein-grandeur, image + titre superposé.
-- Profondeur plate : hairlines et calques tonaux, jamais d'ombres portées.
-- Curseur loupe signature sur les plaques et éléments interactifs.
-- Marquee d'atelier (rubriques du métier défilant).
-- Retenu par construction : pas d'ivoire, pas de serif display, pas de gradient texte.
+- Pure atelier-black ground (`oklch(0.15 0.012 292)`), one color accent per screen.
+- Editorial grotesque (Space Grotesk), enormous tight titles, accented emphasized words.
+- Work first: full-size project plates, image + overlaid title.
+- Flat depth: hairlines and tonal layers, never drop shadows.
+- Signature magnifying-glass cursor over plates and interactive elements.
+- Atelier marquee (scrolling craft sections).
+- Refined by construction: no ivory, no serif display, no text gradients.
 
 ## Colors
 
-Palette d'atelier : un noir profond comme matière, un blanc papier pour l'encre, UN accent mauve électrique — et rien d'autre. Toutes les tuiles s'écrivent en `oklch` dans le thème.
+Atelier palette: a deep black as material, paper white as ink, ONE electric-mauve accent — and nothing else. Every tile is written in `oklch` in the theme.
 
 ### Primary
 
-- **Mauve électrique** (`oklch(0.7 0.16 296)`, soft — l'accent à l'usage) : les mots italiques dans les titres, les puces-signes `■`, les numéros d'index, les survols de liens et le curseur loupe. C'est LE signal de vie dans le noir.
-- **Mauve électrique profond** (`oklch(0.46 0.2 296)`, deep) : le remplissage des rares surfaces colorées pleines (touch suivis), où le texte doit rester lisible (contraste ≥ 4.5) — ex. l'historique des CTA bordeaux à l'ancienne.
-- **Mauve électrique médian** (`oklch(0.56 0.21 296)`, accent) : mots italiques en grand texte (≥3:1) ; jamais en petit texte sur fond clair.
+- **Electric mauve** (`oklch(0.7 0.16 296)`, soft — the accent in use): emphasized words in titles, the sign-bullets `■`, index numbers, link hovers and the magnifying cursor. It is THE life signal in the black.
+- **Deep electric mauve** (`oklch(0.46 0.2 296)`, deep): the fill of the rare fully-colored surfaces (followed-CTA chips) where text must stay legible (contrast ≥ 4.5) — e.g. the legacy bordeaux CTA history.
+- **Mid electric mauve** (`oklch(0.56 0.21 296)`, accent): emphasized words in large text (≥3:1); never in small text on light grounds.
 
 ### Neutral
 
-- **Noir d'atelier** (`#050505` — ground de la page, `oklch(0.15 0.012 292)` pour les variantes) : la matière même de la page.
-- **Noir plaque** (`oklch(0.15 0.012 292)` et teintes `#0b0b0d / #101014`) : variantes de surface pour plaques WebGL et cartes de repli.
-- **Encre papier** (`oklch(0.948 0.012 88)`, paper) : texte sur noir.
-- **Encre papier atténuée** (`paper / 0.5`, `/ 0.6`, `/ 0.7`) : corps, notes, légendes.
-- **Encre papier faible** (`paper / 0.4`) : éléments purement décoratifs/noise visuel.
-- **Hairline** (`paper / 0.10`) : séparateurs de tuiles, bordures de plaques, règles de lists.
+- **Atelier black** (`oklch(0.15 0.012 292)` — the page ground, the shipped `--color-canvas`): the very material of the page.
+- **Plate black** (`oklch(0.15 0.012 292)` with tints `#0b0b0d / #101014`): surface variants for WebGL plates and fallback cards.
+- **Paper ink** (`oklch(0.948 0.012 88)`, paper): text on black.
+- **Dimmed paper ink** (`paper / 0.5`, `/ 0.6`, `/ 0.7`): body copy, notes, captions.
+- **Faint paper ink** (`paper / 0.4`): purely decorative / visual-noise elements.
+- **Hairline** (`paper / 0.40`, the shipped `--color-edge`): tile separators, plate borders, list rules. The soft variant (`paper / 0.18`, the shipped `--color-edge-strong`) and the tile-grid hairline (`white / 0.10`) round out the line vocabulary.
 
 ### Named Rules
 
-**The One-Accent Rule.** Un seul accent coloré porte une surface donnée. Le mauve électrique n'est jamais utilisé sur plus de ~10 % d'un écran ; sa rareté fait sa force.
+**The One-Accent Rule.** A single color accent carries any given surface. Electric mauve is never used on more than ~10% of a screen; its rarity is its strength.
 
-**The No-Ivory Rule.** Aucune section — sauf feuille de repli accessible — ne passe en fond clair ivoire. La page entière vit sur `#050505` ; le blanc n'est que de l'encre.
+**The No-Ivory Rule.** No section — aside from an accessible fallback sheet — goes light ivory. The whole page lives on the canvas black; white is only ink.
 
 ## Typography
 
-**Display Font:** Space Grotesk (fallback: Inter, sans-serif)
-**Body Font:** Space Grotesk (fallback: Inter, sans-serif)
+**Display Font:** Space Grotesk (fallback: sans-serif)
+**Body Font:** Space Grotesk (fallback: sans-serif)
 
-**Character:** Une seule famille, utilisée d'un bout à l'autre — le grotesque éditorial moderne qui rappelle le travail des studios contemporains. La hiérarchie se fait par taille, graisse et casse, jamais par changement de famille. Les mots italiques signalent l'emphase ET reçoivent l'accent mauve.
+**Character:** A single family used from end to end — the modern editorial grotesque that recalls contemporary studio work. Hierarchy is built with size, weight and case, never with a change of family. Emphasized words in titles receive the electric-mauve accent.
 
 ### Hierarchy
 
-- **Display** (400, `clamp(2.7rem, 8vw, 6.5rem)`, `1.02`): le titre de une en haut de page, tracking `-0.03em`, balance.
-- **Headline** (400, `clamp(2rem, 5vw, 4rem)`, `1.02`): titres de section, tracking `-0.03em`.
-- **Title** (500, `clamp(2rem, 6vw, 4.7rem)`, `1.02`): titres superposés sur plaques projets, tracking `-0.02em`.
-- **Body** (300, `1rem` → `1.125rem` sur md, `1.625`): textes éditoriaux, colonne ~65ch max.
-- **Label** (400, `0.6875rem`, tracking `0.25em`, uppercase): micro-étiquettes « Projets », rubriques, index, pieds de plaque.
+- **Display** (400, `clamp(2.7rem, 8vw, 6.5rem)`, `1.02`): the front-page hero title, tracking `-0.03em`, balanced.
+- **Headline** (400, `clamp(2rem, 5vw, 4rem)`, `1.02`): section titles, tracking `-0.03em`.
+- **Title** (500, `clamp(2rem, 6vw, 4.7rem)`, `1.02`): titles overlaid on project plates, tracking `-0.02em`.
+- **Body** (400, `1rem` → `1.125rem` on md, `1.625`): editorial text, ~65ch max column.
+- **Label** (400, `0.6875rem`, tracking `0.25em`, uppercase): micro-labels "Projects", rubrics, indexes, plate footers.
 
 ### Named Rules
 
-**The One-Face Rule.** Une seule family (Space Grotesk) porte tout le langage. Pas de serif display, pas de mono « technique », pas de plateforme-sans.
+**The One-Face Rule.** A single family (Space Grotesk) carries the whole language. No serif display, no "technical" mono, no platform sans.
 
-**The Italic-Accent Rule.** Un mot en italique dans un titre reçoit automatiquement l'accent mauve électrique; c'est le seul usage de l'emphase italique.
+**The Accent-Emphasis Rule.** A word in a title that needs emphasis receives the electric-mauve accent; that is the only use of emphasis. Space Grotesk ships no italic face, so emphasis is carried by color and weight, never by italics.
 
 ## Layout
 
-Système de grille sobre : container max `6xl` pour le texte éditorial, hambre `1600px` pour les plaques projets. Padding `16px` mobile / `64px` desktop (px-5 / md:px-16).
+Sober grid system: container max `6xl` for editorial text, `1600px` width for project plates. Padding `16px` mobile / `64px` desktop (px-5 / md:px-16).
 
-- **Nœud vertical éditorial** : py-20→28 (sections), py-28→40 (contact), plaques projets `62vh` mobile / `86vh` desktop pleine largeur.
-- **Densité** : air généreux entre titres et corps (mt-10/14), micro-liens et labels espacés maximol.
-- **Sections** : la page alterne headers noirs, une marquee cintrée 1px, puis sections scrollées. La grille de tuiles utilise `gap-px` sur fond `white/10` pour créer l'effet « hairline entre tuiles ».
-- **Responsive** : plaques 86vh → 62vh, grilles 3 colonnes → 1 colonne, titres clampés (dès mobile).
+- **Editorial vertical rhythm:** py-20→28 (sections), py-28→40 (contact), project plates `62vh` mobile / `86vh` desktop full width.
+- **Density:** generous air between titles and body (mt-10/14), maximally spaced micro-links and labels.
+- **Sections** : the page alternates black headers, a 1px curved marquee, then scrolled sections. The tile grid uses `gap-px` on a `white/10` ground to create the "hairline between tiles" effect.
+- **Responsive** : plates 86vh → 62vh, 3-column grids → 1 column, clamp-sized titles (from mobile up).
 
 ## Elevation & Depth
 
-**Flat par défaut.** La profondeur n'est PAS portée par des ombres. Elle vient de trois mécanismes : les hairlines 1px (`white/10`, `paper/0.40`) qui découpent les plan ; les calques tonaux de noir (page `#050505` vs plaques `#0b0b0d`/`#101014`) ; et le dégradé de lisibilité sur les images (`to-b from-black/75 via-black/20`). Le WebGL ambient dépose une dérive de motes mauves très légère — de l'atmosphère, pas de l'élévation.
+**Flat by default.** Depth is NOT carried by shadows. It comes from three mechanisms: 1px hairlines (`white/10`, `paper/0.40`) that cut the planes; tonal black layers (page `oklch(0.15 0.012 292)` vs plates `#0b0b0d`/`#101014`); and the readability gradient over images (`to-b from-black/75 via-black/20`). The ambient WebGL lays down a very light drift of mauve motes — atmosphere, not elevation.
 
 ### Named Rules
 
-**The Flat-At-Rest Rule.** Les surfaces sont plates au repos. Aucune ombre portée n'habille une carte, un bouton ou une tuile ; le seul « levé » est le survol (échelle + nuance).
+**The Flat-At-Rest Rule.** Surfaces are flat at rest. No drop shadow dresses a card, a button or a tile; the only "lift" is the hover (scale + shade shift).
 
 ## Shapes
 
-Le système est carré et net : l'atelier ne travaille pas aux arrondis. Bords franches (radius 0), carrés de signal `■` (1×1 → 2×2 rem) comme puces et signes, hairlines droites. Seul le curseur loupe est rond (élément non-retenti).
+The system is square and sharp: the atelier does not work in rounded corners. Crisp edges (radius 0), signal squares `■` (1×1 → 2×2 rem) as bullets and signs, straight hairlines. Only the magnifying cursor is round (a non-retained element).
 
 ## Components
 
 ### Buttons (CTA ghost)
 
-- **Shape:** bords franches, `1px solid paper/0.40`, radius 0, padding `14px 28px`, uppercase tracking `0.18em`.
-- **Primary CTA:** bordure ghost + flèche `→` mauve ; au survol le texte passe en mauve électrique, la bordure suit.
-- **Hover / Focus:** changement de nuance et de couleur, jamais d'ombre ni de lift ; `:focus-visible` outline `2px accent` sur la bordure.
+- **Shape:** crisp edges, `1px solid paper/0.40`, radius 0, padding `14px 28px`, uppercase tracking `0.18em`.
+- **Primary CTA:** ghost border + mauve `→` arrow; on hover the text turns electric mauve and the border follows.
+- **Hover / Focus:** shade and color shifts, never a shadow or a lift; `:focus-visible` outline `2px accent` on the border.
 
 ### Chips / Tags
 
-- **Style:** texte `paper/0.50` uppercase `0.2em` (jamais de pilules).
+- **Style:** text `paper/0.50` uppercase `0.2em` (never pills).
 
 ### Cards / Containers
 
-- **Corner Style:** carrés (radius 0).
-- **Background:** noir page ou plaques `#0b0b0d` / `#101014`.
+- **Corner Style:** square (radius 0).
+- **Background:** page black or plate tints `#0b0b0d` / `#101014`.
 - **Border:** hairline `white/10`.
-- **Shadow Strategy:** aucun — hairlines et calques tonaux.
+- **Shadow Strategy:** none — hairlines and tonal layers.
 - **Internal Padding:** `32px` mobile, `40px` desktop (`p-8 md:p-10`).
 
 ### Project Plates (signature component)
 
-- **Layout:** une œuvre = un plein écran `62–86vh`, pleine largeur, image landscape (`2000×1200`, servie par le module fichiers backend) en `object-cover`, zoom `1.04` au survol.
-- **Overlay:** titre titre-clamp `2rem→4.7rem` en bas-gauche, rubrique `N° — Rubrique` au-dessus, note de projet à droite bas; desgradé `from-black/75 via-black/20 to-transparent` pour la lisibilité.
-- **Curseur:** loupe « VOIR · VOIR · » (différence blend) posée sur la plaque.
+- **Layout:** one piece = a full screen `62–86vh`, full width, landscape image (`2000×1200`, served by the backend file module) in `object-cover`, zoom `1.04` on hover.
+- **Overlay:** clamp-sized title `2rem→4.7rem` at bottom-left, `N° — Rubric` above it, project note at bottom right; gradient `from-black/75 via-black/20 to-transparent` for readability.
+- **Cursor:** magnifying-glass "SEE · SEE" (difference blend) resting on the plate.
 
 ### Navigation (front)
 
-- **Style:** fixe, fond `canvas/70` + `backdrop-blur`, logo Space Grotesk, nav links uppercase `0.2em` `paper/70` → `paper` au hover; `current` en mauve électrique. Burgers mobile, menu plein-charge noir.
+- **Style:** fixed, `canvas/70` ground + `backdrop-blur`, Space Grotesk logo, nav links uppercase `0.2em` `paper/70` → `paper` on hover; `current` in electric mauve. Mobile burger, full-screen black menu.
 
 ### Ambient WebGL (signature)
 
-- Champ de motes mauves (`#8f7bff`, AdditiveBlending, ~110 points) dérivant dans le héros. Atmosphère seulement; `prefers-reduced-motion` → trame statique; WebGL absent → héros noir simple.
+- Field of mauve motes (`#8f7bff`, AdditiveBlending, ~110 points) drifting in the hero. Atmosphere only; `prefers-reduced-motion` → static pattern; no WebGL → plain black hero.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** composer chaque nouvelle surface à partir des composants existants (`atoms` / `molecules` / `organisms`) plutôt que de recréer des éléments from scratch ; si aucun composant ne couvre le besoin et que l'élément est réutilisable, crée un composant.
-- **Do** garder la page sur `#050505` — l'ivoire n'est que de l'encre (voir The No-Ivory Rule).
-- **Do** laisser l'accent mauve électrique rare : mots italiques, indexes, survols, loupe.
-- **Do** donner aux travaux des projets toute la hauteur : une œuvre = un plein écran image-led.
-- **Do** exprimer la profondeur par hairline + calque tonal, jamais par ombre.
-- **Do** utiliser Space Grotesk seul, dans les clamps, tracking serré, mots italiques accentués.
+- **Do** compose every new surface from the existing components (`atoms` / `molecules` / `organisms`) rather than recreating elements from scratch; if no component covers the need and the element is reusable, create a component.
+- **Do** keep the page on the canvas black — ivory is only ink (see The No-Ivory Rule).
+- **Do** keep the electric-mauve accent rare: emphasized words, indexes, hovers, the magnifier.
+- **Do** give project work its full height: one piece = one image-led full screen.
+- **Do** express depth with hairline + tonal layer, never with shadow.
+- **Do** use Space Grotesk alone, in clamps, tight tracking, accented emphasized words.
 
 ### Don't:
 
-- **Don't** utiliser des fonds clairs / sections ivoire sur la surface publique.
-- **Don't** ajouter un second accent ou un dégradé texte.
-- **Don't** mettre l'accent médian en petit texte sur fond clair (contraste < 4.5).
-- **Don't** fabriquer des captures d'écran : les visuels des plaques et des galeries sont servis par le module fichiers backend (fichiers de la base), et ça doit rester visible.
-- **Don't** laisser le WebGL orner le contenu : motes uniquement, `prefers-reduced-motion` figé.
+- **Don't** use light grounds / ivory sections on the public surface.
+- **Don't** add a second accent or a text gradient.
+- **Don't** set the mid accent in small text on light grounds (contrast < 4.5).
+- **Don't** fabricate screenshots: plate and gallery visuals are served by the backend file module (database files), and that must stay visible.
+- **Don't** let the WebGL ornament the content: motes only, frozen under `prefers-reduced-motion`.

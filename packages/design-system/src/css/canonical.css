@@ -7,6 +7,9 @@
 @import '@fontsource/playfair-display/400.css';
 @import '@fontsource/playfair-display/700.css';
 @import '@fontsource/playfair-display/400-italic.css';
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/700.css';
 @import 'tailwindcss';
 
 @source '../';
@@ -19,10 +22,11 @@
 	--font-cormorant: 'Cormorant Garamond', serif;
 	--font-playfair: 'Playfair Display', serif;
 	--font-jost: 'Jost Variable', 'Jost', sans-serif;
+	--font-news: 'Space Grotesk', sans-serif;
 
-	--color-primary-deep: oklch(0.3038 0.0392 162.91);
-	--color-primary: oklch(0.4049 0.0528 161.65);
-	--color-primary-soft: oklch(0.5373 0.0669 159.37);
+	--color-primary-deep: oklch(0.46 0.2 296);
+	--color-primary: oklch(0.56 0.21 296);
+	--color-primary-soft: oklch(0.7 0.16 296);
 	--color-primary-light: oklch(0.7959 0.043 153.88);
 
 	--color-secondary-deep: oklch(0.7294 0.0887 81.25);
@@ -33,21 +37,21 @@
 	--color-tertiary: oklch(0.7543 0.0621 18.63);
 	--color-tertiary-light: oklch(0.9019 0.0267 17.66);
 
-	--color-ink: oklch(0.162 0.014 258.363);
-	--color-ink-muted: oklch(0.4 0.018 263);
+	--color-ink: oklch(0.22 0.015 292);
+	--color-ink-muted: oklch(0.52 0.02 292);
 	--color-ink-subtle: oklch(0.6 0.012 263);
-	--color-ink-inverted: oklch(0.97 0.005 263);
-	--color-ink-inverted-muted: oklch(0.823 0.01 267.344);
+	--color-ink-inverted: oklch(0.948 0.012 88);
+	--color-ink-inverted-muted: oklch(0.912 0.015 88);
 	--color-ink-inverted-subtle: oklch(0.65 0.01 263);
 
-	--color-canvas: oklch(0.974 0.0114 84.58);
+	--color-canvas: oklch(0.15 0.012 292);
 	--color-surface: oklch(0.9322 0.0226 87.15);
 	--color-sunken: oklch(0.94 0.007 263);
 	--color-overlay: oklch(0.995 0.002 263);
 	--color-raised: oklch(1 0 0);
 
-	--color-edge: oklch(0.82 0.012 263);
-	--color-edge-strong: oklch(0.65 0.018 263);
+	--color-edge: oklch(0.62 0.025 292 / 0.4);
+	--color-edge-strong: oklch(0.62 0.025 292 / 0.18);
 
 	--color-success: oklch(0.55 0.15 145);
 	--color-success-soft: oklch(0.92 0.04 145);
