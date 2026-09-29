@@ -1,0 +1,51 @@
+{
+	"admin": {
+		"value": "Journaux",
+		"list": {
+			"title": "Journaux applicatifs",
+			"empty": "Aucune entrée de journal trouvée.",
+			"logged_on": "Enregistré le"
+		},
+		"search": {
+			"value": "Rechercher",
+			"placeholder": "Rechercher dans les messages…",
+			"filter": "Filtrer"
+		},
+		"level": {
+			"value": "Niveau",
+			"placeholder": "Tous les niveaux",
+			"debug": "Debug",
+			"info": "Info",
+			"warn": "Avertissement",
+			"error": "Erreur",
+			"fatal": "Fatal"
+		},
+		"category": {
+			"value": "Catégorie",
+			"placeholder": "Toutes les catégories",
+			"system": "Système",
+			"security": "Sécurité",
+			"business": "Métier",
+			"auth": "Auth",
+			"api": "API",
+			"database": "Base de données",
+			"performance": "Performance"
+		},
+		"date": {
+			"from": "Du",
+			"to": "Au"
+		},
+		"context": {
+			"value": "Contexte",
+			"empty": "Aucun contexte",
+			"view": "Voir le contexte"
+		},
+		"columns": {
+			"level": "Niveau",
+			"category": "Catégorie",
+			"message": "Message",
+			"actor": "Acteur",
+			"date": "Date"
+		}
+	}
+}

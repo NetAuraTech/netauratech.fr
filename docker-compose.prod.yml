@@ -41,6 +41,32 @@ services:
       - redis
       - postgres
 
+  worker:
+    build: .
+    command: node ace.js queue:work -q default,auth,maintenance,webhook
+    environment:
+      - NODE_ENV=production
+      - APP_KEY=mLkmXGcKT_BHO7EX3HAuOU0iT6eixPXU
+      - REDIS_ENABLED=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_DATABASE=app
+      - SMTP_HOST=localhost
+      - SMTP_PORT=1025
+      - SMTP_USERNAME=username
+      - SMTP_PASSWORD=password
+      - SMTP_FROM_ADDRESS=contact@example.com
+      - QUEUE_DRIVER=redis
+      - QUEUE_CONNECTION=local
+    depends_on:
+      - redis
+      - postgres
+
   postgres:
     image: postgres:16-alpine
     environment:

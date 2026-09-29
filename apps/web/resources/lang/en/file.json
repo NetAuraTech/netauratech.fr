@@ -1,0 +1,134 @@
+{
+	"admin": {
+		"files": {
+			"list": {
+				"title": "Manage files",
+				"action": {
+					"upload": "Upload",
+					"folders": "Folders"
+				},
+				"folders": {
+					"all": "All"
+				}
+			},
+			"show": {
+				"title": "Open",
+				"info": {
+					"name": "Name",
+					"type": "Type",
+					"size": "Size",
+					"uploaded_at": "Uploaded at",
+					"value": "Content"
+				},
+				"alts": {
+					"title": "Alt texts",
+					"value": "Alt text",
+					"empty": "No alt texts yet.",
+					"add": "Add",
+					"close": "Close",
+					"edit": "Edit",
+					"delete": {
+						"value": "Delete",
+						"confirm": "Are you sure you want to delete this alt text?"
+					},
+					"form": {
+						"locale": {
+							"value": "Locale"
+						},
+						"key": {
+							"value": "Key",
+							"placeholder": "hero, thumbnail, ..."
+						},
+						"alt_text": {
+							"value": "Alt text",
+							"placeholder": "Descriptive alt text"
+						},
+						"submit": "Add",
+						"cancel": "Cancel",
+						"update": "Update"
+					}
+				}
+			},
+			"delete": {
+				"title": "Delete the file: {filename}",
+				"confirm": "Are you sure you want to delete this file?"
+			},
+			"upload": {
+				"remove": "Remove",
+				"submit": "Upload file",
+				"help": "Click to upload or drag and drop",
+				"try_again": "Try another file",
+				"max_size": "Max {size}",
+				"error": {
+					"size": "File exceeds the {max} limit"
+				}
+			},
+			"form": {
+				"name": {
+					"value": "Name"
+				},
+				"type": {
+					"value": "Type"
+				},
+				"size": {
+					"value": "Size"
+				},
+				"uploaded_at": {
+					"value": "Uploaded at"
+				}
+			},
+			"search": {
+				"filter": "Filter",
+				"placeholder": "...",
+				"value": "Search",
+				"type": {
+					"value": "File type",
+					"options": {
+						"placeholder": "All types",
+						"image": "Images",
+						"video": "Video",
+						"audio": "Audio",
+						"pdf": "PDF"
+					}
+				}
+			},
+			"actions": "Actions",
+			"value": "Files"
+		},
+		"folders": {
+			"list": {
+				"title": "Manage folders",
+				"add": "Add subfolder",
+				"rename": "Rename folder",
+				"browse": "Browse files",
+				"empty": {
+					"value": "No folders yet.",
+					"help": "Create a folder above to start organising your files."
+				}
+			},
+			"delete": {
+				"title": "Delete folder {folder}",
+				"confirm": "Are you sure you want to delete this folder?"
+			},
+			"form": {
+				"name": {
+					"root": "New root folder",
+					"sub": "New subfolder",
+					"placeholder": "Folder name"
+				},
+				"help": "Will be created inside the selected folder.",
+				"create": "Create",
+				"cancel": "Cancel",
+				"update": "Update"
+			}
+		},
+		"dashboard": {
+			"cards": {
+				"folders": "Folders"
+			},
+			"recent": {
+				"uploads": "Recent uploads"
+			}
+		}
+	}
+}

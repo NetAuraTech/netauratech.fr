@@ -1,0 +1,51 @@
+{
+	"admin": {
+		"value": "Logs",
+		"list": {
+			"title": "Application logs",
+			"empty": "No log entries found.",
+			"logged_on": "Logged on"
+		},
+		"search": {
+			"value": "Search",
+			"placeholder": "Search messages…",
+			"filter": "Filter"
+		},
+		"level": {
+			"value": "Level",
+			"placeholder": "All levels",
+			"debug": "Debug",
+			"info": "Info",
+			"warn": "Warning",
+			"error": "Error",
+			"fatal": "Fatal"
+		},
+		"category": {
+			"value": "Category",
+			"placeholder": "All categories",
+			"system": "System",
+			"security": "Security",
+			"business": "Business",
+			"auth": "Auth",
+			"api": "API",
+			"database": "Database",
+			"performance": "Performance"
+		},
+		"date": {
+			"from": "From",
+			"to": "To"
+		},
+		"context": {
+			"value": "Context",
+			"empty": "No context",
+			"view": "View context"
+		},
+		"columns": {
+			"level": "Level",
+			"category": "Category",
+			"message": "Message",
+			"actor": "Actor",
+			"date": "Date"
+		}
+	}
+}

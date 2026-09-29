@@ -1,0 +1,180 @@
+name: Release
+
+# Cuts a GitHub release when a `v*` tag is pushed to `main`, and — because a
+# single tag can only point at one commit — releases the flavor branches too.
+#
+# The flavor branches (`api`, `inertia`) are CI-regenerated artifacts: on every
+# push to `main`, the flavor prune pipeline (flavor-prune.yml) force-pushes each
+# flavor branch to the pruned tree of the pushed main commit, with a commit
+# message of the form "chore(flavor): regenerate <flavor> from main <sha>".
+#
+# A release on main therefore has a natural, deterministic counterpart on each
+# flavor: the commit the flavor branch was last regenerated from. This workflow
+# waits for the flavor branch to catch up to the released commit (i.e. to carry
+# a prune commit sourced from that exact SHA), then cuts a per-flavor tag
+# (`<tag>-<flavor>`, e.g. `v2.0.0-inertia`) on the branch HEAD and creates a
+# GitHub release for it. No code is rebuilt here: the heavy prune + gates are
+# already done by flavor-prune.yml, so this pipeline only tags and publishes.
+#
+# Triggered by a tag push (the normal path) or manually via workflow_dispatch to
+# (re)cut the releases for an existing tag.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag on main to (re)cut the release for'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+# Serialize per tag so a re-triggered run never races a live one on the same tag.
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  # ─── Stage 1: main release ────────────────────────────────────────────────
+  # Resolves the tag and the commit it points at, extracts the matching
+  # changelog section from the README, and creates the main GitHub release.
+  release-main:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      sha: ${{ steps.meta.outputs.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Resolve tag and target commit
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+            # The tag may not be present locally for a manual dispatch — fetch it.
+            git fetch origin --tags
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          SHA="$(git rev-list -n 1 "${TAG}")"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "Release target: ${TAG} @ ${SHA}"
+
+      - name: Extract release notes from the README changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.tag }}"
+          VER="${TAG#v}"
+          # Print the "### v<VER>" section of README.md up to (but not including)
+          # the next level-3 heading ("### "). The "####" sub-headings inside the
+          # section do not match "^### " (the fourth character is "#", not a
+          # space), so the whole section — including its subsections — is kept.
+          awk -v ver="${VER}" '
+            /^### / { if (insec) exit; if ($0 == "### v" ver) insec = 1 }
+            insec { print }
+          ' README.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "No changelog section for ${TAG} in README.md — using a default note."
+            printf 'Release %s.\n\nSee the changelog in the repository README.\n' "${TAG}" > notes.md
+          fi
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.tag }}"
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists — skipping."
+            exit 0
+          fi
+          gh release create "${TAG}" --title "${TAG}" --notes-file notes.md
+          echo "Created release ${TAG}."
+
+  # ─── Stage 2: per-flavor releases ─────────────────────────────────────────
+  # For each flavor branch: wait until it has been regenerated from the released
+  # commit, then tag its HEAD and create the flavor's GitHub release.
+  release-flavors:
+    runs-on: ubuntu-latest
+    needs: release-main
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [api, inertia]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Wait for the flavor branch to catch up to the released commit
+        shell: bash
+        run: |
+          set -uo pipefail
+          FLAVOR="${{ matrix.flavor }}"
+          SHA="${{ needs.release-main.outputs.sha }}"
+          for attempt in $(seq 1 60); do
+            # Fetch inside the loop: the prune pipeline force-pushes the branch
+            # after this step starts, so a one-shot fetch would only ever see the
+            # pre-release state and the poll would run out without matching.
+            git fetch origin "refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}" 2>/dev/null || true
+            MSG="$(git log -1 --format=%B "refs/remotes/origin/${FLAVOR}" 2>/dev/null || true)"
+            if printf '%s' "${MSG}" | grep -qF "from main ${SHA}"; then
+              echo "Flavor branch '${FLAVOR}' is pruned from ${SHA}."
+              exit 0
+            fi
+            if [ "${attempt}" -eq 60 ]; then
+              echo "::error::Flavor branch '${FLAVOR}' did not catch up to ${SHA} within the timeout."
+              echo "::error::Its HEAD commit is: $(printf '%s' "${MSG}" | head -n 1)"
+              exit 1
+            fi
+            sleep 30
+          done
+
+      - name: Tag the flavor branch and create its release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          FLAVOR="${{ matrix.flavor }}"
+          TAG="${{ needs.release-main.outputs.tag }}"
+          SHA="${{ needs.release-main.outputs.sha }}"
+          FLAVOR_TAG="${TAG}-${FLAVOR}"
+          git fetch origin "refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}"
+
+          if git rev-parse -q --verify "refs/tags/${FLAVOR_TAG}" >/dev/null 2>&1; then
+            echo "Tag ${FLAVOR_TAG} already exists — reusing it."
+          else
+            git tag "${FLAVOR_TAG}" "refs/remotes/origin/${FLAVOR}"
+            git push origin "${FLAVOR_TAG}"
+          fi
+
+          if gh release view "${FLAVOR_TAG}" >/dev/null 2>&1; then
+            echo "Release ${FLAVOR_TAG} already exists — skipping."
+            exit 0
+          fi
+
+          {
+            printf 'The **%s** flavor of AdonisJS Foundry %s.\n' "${FLAVOR}" "${TAG}"
+            printf '\n'
+            printf 'Regenerated by the prune pipeline from the released main commit (source SHA: %s). This is a derived artifact of the main release.\n' "${SHA}"
+            printf '\n'
+            printf 'See the [main release](https://github.com/%s/releases/tag/%s) for the full changelog.\n' "${GITHUB_REPOSITORY}" "${TAG}"
+          } > flavor-notes.md
+
+          # --prerelease: flavor releases are derived artifacts, so they must not
+          # steal the "Latest" badge from the main (stable) release.
+          gh release create "${FLAVOR_TAG}" --title "${TAG} (${FLAVOR} flavor)" --notes-file flavor-notes.md --prerelease
+          echo "Created release ${FLAVOR_TAG}."

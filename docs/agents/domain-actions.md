@@ -1,21 +1,19 @@
 ﻿# Domain Actions
 
-One action = one business operation. Lives in `app/domain/actions/{area}/{verb}_action.ts`. Owns a single use-case, delegates persistence to repositories, and exposes exactly one public method: `async execute(payload): Promise<T>`.
-
-> **CMS exception (ADR-0001):** CMS actions (page, template) live under `app/cms/domain/actions/{area}/`, imported via `#cms/domain/actions/...`. The layout above applies to everything outside the CMS module.
+One action = one business operation. Lives in `src/{domain}/actions/{area}/{verb}_action.ts` — co-located with the domain's models, repositories and services, and imported through the domain alias (`#cms/actions/...`, `#identity/actions/...`, `#file/actions/...`). Owns a single use-case, delegates persistence to repositories, and exposes exactly one public method: `async execute(payload): Promise<T>`.
 
 ## Structure
 
 ```typescript
-import { inject } from '@adonisjs/core'
-import type Result from '#models/some/model'
-import { SomeRepository } from '#repositories/some_repository'
-import { LogService } from '#services/logging/log_service'
-import { withTransaction } from '#shared/utils/with_transaction'
+import { inject } from '@adonisjs/core';
+import type File from '#file/models/file';
+import { FileRepository } from '#file/repositories/file_repository';
+import { LogService } from '#log/services/log_service';
+import { withTransaction } from '#core/services/with_transaction';
 
 interface CreateSomethingPayload {
-  name: string
-  userId: number
+	name: string;
+	userId: number;
 }
 
 /**
@@ -26,27 +24,27 @@ interface CreateSomethingPayload {
  */
 @inject()
 export class CreateSomethingAction {
-  constructor(
-    protected repository: SomeRepository,
-    protected logService: LogService
-  ) {}
+	constructor(
+		protected repository: FileRepository,
+		protected logService: LogService,
+	) {}
 
-  /**
-   * Execute the operation.
-   *
-   * @param payload - Description of the payload fields.
-   * @returns What is returned, including null/undefined semantics.
-   * @throws {TypedException} When and why.
-   *
-   * @example
-   * const result = await createSomethingAction.execute({ name: 'test', userId: 1 })
-   */
-  async execute(payload: CreateSomethingPayload): Promise<Result> {
-    // 1. validate / check invariants, throw typed exception if violated
-    // 2. delegate persistence to this.repository
-    // 3. this.logService.logBusiness/logAuth/logSecurity(event, { userId }, metadata?)
-    // 4. return a model, primitive, or void — never an HTTP response
-  }
+	/**
+	 * Execute the operation.
+	 *
+	 * @param payload - Description of the payload fields.
+	 * @returns What is returned, including null/undefined semantics.
+	 * @throws {TypedException} When and why.
+	 *
+	 * @example
+	 * const result = await createSomethingAction.execute({ name: 'test', userId: 1 })
+	 */
+	async execute(payload: CreateSomethingPayload): Promise<File> {
+		// 1. validate / check invariants, throw typed exception if violated
+		// 2. delegate persistence to this.repository
+		// 3. this.logService.logBusiness/logAuth/logSecurity(event, { userId }, metadata?)
+		// 4. return a model, primitive, or void — never an HTTP response
+	}
 }
 ```
 
@@ -56,23 +54,23 @@ export class CreateSomethingAction {
 - **Payload contract**: A single typed object parameter named `<ActionName>Payload`, colocated in the same file. No variadic or positional arguments.
 - **Constructor injection**: Use `@inject()` decorator and constructor injection for repositories and services. Prefer `protected` modifier on injected dependencies.
 - **Return types**: Model instance, primitive, or `void`. Never HTTP responses or Inertia payloads.
-- **Error handling**: Typed exceptions from `app/exceptions/` or coded errors with `{ code: 'E_...' }`.
+- **Error handling**: Typed exceptions from `src/{domain}/exceptions/` (or `src/core/exceptions/` for cross-domain ones) or coded errors with `{ code: 'E_...' }`.
 - **Logging**: Call LogService on meaningful mutations per `docs/agents/logging.md`; not on reads.
 
 ## Action Variants
 
-| Variant                      | Trait                                    | Example                                                  |
-| ---------------------------- | ---------------------------------------- | -------------------------------------------------------- |
-| **Standard action**          | Mutates state, orchestrates repos        | `CreateUserAction`, `UploadFileAction`                   |
-| **Read-only action**         | Queries only, no mutation                | `ListUsersAction`, `FindPageBySlugAction`                |
-| **Event-dispatching action** | Triggers emails/notifications via events | `SendEmailVerificationAction`, `SendPasswordResetAction` |
+| Variant                 | Trait                                                                                | Example                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **Standard action**     | Mutates state, orchestrates repos                                                    | `CreateUserAction`, `UploadFileAction`                   |
+| **Read-only action**    | Queries only, no mutation                                                            | `ListUsersAction`, `FindPageBySlugAction`                |
+| **Mail-sending action** | Sends mail directly through the mail client (spec-driven token mails — no event bus) | `SendEmailVerificationAction`, `SendPasswordResetAction` |
 
 ## Transactions
 
 Mutating actions that touch multiple repositories or perform multi-step operations should wrap their work in `withTransaction()`. Read-only actions never use transactions.
 
 ```typescript
-import { withTransaction } from '#shared/utils/with_transaction'
+import { withTransaction } from '#core/services/with_transaction'
 
 async execute(payload: CreatePagePayload): Promise<Page> {
   return withTransaction(async () => {
@@ -95,34 +93,27 @@ The `withTransaction()` utility starts a Lucid database transaction and binds it
 
 - **Actions depend on repositories** for data persistence.
 - **Actions may depend on infrastructure services** when needed (StorageService, CacheService, ImageOptimizerService).
-- **Actions never call other actions** — shared logic is inlined or extracted to repository/helper methods. Actions are leaf nodes.
+- **Actions may depend on domain services** — when a use case's logic is owned by a service (or shared by several entry points), the action stays a leaf and delegates its single `execute()` to the owning service.
+- **Actions never call other actions** — shared logic is inlined or extracted to repository/helper/service methods. Actions are leaf nodes.
+- **Services call actions in exactly one documented case** — resolving the recipient's locale for mail dispatch: a per-domain mail service may call the account domain's preferences leaf action (`TokenMailService` and `EmailChangeMailService` → `GetPreferencesAction`), because the recipient's preferences live in the account domain and the resolved locale must stay domain-side of the kernel mail service. No other service→action edge is allowed — any other shared logic belongs in a service or a repository.
 - **Actions import LogService** for audit logging of business events.
 
 ## Directory Structure
 
-Mirror the domain areas used by services and repositories:
+Every non-CMS domain is co-located in its `src/{domain}/` business module; mirror the domain areas used by services and repositories:
 
 ```
-app/domain/actions/
-  auth/              # login, register, logout
-  account/           # email change, deletion
-  backup/            # run, list, restore, delete backups
-  core/              # cross-cutting operations (dashboard stats)
-  email_verification/ # send verification, verify email
-  file/              # upload, move, delete files
-  file_folder/       # create, rename, delete folders
-  invitation/        # send, accept invitations
-  password/          # reset password flow
-  permission/        # list permissions (read-only)
-  preferences/       # get, update user preferences
-  profile/           # update user profile
-  role/              # list roles (read-only)
-  social/            # OAuth login, link/unlink providers
-  user/              # CRUD users, admin operations
+src/
+  auth/actions/          # session, email_verification, invitation, password, social, token
+  account/actions/       # account, preferences, profile
+  core/actions/          # cross-cutting operations (dashboard stats, robots.txt)
+  file/actions/          # file, file_folder
+  identity/actions/      # user, role, permission
+  log/actions/           # log
+  backup/actions/        # backup
 ```
 
-> **(full flavor)** CMS actions (page, template) live under `app/cms/domain/actions/{page,template}/`
-> — see the CMS module note at the top of this file.
+> **(full flavor)** CMS actions (page, template) live under `src/cms/actions/{page,template}/`.
 
 ## Documentation
 

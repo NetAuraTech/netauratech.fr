@@ -1,0 +1,8 @@
+**/node_modules
+.git
+.env
+.env.*
+!apps/web/.env.test
+apps/web/build
+apps/web/tmp
+apps/web/public/assets

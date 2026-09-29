@@ -1,0 +1,56 @@
+{
+	"title": "Mode maintenance",
+	"default_message": "Nous effectuons une maintenance planifiée. Merci de revenir plus tard.",
+	"retry_in": "Nouvel essai dans :",
+	"retry_now": "Réessayer maintenant",
+	"admin": {
+		"value": "Mode maintenance",
+		"sub_title": "Configurer le mode maintenance de l'application",
+		"status": {
+			"label": "État",
+			"inactive": "Inactif",
+			"active_redis": "Actif (Redis)",
+			"active_memory": "Actif (Mémoire secours)"
+		},
+		"source": {
+			"redis": "Redis",
+			"memory": "Mémoire secours",
+			"memory_warning": "Fonctionne en mémoire secours — modifications perdues au redémarrage",
+			"redis_unavailable": "Redis indisponible"
+		},
+		"toggle": {
+			"label": "Activer le mode maintenance",
+			"enable": "Activer",
+			"disable": "Désactiver",
+			"is_enabled": "Le mode maintenance est activé",
+			"is_disabled": "Le mode maintenance est désactivé"
+		},
+		"message": {
+			"label": "Message de maintenance",
+			"placeholder": "Nous effectuons une maintenance planifiée. Retour prévu : 14:00 UTC",
+			"value": "Message"
+		},
+		"allowed_ips": {
+			"label": "IPs autorisées (notation CIDR, une par ligne)",
+			"placeholder": "192.168.1.0/24\n10.0.0.5/32",
+			"help": "Plages IP autorisées à contourner le mode maintenance. Supporte IPv4 et IPv6 en notation CIDR."
+		},
+		"schedule": {
+			"title": "Maintenance planifiée",
+			"enable": "Activer la fenêtre de maintenance planifiée",
+			"start": "Début",
+			"end": "Fin",
+			"help": "Le mode maintenance s'active automatiquement du début à la fin. Saisissez les dates dans votre fuseau local."
+		},
+		"submit": "Enregistrer les modifications",
+		"memory": {
+			"title": "Secours mémoire actif",
+			"description": "Le mode maintenance fonctionne en secours mémoire car Redis est indisponible. La configuration a été explicitement définie par un admin pendant la panne Redis. Sera synchronisé vers Redis à la récupération."
+		},
+		"redis_down": {
+			"title": "Redis indisponible",
+			"description": "Impossible de se connecter à Redis. Le mode maintenance fonctionne en secours mémoire avec les valeurs par défaut sécurisées (maintenance DÉSACTIVÉE).",
+			"help": "Vérifiez la connexion Redis. Les modifications d'un admin pendant la panne seront poussées vers Redis à la récupération."
+		}
+	}
+}

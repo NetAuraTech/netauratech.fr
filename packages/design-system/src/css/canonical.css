@@ -1,0 +1,161 @@
+@import '@fontsource/cormorant-garamond/400.css';
+@import '@fontsource/cormorant-garamond/700.css';
+@import '@fontsource/cormorant-garamond/400-italic.css';
+@import '@fontsource/jost/400.css';
+@import '@fontsource/jost/700.css';
+@import '@fontsource/jost/400-italic.css';
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/playfair-display/400-italic.css';
+@import 'tailwindcss';
+
+@source '../';
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant current (&[aria-current="page"]);
+@custom-variant focus (&:is(:focus-visible));
+
+@theme {
+	--font-cormorant: 'Cormorant Garamond', serif;
+	--font-playfair: 'Playfair Display', serif;
+	--font-jost: 'Jost Variable', 'Jost', sans-serif;
+
+	--color-primary-deep: oklch(0.3038 0.0392 162.91);
+	--color-primary: oklch(0.4049 0.0528 161.65);
+	--color-primary-soft: oklch(0.5373 0.0669 159.37);
+	--color-primary-light: oklch(0.7959 0.043 153.88);
+
+	--color-secondary-deep: oklch(0.7294 0.0887 81.25);
+	--color-secondary: oklch(0.7294 0.0887 81.25);
+	--color-secondary-soft: oklch(0.7294 0.0887 81.25);
+	--color-secondary-light: oklch(0.8507 0.0623 82.99);
+
+	--color-tertiary: oklch(0.7543 0.0621 18.63);
+	--color-tertiary-light: oklch(0.9019 0.0267 17.66);
+
+	--color-ink: oklch(0.162 0.014 258.363);
+	--color-ink-muted: oklch(0.4 0.018 263);
+	--color-ink-subtle: oklch(0.6 0.012 263);
+	--color-ink-inverted: oklch(0.97 0.005 263);
+	--color-ink-inverted-muted: oklch(0.823 0.01 267.344);
+	--color-ink-inverted-subtle: oklch(0.65 0.01 263);
+
+	--color-canvas: oklch(0.974 0.0114 84.58);
+	--color-surface: oklch(0.9322 0.0226 87.15);
+	--color-sunken: oklch(0.94 0.007 263);
+	--color-overlay: oklch(0.995 0.002 263);
+	--color-raised: oklch(1 0 0);
+
+	--color-edge: oklch(0.82 0.012 263);
+	--color-edge-strong: oklch(0.65 0.018 263);
+
+	--color-success: oklch(0.55 0.15 145);
+	--color-success-soft: oklch(0.92 0.04 145);
+	--color-warning: oklch(0.62 0.15 75);
+	--color-warning-soft: oklch(0.95 0.04 75);
+	--color-danger: oklch(0.55 0.18 25);
+	--color-danger-soft: oklch(0.93 0.04 25);
+	--color-info: oklch(0.55 0.12 240);
+	--color-info-soft: oklch(0.93 0.03 240);
+}
+
+@utility input {
+	@apply bg-sunken text-ink p-2 rounded-lg border border-solid border-edge;
+
+	&::placeholder {
+		@apply text-ink-subtle;
+	}
+
+	&:disabled {
+		@apply text-ink-subtle opacity-60 cursor-not-allowed;
+	}
+
+	&:focus-visible {
+		@apply border-primary outline-none;
+		box-shadow: 0 0 0 3px oklch(0.759 0.029 263 / 0.35);
+
+		@variant dark {
+			box-shadow: 0 0 0 3px oklch(0.345 0.047 264 / 0.3);
+		}
+	}
+}
+
+@utility container {
+	margin-inline: auto;
+	padding-inline: 1rem;
+	max-width: 1330px;
+}
+
+@utility grid-auto-fit-* {
+	@apply grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(--value([length]), 100%), 1fr));
+}
+
+@utility table {
+	@apply border-collapse w-full leading-[1.2];
+
+	thead {
+		@apply border-0 hidden;
+
+		@variant lg {
+			@apply table-header-group;
+		}
+
+		th {
+			@apply uppercase opacity-60 text-[0.9em] text-left;
+
+			&.center {
+				@variant lg {
+					@apply text-center;
+				}
+			}
+
+			&:last-child {
+				@variant lg {
+					@apply text-right;
+				}
+			}
+		}
+	}
+
+	tbody {
+		tr {
+			@apply block mb-6 border border-edge rounded-lg p-4;
+
+			@variant lg {
+				@apply table-row mb-0 border-0 border-b border-edge rounded-none p-0;
+			}
+
+			&:last-child {
+				@apply border border-edge;
+
+				@variant lg {
+					@apply border-0;
+				}
+			}
+		}
+
+		td {
+			@apply block text-left py-2 border-0 align-middle;
+
+			&::before {
+				content: attr(data-label);
+				@apply font-bold uppercase text-[0.85em] opacity-60 block mb-1;
+
+				@variant lg {
+					@apply hidden;
+				}
+			}
+
+			@variant lg {
+				@apply table-cell py-4;
+			}
+
+			&:last-child > * {
+				@variant lg {
+					@apply justify-end;
+				}
+			}
+		}
+	}
+}

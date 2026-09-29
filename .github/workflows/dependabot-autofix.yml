@@ -1,0 +1,74 @@
+name: Dependabot autofix
+
+# Completes dependabot's own PRs so they pass CI without manual edits.
+#
+# Dependabot updates the live `package.json` files and the lockfile, but it
+# cannot touch the flavor manifests (`tooling/prune/flavors/*.manifest.ts`),
+# which freeze a snapshot of every `package.json`. That snapshot goes stale on
+# each bump and the `manifest_drift` unit test (run by the CI `backend-tests`
+# job) fails. This workflow closes the gap: on every dependabot PR it rewrites
+# the frozen ranges/versions to match the live files and converges the
+# lockfile, then commits the result back onto the PR branch. The PR's own CI
+# then runs green and the PR is ready to merge.
+#
+# It runs on `pull_request_target` (not `pull_request`) because it must push
+# back onto the PR head branch, which only a base-branch-token run may do. It
+# is gated to PRs opened by `dependabot[bot]` from this repository (never a
+# fork): dependabot only ever rewrites `package.json`/`package-lock.json`, so
+# the tooling it executes on the PR head is byte-identical to `main`'s and no
+# untrusted code runs.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  sync-manifests-and-lockfile:
+    runs-on: ubuntu-latest
+    # Same-PR runs are serialized so a re-triggered run (from our own commit)
+    # never races a live one on the branch.
+    concurrency:
+      group: dependabot-autofix-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.18.0
+
+      - name: Sync flavor manifest ranges and versions
+        # Dependency-free: Node 24 runs the .ts entrypoint and imports the
+        # manifests natively (type stripping), so no install is required.
+        run: node tooling/prune/sync-deps.ts
+
+      - name: Converge the lockfile
+        # Resolves the ideal tree from the package manifests without installing
+        # or running lifecycle scripts. A no-op when dependabot's lockfile is
+        # already consistent; repairs the rarer hoisting / range-mirror cases.
+        run: npm install --package-lock-only
+
+      - name: Commit and push if anything changed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo 'Nothing to sync — manifests and lockfile already match the bump.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "chore(deps): sync flavor manifests and lockfile with dependabot bump"
+          git push origin "HEAD:refs/heads/${TARGET_REF}"

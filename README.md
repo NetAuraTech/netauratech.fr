@@ -13,8 +13,8 @@ auth + admin foundation and their own hand-crafted pages.
   reset, OAuth (GitHub, Google, Facebook), invitations, define-password.
 - **File management** — upload, folders, multi-disk storage (local, S3, R2),
   image optimization, and server-side file resolution for hand-written pages.
-- **SEO** — dynamic `sitemap.xml` and `robots.txt`. Every `front.*` route is
-  collected automatically.
+- **SEO** — dynamic `sitemap.xml` and `robots.txt`. Every `core.*.render`
+  route is collected automatically.
 - **Minimal front shell** — a blank home page and error pages, each served by
   its own controller.
 
@@ -27,12 +27,13 @@ The flavor is self-documenting by construction — the files you open first are
 the pattern to follow:
 
 - **One controller per page.** Each public page is served by a dedicated
-  controller in the `core` domain (`app/http/controllers/core/front/`), keeping
+  controller in the `core` domain (`app/core/controllers/front/`), keeping
   the controller thin and delegating to services.
-- **`front.*` route names.** Public routes are declared manually in
-  `start/routes/front.routes.ts` via `registerFrontRoutes()` and named
-  `front.home`, `front.about`, ... so the sitemap collector and your frontend
-  links reference them consistently.
+- **`core.*.render` route names.** Public routes are declared in the core
+  domain entry (`app/core/routes.ts` for the home, the surface files for
+  the SEO endpoints) and named `core.home.render`, `core.about.render`, ...
+  so the sitemap collector and your frontend links reference them
+  consistently.
 - **Hand-written Inertia pages.** Front pages live under
   `inertia/pages/core/front/` and use the public layout; error pages under
   `inertia/pages/errors/`.
@@ -72,6 +73,6 @@ recover the CMS, the builder, and Transmit later.
 | `npm run build`     | Build for production            |
 | `npm start`         | Start the production server     |
 | `npm test`          | Run tests (Japa)                |
-| `npm run lint`      | Run ESLint                      |
-| `npm run format`    | Format code with Prettier       |
+| `npm run lint`      | Run oxlint                      |
+| `npm run format`    | Format code with oxfmt          |
 | `npm run typecheck` | Type-check backend and frontend |

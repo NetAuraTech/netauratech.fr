@@ -1,6 +1,6 @@
 # JSDoc Conventions
 
-Every exported function, class, and public method gets JSDoc. No exception by layer — this applies equally to helpers, services, repositories, models, controllers, exceptions, transformers, events, listeners, mails, and middleware. Existing files missing it are a backlog item, not a documented alternative style.
+Every exported function, class, and public method gets JSDoc. No exception by layer — this applies equally to helpers, services, repositories, queries, models, controllers, exceptions, transformers, validators, jobs, and middleware. Existing files missing it are a backlog item, not a documented alternative style.
 
 ## Template
 

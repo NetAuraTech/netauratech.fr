@@ -1,6 +1,9 @@
 ---
-status: accepted
+status: superseded
 date: 2026-07-10
+superseded_by: The event chain was removed with the CMS module extraction
+  (ADR-0001, Phase 3) — mail flows now go through the mail client directly,
+  so the decision no longer applies.
 context:
   - AdonisJS uses the class name as the routing key to listeners
   - Event classes are thin but serve as framework binding contracts

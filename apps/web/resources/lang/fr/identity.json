@@ -1,0 +1,363 @@
+{
+	"admin": {
+		"users": {
+			"created": "Un e-mail d'invitation a été envoyé à {email} afin que l'utilisateur {username} puisse créer son compte.",
+			"updated_email": "Un e-mail de confirmation a été envoyé à l'utilisateur afin de confirmer le changement d'adresse e-mail.",
+			"updated": "L'utilisateur a été modifié avec succès.",
+			"deleted": "L'utilisateur a été supprimé avec succès.",
+			"mail": {
+				"subject": "Vous avez été invité à rejoindre {app}",
+				"greeting": "Vous avez été invité,",
+				"intro": "Un administrateur vous a invité à rejoindre {app}. Cliquez sur le bouton ci-dessous pour accepter votre invitation et configurer votre compte.",
+				"action": "Accepter l’invitation",
+				"outro": "Une fois que vous aurez accepté, vous pourrez définir votre mot de passe et commencer à utiliser votre compte immédiatement. Votre adresse e-mail sera vérifiée automatiquement. ",
+				"expiry": "Ce lien d'invitation expirera dans {days} jours.",
+				"footer": "Si vous rencontrez des difficultés pour cliquer sur le bouton, copiez et collez l'URL ci-dessous dans votre navigateur web :"
+			},
+			"list": {
+				"action": "Inviter un utilisateur",
+				"empty": "Aucun utilisateur trouvé.",
+				"register_on": "Inscrit le",
+				"title": "Gérer les utilisateurs"
+			},
+			"show": {
+				"title": "Voir l'utilisateur: {username}",
+				"info": {
+					"email": "E-mail",
+					"username": "Nom d'utilisateur",
+					"value": "Information sur l'utilisateur"
+				},
+				"history": {
+					"created_at": "Créé le",
+					"updated_at": "Dernière mise à jour",
+					"verified_at": "E-mail vérifié le",
+					"value": "Chronologie du compte"
+				},
+				"providers": {
+					"connected": "Connecté",
+					"not_connected": "Non connecté",
+					"value": "Comptes connectés"
+				},
+				"role": {
+					"current": "Rôle actuel",
+					"value": "Rôle et permissions"
+				},
+				"permission": {
+					"value": "Permissions de ce rôle ({amount})"
+				}
+			},
+			"create": {
+				"title": "Inviter un utilisateur"
+			},
+			"edit": {
+				"title": "Modifier l'utilisateur: {username}"
+			},
+			"delete": {
+				"title": "Supprimer l'utilisateur: {username}"
+			},
+			"form": {
+				"email": {
+					"placeholder": "john.doe@test.local",
+					"value": "E-mail"
+				},
+				"username": {
+					"placeholder": "JohnDoe",
+					"value": "Nom d'utilisateur"
+				},
+				"role": {
+					"placeholder": "Choisir un rôle...",
+					"value": "Rôle"
+				},
+				"api_rate_limit": {
+					"placeholder": "ex. 60",
+					"value": "Limite de requêtes API (par minute)"
+				},
+				"submit": "Envoyer"
+			},
+			"status": {
+				"verified": "✓ Vérifié",
+				"unverified": "× Non vérifié",
+				"pending_invite": "⟳ Invitation en attente",
+				"value": "Statut"
+			},
+			"search": {
+				"filter": "Filtrer",
+				"placeholder": "John Doe",
+				"value": "Rechercher"
+			},
+			"roles": {
+				"placeholder": "Tous les rôles",
+				"value": "Rôles",
+				"value_one": "Rôle"
+			},
+			"permissions": {
+				"category": {
+					"admin": "Administration",
+					"users": "Utilisateurs",
+					"roles": "Rôles",
+					"permissions": "Permissions",
+					"logs": "Journaux"
+				},
+				"admin": {
+					"access": {
+						"value": "Accéder au tableau de bord de l'administration"
+					}
+				},
+				"users": {
+					"create": {
+						"value": "Créer des utilisateurs"
+					},
+					"view": {
+						"value": "Afficher les utilisateurs"
+					},
+					"update": {
+						"value": "Modifier les utilisateurs"
+					},
+					"delete": {
+						"value": "Supprimer les utilisateurs"
+					},
+					"manage_roles": {
+						"value": "Gérer les rôles des utilisateurs"
+					}
+				},
+				"roles": {
+					"create": {
+						"value": "Créer des rôles"
+					},
+					"view": {
+						"value": "Afficher les rôles"
+					},
+					"update": {
+						"value": "Modifier les rôles"
+					},
+					"delete": {
+						"value": "Supprimer les rôles"
+					},
+					"manage_permissions": {
+						"value": "Gérer les rôles des permissions"
+					}
+				},
+				"permissions": {
+					"create": {
+						"value": "Créer des permissions"
+					},
+					"view": {
+						"value": "Afficher les permissions"
+					},
+					"update": {
+						"value": "Modifier les permissions"
+					},
+					"delete": {
+						"value": "Supprimer les permissions"
+					}
+				},
+				"logs": {
+					"view": {
+						"value": "Afficher les journaux"
+					}
+				}
+			},
+			"actions": "Actions",
+			"value": "Utilisateurs",
+			"value_one": "Utilisateur"
+		},
+		"roles": {
+			"value": "Rôles",
+			"value_one": "Rôle",
+			"list": {
+				"title": "Gérer les rôles"
+			},
+			"search": {
+				"value": "Recherche",
+				"placeholder": "Rechercher par nom ou description...",
+				"filter": "Filtrer"
+			},
+			"create": {
+				"title": "Créer un rôle"
+			},
+			"edit": {
+				"title": "Modifier le rôle \"{name}\""
+			},
+			"show": {
+				"title": "Rôle \"{name}\""
+			},
+			"delete": {
+				"title": "Supprimer le rôle \"{name}\"",
+				"confirm": "Êtes-vous sûr de vouloir supprimer le rôle \"{name}\" ? Ses utilisateurs seront réassignés au rôle \"Utilisateur\"."
+			},
+			"form": {
+				"name": {
+					"value": "Nom",
+					"placeholder": "Éditeur"
+				},
+				"slug": {
+					"value": "Slug",
+					"placeholder": "editeur"
+				},
+				"description": {
+					"value": "Description",
+					"placeholder": "Peut gérer les contenus éditoriaux"
+				},
+				"permissions": {
+					"value": "Permissions",
+					"system_hint": "Les rôles système ne peuvent pas être modifiés."
+				},
+				"submit": "Enregistrer"
+			},
+			"flash": {
+				"created": "Rôle créé avec succès",
+				"updated": "Rôle mis à jour avec succès",
+				"deleted": "Rôle supprimé avec succès"
+			},
+			"system": {
+				"value": "Système",
+				"hint": "Rôle système — la modification et la suppression sont désactivées."
+			},
+			"table": {
+				"name": "Nom",
+				"slug": "Slug",
+				"permissions": "Permissions",
+				"users": "Utilisateurs"
+			},
+			"users": {
+				"value": "Utilisateurs",
+				"empty": "Aucun utilisateur ne détient ce rôle.",
+				"table": {
+					"username": "Nom d'utilisateur",
+					"email": "Email"
+				}
+			},
+			"actions": "Actions",
+			"empty": "Aucun rôle trouvé.",
+			"permissions": {
+				"category": {
+					"admin": "Administration",
+					"users": "Utilisateurs",
+					"roles": "Rôles",
+					"permissions": "Permissions",
+					"logs": "Journaux"
+				},
+				"admin.access": {
+					"value": "Accéder au tableau de bord de l'administration",
+					"description": "Permet d'accéder au panneau d'administration."
+				},
+				"users.view": {
+					"value": "Afficher les utilisateurs",
+					"description": "Permet de lister et de consulter les utilisateurs."
+				},
+				"users.create": {
+					"value": "Créer des utilisateurs",
+					"description": "Permet de créer de nouveaux utilisateurs."
+				},
+				"users.update": {
+					"value": "Modifier les utilisateurs",
+					"description": "Permet de modifier les utilisateurs existants."
+				},
+				"users.delete": {
+					"value": "Supprimer les utilisateurs",
+					"description": "Permet de supprimer des utilisateurs."
+				},
+				"users.manage_roles": {
+					"value": "Gérer les rôles des utilisateurs",
+					"description": "Permet d'assigner des rôles aux utilisateurs."
+				},
+				"roles.view": {
+					"value": "Afficher les rôles",
+					"description": "Permet de lister et de consulter les rôles."
+				},
+				"roles.create": {
+					"value": "Créer des rôles",
+					"description": "Permet de créer des rôles personnalisés."
+				},
+				"roles.update": {
+					"value": "Modifier les rôles",
+					"description": "Permet de modifier les rôles personnalisés et leurs permissions."
+				},
+				"roles.delete": {
+					"value": "Supprimer les rôles",
+					"description": "Permet de supprimer les rôles personnalisés."
+				},
+				"roles.manage_permissions": {
+					"value": "Gérer les permissions des rôles",
+					"description": "Permet de changer les permissions qu'un rôle accorde."
+				},
+				"permissions.view": {
+					"value": "Afficher les permissions",
+					"description": "Permet de lister et de consulter les permissions."
+				},
+				"permissions.create": {
+					"value": "Créer des permissions",
+					"description": "Permet de créer des permissions personnalisées."
+				},
+				"permissions.update": {
+					"value": "Modifier les permissions",
+					"description": "Permet de modifier les permissions personnalisées."
+				},
+				"permissions.delete": {
+					"value": "Supprimer les permissions",
+					"description": "Permet de supprimer les permissions personnalisées."
+				},
+				"logs.view": {
+					"value": "Afficher les journaux",
+					"description": "Permet de consulter les journaux de l'application."
+				}
+			}
+		},
+		"permissions": {
+			"value": "Permissions",
+			"list": {
+				"title": "Gérer les permissions"
+			},
+			"create": {
+				"title": "Créer une permission"
+			},
+			"edit": {
+				"title": "Modifier la permission \"{name}\""
+			},
+			"delete": {
+				"title": "Supprimer la permission \"{name}\"",
+				"confirm": "Êtes-vous sûr de vouloir supprimer la permission \"{name}\" ? Elle sera retirée de tous les rôles."
+			},
+			"form": {
+				"name": {
+					"value": "Nom",
+					"placeholder": "Publier des rapports"
+				},
+				"slug": {
+					"value": "Slug",
+					"placeholder": "reports.publish"
+				},
+				"category": {
+					"value": "Catégorie",
+					"placeholder": "reports"
+				},
+				"description": {
+					"value": "Description",
+					"placeholder": "Permet de publier des rapports"
+				},
+				"submit": "Enregistrer"
+			},
+			"flash": {
+				"created": "Permission créée avec succès",
+				"updated": "Permission mise à jour avec succès",
+				"deleted": "Permission supprimée avec succès"
+			},
+			"system": {
+				"value": "Système",
+				"hint": "Permission système — la modification et la suppression sont désactivées."
+			},
+			"table": {
+				"name": "Nom",
+				"slug": "Slug",
+				"description": "Description"
+			},
+			"actions": "Actions",
+			"empty": "Aucune permission trouvée."
+		},
+		"dashboard": {
+			"cards": {
+				"no_role": "Sans rôle"
+			}
+		}
+	}
+}

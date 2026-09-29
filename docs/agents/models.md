@@ -1,28 +1,28 @@
 ﻿# Models
 
-Lucid models live in `app/models/{area}/{name}.ts`. Each model extends a generated schema class from `database/schema.ts` that contains column definitions. The model file adds relations, hooks, scopes, and helpers on top of the schema.
+Lucid models live in `src/{domain}/models/{name}.ts` (area subdirectories for large domains) — co-located with the domain's actions, repositories and services, and imported through the domain alias (`#identity/models/...`, `#cms/models/...`). Each model extends a generated schema class from `database/schema.ts` that contains column definitions. The model file adds relations, hooks, scopes, and helpers on top of the schema.
 
-> **CMS exception (ADR-0001):** the CMS module (page, template) lives under `app/cms/` with the same structure — e.g. `app/cms/models/page/page.ts`, imported via `#cms/models/page/page`. The layer-first layout above applies to everything outside the CMS module.
+> The transport layer (controllers, routes, validators, transformers, REST resources) stays under `app/{domain}/`, co-located per domain; the business layer (models, actions, repositories, services, exceptions) stays under `src/{domain}/`. The BFF boundary between the two is enforced by the lint in `oxlint.config.ts`: `src/` must not import `#transport/*` or escape to `app/`; shared framework aliases (`#start`, `#config`, `#database`, `#generated`, `#types`) stay reachable from `src/` — the boundary guards against HTTP details, not framework plumbing.
 
 ## Structure
 
 ```typescript
-import { FooSchema } from '#database/schema'
-import { belongsTo, hasMany, scope } from '@adonisjs/lucid/orm'
-import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import { FooSchema } from '#database/schema';
+import { belongsTo, hasMany, scope } from '@adonisjs/lucid/orm';
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations';
 
 export default class Foo extends FooSchema {
-  // ── Relations ──
-  @belongsTo(() => Bar)
-  declare bar: BelongsTo<typeof Bar>
+	// ── Relations ──
+	@belongsTo(() => Bar)
+	declare bar: BelongsTo<typeof Bar>;
 
-  // ── Scopes ──
-  public static active = scope((query) => query.where('is_active', true))
+	// ── Scopes ──
+	public static active = scope((query) => query.where('is_active', true));
 
-  // ── Helpers ──
-  displayName(): string {
-    return this.name || 'Untitled'
-  }
+	// ── Helpers ──
+	displayName(): string {
+		return this.name || 'Untitled';
+	}
 }
 ```
 
@@ -39,7 +39,7 @@ Lucid hooks (`@beforeSave`, `@afterFetch`, etc.) run outside the IoC container �
 ```typescript
 @beforeDelete()
 static async cleanup(foo: Foo) {
-  const { CleanupService } = await import('#services/cleanup_service')
+  const { CleanupService } = await import('#file/services/cleanup_service')
   const service = new CleanupService()
   await service.removeAssets(foo.id)
 }
@@ -75,12 +75,12 @@ public static published = scope((query) => {
 })
 ```
 
-Scopes are for filtering logic intrinsic to the model. Conditional request-driven filters belong in `PaginationService` via `ConditionalFilter`, not as model scopes.
+Scopes are for filtering logic intrinsic to the model. Conditional request-driven filters are composed in the repository (or service) that builds the query, not as model scopes.
 
 ## Conventions
 
 - One file per model, named after the entity (`user.ts`, `token.ts`).
-- Models grouped by domain area: `auth/`, `core/`, `file/`, `page/`, etc.
+- Models live co-located under `src/{domain}/models/` (identity, file, log, account, auth, core, webhook) and `src/cms/models/` (CMS).
 - Relations use arrow functions for lazy resolution: `@belongsTo(() => Role)`.
 - Computed properties use `@computed()` decorator when they derive from model state.
 - A model never imports another repository directly outside a hook — cross-entity composition belongs in the service layer.

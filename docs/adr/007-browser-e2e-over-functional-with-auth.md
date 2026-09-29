@@ -1,6 +1,8 @@
 ---
-status: accepted
+status: superseded
 date: 2026-08-04
+superseded_by:
+  - 011
 context:
   - Functional tests use Japa's API client (`client.get()`, `client.post()`)
   - Browser E2E tests use Playwright via Japa's browser client (`visit`, `page`)
@@ -8,6 +10,8 @@ context:
   - Japa's API client does not execute JavaScript — no React hydration occurs
   - Session cookies are not persisted across API client requests in some cases
 ---
+
+> **Superseded by [ADR 011](./011-functional-tests-replace-browser-e2e.md).** The functional suite (`@japa/api-client`) proves reliable for authenticated flows (`loginAs()`, `.withCsrfToken()`, `redirects(0)`) and asserts Inertia state through the server-rendered `data-page` payload. The browser suite and Playwright tooling were removed; "browser E2E for authenticated flows" no longer applies.
 
 ## Context
 
@@ -49,17 +53,17 @@ When converting a functional test to browser E2E:
 ```typescript
 // Before: functional test (flaky with auth)
 const response = await client
-  .post(route('admin.templates.update', { id: template.id }))
-  .json({ name: 'Updated' })
-  .loginAs(admin)
+	.post(route('admin.templates.update', { id: template.id }))
+	.json({ name: 'Updated' })
+	.loginAs(admin);
 
 // After: browser E2E test (reliable)
-await login(route('auth.session.render'), visit, admin.email, 'TestPassword123!')
-const page = await visitPage(route('admin.templates.edit', { id: template.id }), visit)
-await fillField(page, 'input', 'name', 'Updated')
+await login(route('auth.session.render'), visit, admin.email, 'TestPassword123!');
+const page = await visitPage(route('admin.templates.edit', { id: template.id }), visit);
+await fillField(page, 'input', 'name', 'Updated');
 const response = await waitForInertiaResponse(page, '/admin/templates/', () =>
-  page.getByRole('button', { name: /Save changes/i }).click()
-)
+	page.getByRole('button', { name: /Save changes/i }).click(),
+);
 ```
 
 Key helpers:

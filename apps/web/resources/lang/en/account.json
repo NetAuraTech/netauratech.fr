@@ -1,0 +1,174 @@
+{
+	"title": "Settings",
+	"sub_title": "Manage your profile, account, and preferences.",
+	"account": {
+		"success": "Your account has been updated successfully.",
+		"delete": {
+			"success": "Your account has been deleted successfully.",
+			"confirm": {
+				"title": "Are you sure you want to delete your account?",
+				"sub_title": "Once your account is deleted, all its resources and data will be permanently deleted. Please enter your password to confirm that you want to permanently delete your account."
+			},
+			"password": "Password",
+			"title": "Delete account",
+			"sub_title": "Once your account is deleted, all its resources and data will be permanently deleted.",
+			"submit": "Delete account",
+			"cancel": "Cancel"
+		},
+		"password": {
+			"success": "Your password has been updated successfully.",
+			"title": "Password",
+			"sub_title": "Ensure your account uses a long, random password to remain secure.",
+			"current": {
+				"value": "Current password"
+			},
+			"new": {
+				"help": "For optimal security, your password must be at least 8 characters long.",
+				"value": "New password"
+			},
+			"confirm": {
+				"help": "Re-enter your password to verify that there are no typos.",
+				"value": "Confirm password"
+			},
+			"submit": "Update password"
+		},
+		"email": {
+			"change": {
+				"cancel": "Cancel",
+				"info": {
+					"title": "Important Information",
+					"message": "Once confirmed, your account email will be updated and you'll need to use the new email for login."
+				},
+				"title": "Confirm Email Change",
+				"token": "Token",
+				"sub_title": "Click the button below to confirm your new email address.",
+				"submit": "Confirm New Email"
+			},
+			"title": "Email address",
+			"sub_title": "A confirmation email will be sent to the new address.",
+			"value": "Current email address",
+			"placeholder": "john.doe@example.com",
+			"submit": "Update email address"
+		},
+		"oauth": {
+			"title": "Connected accounts",
+			"sub_title": "Manage your OAuth connections.",
+			"link": "Connect",
+			"unlink": {
+				"confirm": "Are you sure you want to unlink your {provider} account? You will no longer be able to connect via this provider.",
+				"value": "Unlink"
+			},
+			"connected": "Connected",
+			"not_connected": "Not connected"
+		},
+		"two_factor": {
+			"success": "Two-factor authentication has been enabled for your account.",
+			"title": "Two-factor authentication",
+			"sub_title": "Add an extra layer of security by requiring a code from your authenticator app at login.",
+			"enable": "Enable two-factor authentication",
+			"enabled": "Enabled",
+			"enabled_sub": "Two-factor authentication is active on this account.",
+			"scan": "Scan this QR code with your authenticator app, then enter the 6-digit code to confirm.",
+			"manual": "Or enter this setup key manually",
+			"apps": "Works with most authenticator apps, such as Google Authenticator, Microsoft Authenticator, Authy, 1Password, Aegis, or FreeOTP.",
+			"code": {
+				"value": "Authentication code",
+				"placeholder": "123456"
+			},
+			"confirm": "Confirm and enable",
+			"cancel": "Cancel",
+			"recovery": {
+				"title": "Recovery codes",
+				"sub_title": "If you lose access to your authenticator, use one of these one-time codes to log in.",
+				"info": "Each code can only be used once. Copy or download them and store them somewhere safe.",
+				"copy": "Copy all",
+				"download": "Download"
+			},
+			"disable": {
+				"sub_title": "Enter your password and a current code to turn off two-factor authentication.",
+				"warning": "After disabling, you will no longer be asked for a code at login and your recovery codes are deleted.",
+				"password": "Current password",
+				"code": "Authentication code or recovery code",
+				"confirm": "Disable two-factor authentication",
+				"success": "Two-factor authentication has been disabled for your account."
+			}
+		},
+		"value": "Account"
+	},
+	"profile": {
+		"success": "Your profile has been updated successfully.",
+		"avatar": {
+			"change": "Change",
+			"value": "Avatar"
+		},
+		"username": {
+			"placeholder": "John Doe",
+			"value": "Username"
+		},
+		"title": "Profile information",
+		"sub_title": "Your name and avatar are publicly visible.",
+		"submit": "Save changes",
+		"value": "Profile"
+	},
+	"preferences": {
+		"theme": {
+			"success": "The theme has been successfully updated."
+		},
+		"success": "Your preferences have been saved.",
+		"value": "Preferences",
+		"appearance": {
+			"title": "Appearance",
+			"sub_title": "Customize how the interface looks and feels.",
+			"value": "Theme"
+		},
+		"interface": {
+			"title": "Interface",
+			"sub_title": "Configure your language and regional preferences.",
+			"submit": "Save",
+			"locale": {
+				"english": "English",
+				"french": "French",
+				"value": "Language"
+			}
+		}
+	},
+	"email": {
+		"change": {
+			"success": "Your email address has been changed successfully.",
+			"no_pending": "You don't have any pending email change.",
+			"cancelled": "Email change has been cancelled.",
+			"mail": {
+				"notification": {
+					"subject": "Your email address is being changed",
+					"greeting": "Hello,",
+					"intro": "This email is to notify you that your account email address is being changed from {old} to {new}.",
+					"warning": "If you did not initiate this change, your account may be compromised. Please contact our support team immediately.",
+					"action": "If you need assistance, please contact us at:"
+				},
+				"confirm": {
+					"subject": "Confirm your email address change",
+					"greeting": "Hello,",
+					"intro": "You have requested to change your email address to {email}. Please confirm this change by clicking the button below.",
+					"action": "Confirm Email Change",
+					"outro": "If you did not request this change, please ignore this email.",
+					"expiry": "This confirmation link will expire in {hours} hour.",
+					"footer": "If you're having trouble clicking the button, copy and paste the URL below into your web browser:"
+				}
+			},
+			"title": "Confirm Email Change",
+			"sub_title": "Click the button below to confirm your new email address.",
+			"info": {
+				"title": "Important Information",
+				"message": "Once confirmed, your account email will be updated and you'll need to use the new email for login."
+			},
+			"submit": "Confirm New Email",
+			"cancel": "Cancel",
+			"token": "Token"
+		},
+		"verify": {
+			"title": "Email Verification Required",
+			"message": "Please verify your email address to access all features.",
+			"resend": "Resend Email"
+		}
+	}
+}

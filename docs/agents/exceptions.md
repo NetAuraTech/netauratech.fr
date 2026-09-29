@@ -1,41 +1,43 @@
 # Exceptions
 
-Custom exceptions live in `app/exceptions/{domain}/{name}_exception.ts`, one class per error case. Built on AdonisJS's `Exception` base class with a project-specific `handle()` convention layered on top.
+Custom exceptions live in `src/{domain}/exceptions/{name}_exception.ts`, one class per error case — co-located with the business module that throws them, and imported through the domain alias (`#identity/exceptions/...`, `#file/exceptions/...`, `#cms/exceptions/...`). Built on AdonisJS's `Exception` base class with a project-specific `handle()` convention layered on top.
 
-> **CMS exception (ADR-0001):** CMS exceptions (page, template) live under `app/cms/exceptions/{domain}/`, imported via `#cms/exceptions/...`. The layout above applies to everything outside the CMS module.
+> **Kernel exceptions:** cross-domain exceptions shared by several business modules (`row_not_found`, `slug_exists`, `email_already_exists`) live under `src/core/exceptions/`, imported via `#core/exceptions/...`, next to the `BaseHttpException` base class they extend.
+>
+> **Global handler:** the exception handler itself is delivery-layer and lives in `app/core/exceptions/handler.ts` (wired in `start/kernel.ts`).
 
 ## Structure
 
 ```typescript
 export default class SomethingWrongException extends Exception {
-  static status = 409
-  static code = 'E_SOMETHING_WRONG'
+	static status = 409;
+	static code = 'E_SOMETHING_WRONG';
 
-  constructor(private detail: string) {
-    super(`Human-readable default message with ${detail}.`, {
-      status: SomethingWrongException.status,
-      code: SomethingWrongException.code,
-    })
-  }
+	constructor(private detail: string) {
+		super(`Human-readable default message with ${detail}.`, {
+			status: SomethingWrongException.status,
+			code: SomethingWrongException.code,
+		});
+	}
 
-  async handle(error: this, ctx: HttpContext) {
-    const { request, response, session, i18n } = ctx
-    const message = i18n.t(`exceptions.${error.code}`)
+	async handle(error: this, ctx: HttpContext) {
+		const { request, response, session, i18n } = ctx;
+		const message = i18n.t(`exceptions.${error.code}`);
 
-    if (request.wantsJSON()) {
-      return response.status(error.status).send({
-        error: {
-          code: error.code,
-          message,
-          details: { detail: error.detail },
-          ...(app.inDev && { stack: error.stack }),
-        },
-      })
-    }
+		if (request.wantsJSON()) {
+			return response.status(error.status).send({
+				error: {
+					code: error.code,
+					message,
+					details: { detail: error.detail },
+					...(app.inDev && { stack: error.stack }),
+				},
+			});
+		}
 
-    session.flash('error', message)
-    return response.redirect().back()
-  }
+		session.flash('error', message);
+		return response.redirect().back();
+	}
 }
 ```
 

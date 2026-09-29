@@ -2,13 +2,15 @@
 
 AdonisJS Foundry ships as three flavors, one per branch. `main`, the full flavor, is the single source of truth; the two lighter flavors are CI-regenerated artifacts derived from it by a declarative prune pipeline.
 
-| Flavor   | Branch    | What it includes                                                                                                                                                                                  | Best for                                                                                      |
-| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **full** | `main`    | Everything: Inertia + React front with public site, visual page builder, template system, CMS module, Transmit, full admin panel, auth (session + optional API tokens), files, logs, RBAC, backup | A project that wants the CMS / visual builder out of the box                                  |
-| inertia  | `inertia` | Hand-written Inertia + React front and admin panel, full auth and settings, **no CMS** (no page builder, no templates, no Transmit)                                                               | A project that wants auth + admin + hand-written pages without a content-management module    |
-| api      | `api`     | Headless REST backend (`/api/v1/*`), token-guarded, **no frontend, no session auth, no CMS**. Entirely consumed by an external front                                                              | A project that wants a backend-only API consumed by a Next.js, mobile or other external front |
+| Flavor   | Branch    | What it includes                                                                                                                                                                                                                                                                                           | Best for                                                                                      |
+| -------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **full** | `main`    | Everything: Inertia + React front with public site, visual page builder, template system, CMS module, Transmit, full admin panel, auth (session + optional API tokens, TOTP 2FA), files, logs, RBAC, backup, per-client rate limiting, OpenAPI reference, inbound webhooks, optional Typesense page search | A project that wants the CMS / visual builder out of the box                                  |
+| inertia  | `inertia` | Hand-written Inertia + React front and admin panel, full auth (incl. TOTP 2FA) and settings, **no CMS** (no page builder, no templates, no Transmit, no inbound webhooks)                                                                                                                                  | A project that wants auth + admin + hand-written pages without a content-management module    |
+| api      | `api`     | Headless REST backend (`/api/v1/*`), token-guarded, with per-client rate limiting and the OpenAPI reference, **no frontend, no session auth, no CMS, no inbound webhooks**. Entirely consumed by an external front                                                                                         | A project that wants a backend-only API consumed by a Next.js, mobile or other external front |
 
 **Choosing a flavor** is about what you ship to the browser: `full` = want the CMS/visual builder; `inertia` = want auth + admin + hand-written pages; `api` = headless backend consumed by an external front.
+
+The shared design-system workspace (`packages/design-system`) ships with `full` and `inertia` only — the headless `api` flavor prunes it wholesale. The root `workspaces` glob field stays flavor-invariant across all branches: a glob matching nothing is valid, so the prune needs no root-manifest variation.
 
 ## Branches as artifacts
 
@@ -58,5 +60,5 @@ Flavors are **not one-way doors**: every flavor branch is derived from `main`, s
 When you add code to `main` (full), keep the whole repo **prune-safe**:
 
 - Flavor variation is confined to config/composition/docs files on the `REWRITE_ALLOWLIST`. Library/business code can only be identical across flavors or deleted wholesale.
-- Rule of thumb: **if it dies when the CMS dies, it lives in `app/cms/`** (see [ADR 0001](../adr/0001-cms-module-extraction.md)).
+- Rule of thumb: **if it dies when the CMS dies, it lives in `apps/web/app/cms/`** (see [ADR 0001](../adr/0001-cms-module-extraction.md)).
 - A hard coupling found while pruning means **refactoring `main`**, never patching a flavor branch.
