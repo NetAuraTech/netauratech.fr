@@ -1,0 +1,16 @@
+{
+	"value": "Administration",
+	"dashboard": {
+		"value": "Tableau de bord",
+		"title": "Tableau de bord",
+		"recent": {
+			"empty": "Rien à afficher pour le moment."
+		},
+		"view_all": "Tout voir"
+	},
+	"category": {
+		"access_control": "Contrôle d'accès",
+		"content": "Contenu",
+		"settings": "Paramètres"
+	}
+}

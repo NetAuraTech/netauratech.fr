@@ -1,8 +1,8 @@
 # Dependencies and AdonisJS build
 node_modules
 build
-tmp/*
-!tmp/.gitkeep
+apps/web/tmp/*
+!apps/web/tmp/.gitkeep
 
 # Secrets
 .env
@@ -11,7 +11,7 @@ tmp/*
 .env.development.local
 
 # Frontend assets compiled code
-public/assets
+apps/web/public/assets
 
 # Build tools specific
 npm-debug.log
@@ -26,12 +26,12 @@ yarn-error.log
 .DS_Store
 
 
-storage/*
+apps/web/storage/*
 
 # Agents
+.impeccable/*
 .pi/*
 .pi-subagents/*
 .claude/*
-.impeccable/*
 docs/plans
 memory/*

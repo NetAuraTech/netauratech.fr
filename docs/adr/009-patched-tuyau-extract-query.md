@@ -17,7 +17,7 @@ The `contact.execute` route validates its payload with `contactValidator` — a 
 For non-GET routes with a validator, Tuyau's codegen emits `query: ExtractQuery<InferInput<...>>` in `.adonisjs/client/registry/schema.d.ts`, where:
 
 ```ts
-type ExtractQuery<T> = 'query' extends keyof T ? (T extends { query?: infer Q } ? Q : {}) : {}
+type ExtractQuery<T> = 'query' extends keyof T ? (T extends { query?: infer Q } ? Q : {}) : {};
 ```
 
 For an open-record input:
@@ -35,12 +35,12 @@ This is upstream bug [Julien-R44/tuyau#116](https://github.com/Julien-R44/tuyau/
 
 ```ts
 type ExtractQuery<T> = 'query' extends keyof T
-  ? T extends { query?: infer Q }
-    ? [Q] extends [Record<string, any>]
-      ? Q
-      : {}
-    : {}
-  : {}
+	? T extends { query?: infer Q }
+		? [Q] extends [Record<string, any>]
+			? Q
+			: {}
+		: {}
+	: {};
 ```
 
 ### Rationale

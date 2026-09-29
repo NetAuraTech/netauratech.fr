@@ -1,12 +1,16 @@
 ---
-status: accepted
+status: superseded
 date: 2026-08-04
+superseded_by:
+  - 011
 context:
   - The project is multilingual (en/fr) — UI labels come from translation keys
   - Browser E2E tests interact with real rendered pages via Playwright
   - A test broke because it located a button by its English label, which differed from another button's label after translation changes
   - Form helpers (`fillField`) already locate fields by `name` attribute, not by label
 ---
+
+> **Superseded by [ADR 011](./011-functional-tests-replace-browser-e2e.md).** The Playwright browser suite no longer exists, so its `name`/`id`-locator conventions are no longer needed. The underlying principle — stable, locale-independent `name`/`id` hooks on interactive elements — still guides component design.
 
 ## Context
 
@@ -68,7 +72,7 @@ Selecting by text that the test itself created is acceptable — it is data, not
 
 ```ts
 // The template name was seeded by the test — stable regardless of locale
-await editor.getByRole('button', { name: 'ApplyFlow Template' }).click()
+await editor.getByRole('button', { name: 'ApplyFlow Template' }).click();
 ```
 
 ## Consequences

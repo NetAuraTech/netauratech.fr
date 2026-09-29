@@ -1,0 +1,74 @@
+{
+  "name": "@foundry/design-system",
+  "version": "2.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    "./tokens": "./src/tokens.ts",
+    "./admin-header": "./src/organisms/admin/admin_header.tsx",
+    "./admin-main": "./src/organisms/admin/admin_main.tsx",
+    "./admin-sidebar": "./src/organisms/admin/admin_sidebar.tsx",
+    "./auth-intro": "./src/molecules/auth_intro/auth_intro.tsx",
+    "./avatar": "./src/atoms/avatar/avatar.tsx",
+    "./badge": "./src/atoms/badge/badge.tsx",
+    "./banner": "./src/molecules/banner/banner.tsx",
+    "./button": "./src/atoms/button/button.tsx",
+    "./card": "./src/atoms/card/card.tsx",
+    "./checkbox": "./src/atoms/checkbox/checkbox.tsx",
+    "./field": "./src/molecules/field/field.tsx",
+    "./floating-portal": "./src/atoms/floating_portal/floating_portal.tsx",
+    "./footer": "./src/organisms/footer/footer.tsx",
+    "./header": "./src/organisms/header/header.tsx",
+    "./heading": "./src/atoms/heading/heading.tsx",
+    "./icon": "./src/atoms/icon/icon.tsx",
+    "./image-picker": "./src/molecules/image_picker/image_picker.tsx",
+    "./input": "./src/atoms/input/input.tsx",
+    "./label": "./src/atoms/label/label.tsx",
+    "./modal": "./src/atoms/modal/modal.tsx",
+    "./nav-link": "./src/atoms/nav_link/nav_link.tsx",
+    "./pagination": "./src/molecules/pagination/pagination.tsx",
+    "./paragraph": "./src/atoms/paragraph/paragraph.tsx",
+    "./section": "./src/atoms/section/section.tsx",
+    "./select": "./src/atoms/select/select.tsx",
+    "./separator": "./src/atoms/separator/separator.tsx",
+    "./table": "./src/atoms/table/table.tsx",
+    "./textarea": "./src/atoms/textarea/textarea.tsx",
+    "./user-status": "./src/atoms/user_status/user_status.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "storybook": "storybook dev -p 6006",
+    "build:storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/jost": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@iconify/react": "^6.0.2",
+    "@inertiajs/react": "^3.7.1",
+    "tailwind-variants": "^3.3.1"
+  },
+  "devDependencies": {
+    "@storybook/react": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "storybook": "^10.6.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.0"
+  }
+}

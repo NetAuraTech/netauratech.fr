@@ -1,0 +1,134 @@
+{
+	"admin": {
+		"files": {
+			"list": {
+				"title": "Gérer les fichiers",
+				"action": {
+					"upload": "Téléverser",
+					"folders": "Dossiers"
+				},
+				"folders": {
+					"all": "Tous"
+				}
+			},
+			"show": {
+				"title": "Ouvrir",
+				"info": {
+					"name": "Nom",
+					"type": "Type",
+					"size": "Taille",
+					"uploaded_at": "Téléversé le",
+					"value": "Contenu"
+				},
+				"alts": {
+					"title": "Textes alternatifs",
+					"value": "Texte alternatif",
+					"empty": "Aucun texte alternatif pour le moment.",
+					"add": "Ajouter",
+					"close": "Fermer",
+					"edit": "Modifier",
+					"delete": {
+						"value": "Supprimer",
+						"confirm": "Êtes-vous sûr de vouloir supprimer ce texte alternatif ?"
+					},
+					"form": {
+						"locale": {
+							"value": "Langue"
+						},
+						"key": {
+							"value": "Clé",
+							"placeholder": "image_principale, vignette, ..."
+						},
+						"alt_text": {
+							"value": "Texte alternatif",
+							"placeholder": "Texte descriptif"
+						},
+						"submit": "Ajouter",
+						"cancel": "Annuler",
+						"update": "Mettre à jour"
+					}
+				}
+			},
+			"delete": {
+				"title": "Supprimer le fichier : {filename}",
+				"confirm": "Êtes-vous sûr de vouloir supprimer ce fichier ?"
+			},
+			"upload": {
+				"remove": "Retirer",
+				"submit": "Téléverser le fichier",
+				"help": "Cliquez pour téléverser ou glissez-déposez",
+				"try_again": "Essayez un autre fichier",
+				"max_size": "Max {size}",
+				"error": {
+					"size": "Le fichier dépasse la limite de {max}"
+				}
+			},
+			"form": {
+				"name": {
+					"value": "Nom"
+				},
+				"type": {
+					"value": "Type"
+				},
+				"size": {
+					"value": "Taille"
+				},
+				"uploaded_at": {
+					"value": "Téléversé le"
+				}
+			},
+			"search": {
+				"filter": "Filtrer",
+				"placeholder": "...",
+				"value": "Rechercher",
+				"type": {
+					"value": "Type de fichier",
+					"options": {
+						"placeholder": "Tous les types",
+						"image": "Images",
+						"video": "Vidéos",
+						"audio": "Audio",
+						"pdf": "PDF"
+					}
+				}
+			},
+			"actions": "Actions",
+			"value": "Fichiers"
+		},
+		"folders": {
+			"list": {
+				"title": "Gérer les dossiers",
+				"add": "Ajouter un sous-dossier",
+				"rename": "Renommer le dossier",
+				"browse": "Parcourir les fichiers",
+				"empty": {
+					"value": "Aucun dossier pour le moment.",
+					"help": "Créez un dossier ci-dessus pour commencer à organiser vos fichiers."
+				}
+			},
+			"delete": {
+				"title": "Supprimer le dossier {folder}",
+				"confirm": "Êtes-vous sûr de vouloir supprimer ce dossier ?"
+			},
+			"form": {
+				"name": {
+					"root": "Nouveau dossier racine",
+					"sub": "Nouveau sous-dossier",
+					"placeholder": "Nom du dossier"
+				},
+				"help": "Sera créé à l'intérieur du dossier sélectionné.",
+				"create": "Créer",
+				"cancel": "Annuler",
+				"update": "Mettre à jour"
+			}
+		},
+		"dashboard": {
+			"cards": {
+				"folders": "Dossiers"
+			},
+			"recent": {
+				"uploads": "Fichiers récents"
+			}
+		}
+	}
+}

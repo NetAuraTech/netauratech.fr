@@ -1,0 +1,16 @@
+{
+	"value": "Administration",
+	"dashboard": {
+		"value": "Dashboard",
+		"title": "Dashboard",
+		"recent": {
+			"empty": "Nothing to display yet."
+		},
+		"view_all": "View all"
+	},
+	"category": {
+		"access_control": "Access control",
+		"content": "Content",
+		"settings": "Settings"
+	}
+}

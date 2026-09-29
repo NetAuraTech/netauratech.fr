@@ -31,12 +31,12 @@ Consequences of the contract:
 
 Each flavor owns a manifest at `tooling/prune/flavors/<flavor>.manifest.ts` (e.g. `inertia.manifest.ts`, `api.manifest.ts`). The manifest is declarative and mechanical — the engine performs no inference — and describes three kinds of edits against a clean checkout of `main`:
 
-| Field          | Meaning                                                                                                  |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| `flavor`       | Flavor identifier, matching the branch name.                                                             |
-| `delete`       | Literal file or directory paths to delete (no globs). Stale entries fail loudly (see Failure modes).     |
-| `rewrites`     | Full replacement content for allowlisted config/composition files (see the closed rewrite allowlist).    |
-| `dependencies` | Optional npm package names pruned from every dependency map of `package.json` (removal only, never add). |
+| Field          | Meaning                                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flavor`       | Flavor identifier, matching the branch name.                                                                                                                                             |
+| `delete`       | Literal file or directory paths to delete (no globs). Stale entries fail loudly (see Failure modes).                                                                                     |
+| `rewrites`     | Full replacement content for allowlisted config/composition files (see the closed rewrite allowlist).                                                                                    |
+| `dependencies` | Optional npm package names pruned from every dependency map of the targeted manifest — the root `package.json` by default, or a workspace manifest via `file` (removal only, never add). |
 
 Rewrites supply the file's **complete post-prune content** — the engine overwrites the file verbatim, never merges. Keeping replacements declarative means the flavor tree is reproducible from the manifest alone, with no hidden engine logic. On the flavor branch the manifest itself is deleted, so the branch ships as a finished product, not a recipe.
 

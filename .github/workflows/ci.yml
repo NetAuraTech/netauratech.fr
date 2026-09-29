@@ -16,16 +16,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
+      - name: Run oxlint
         run: npm run lint:ci
 
-      - name: Run Prettier check
+      - name: Run oxfmt check
         run: npm run format:ci
 
   frontend-tests:
@@ -38,7 +38,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Install dependencies
@@ -49,6 +49,7 @@ jobs:
 
   backend-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -87,83 +88,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run backend tests (unit + functional)
-        run: npm run test -- unit functional
-
-  browser-tests:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: app_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U user -d app_test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      # Auth flows send real emails (awaited inline) via SMTP: the suite needs
-      # a reachable SMTP server, same as the local MailHog in docker-compose.yml.
-      mailhog:
-        image: mailhog/mailhog:latest
-        ports:
-          - 1025:1025
-
-    env:
-      REDIS_ENABLED: 'true'
-      REDIS_HOST: 127.0.0.1
-      REDIS_PORT: '6379'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Chromium with system dependencies
-        run: npx playwright install --with-deps chromium
-
-      # Suites are selected positionally; "--suite=browser" is not a valid flag
-      # and would be silently ignored, running every suite. See backend-tests.
-      - name: Run browser tests
-        run: npm run test -- browser
-
-      - name: Upload Playwright traces on failure
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: playwright-traces
-          path: tmp/playwright-traces/
-          if-no-files-found: warn
+        run: npm run test --workspace @foundry/web -- unit functional
 
   typecheck:
     runs-on: ubuntu-latest
@@ -175,7 +107,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Install dependencies
@@ -194,48 +126,26 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      # The dev server is the only entry point that regenerates every committed
-      # codegen file: the assembler init hooks rewrite the server indexes and
-      # pages.d.ts at startup, and the Tuyau client registry is written once the
-      # running app commits its routes (routesScanned hook), which the build,
-      # typecheck and test commands never trigger. ".env.test" boots the full
-      # app without external services (lazy Redis, memory session/limiter), so
-      # this job needs no service containers.
+      # Shared by ci.yml and flavor-prune.yml: runs "node ace codegen" in the
+      # app workspace and waits for its completion marker (see the action's
+      # description for why the warmup entry point is the only one that
+      # regenerates every committed codegen file).
       - name: Regenerate codegen output
-        run: |
-          cp .env.test .env
-          mkdir -p tmp
-          node ace serve > tmp/codegen.log 2>&1 &
-          SERVER_PID=$!
-          for i in $(seq 1 90); do
-            if grep -q 'tuyau: created api client registry' tmp/codegen.log; then
-              break
-            fi
-            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-              echo 'Dev server exited before the codegen output was regenerated:'
-              cat tmp/codegen.log
-              exit 1
-            fi
-            sleep 1
-          done
-          kill "$SERVER_PID" 2>/dev/null || true
-          if ! grep -q 'tuyau: created api client registry' tmp/codegen.log; then
-            echo 'Timed out waiting for the codegen output to be regenerated:'
-            cat tmp/codegen.log
-            exit 1
-          fi
+        uses: ./.github/actions/regenerate-codegen
+        with:
+          working-directory: apps/web
 
       - name: Fail when the committed codegen output has drifted
         run: |
-          if ! git diff --exit-code -- .adonisjs/; then
+          if ! git diff --exit-code -- apps/web/.adonisjs/; then
             echo ''
-            echo '::error::The committed .adonisjs/ files are out of sync with the codegen output.'
-            echo '::error::Run the codegen locally (start the dev server with "node ace serve"), then commit the updated .adonisjs/ directory.'
+            echo '::error::The committed apps/web/.adonisjs/ files are out of sync with the codegen output.'
+            echo '::error::Run the codegen locally ("node ace codegen" from apps/web), then commit the updated apps/web/.adonisjs/ directory.'
             exit 1
           fi

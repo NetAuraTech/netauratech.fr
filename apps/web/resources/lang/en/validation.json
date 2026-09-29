@@ -1,0 +1,38 @@
+{
+	"required": "The { field } field is required",
+	"email": "The { field } field must be a valid email address",
+	"minLength": "The { field } field must contain at least { min } characters",
+	"maxLength": "The { field } field must not exceed { max } characters",
+	"confirmed": "The confirmation for the { field } field does not match",
+	"unique": "The { field } field is already in use",
+	"exists": "The selected { field } field is invalid",
+	"string": "The { field } field must be a string",
+	"number": "The { field } field must be a number",
+	"boolean": "The { field } field must be true or false",
+	"date": "The { field } field must be a valid date",
+	"enum": "The selected { field } field is invalid",
+	"failed": "The provided data is invalid. Please check your input and try again.",
+	"front": {
+		"required": "{field} is required",
+		"email": "Please enter a valid email address",
+		"min_length": "{field} must be at least {min} characters (currently: {current})",
+		"max_length": "{field} must be at most {max} characters (currently: {current})",
+		"matches": "Must match {other}",
+		"one_of": "{field} contains an invalid value",
+		"fields": {
+			"email": "Email",
+			"password": "Password",
+			"password_confirmation": "Password confirmation",
+			"current_password": "Current password",
+			"username": "Username",
+			"search": "Search",
+			"select": "Selection",
+			"role": "Role",
+			"api_rate_limit": "API rate limit"
+		},
+		"slug_format": "{field} may only contain lowercase letters, numbers, dots, dashes and underscores",
+		"api_rate_limit": {
+			"positive_integer": "{field} must be a positive whole number"
+		}
+	}
+}

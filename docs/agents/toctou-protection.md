@@ -9,12 +9,12 @@ The "check-then-act" pattern is used throughout this codebase:
 ```typescript
 // Check
 if (!(await User.findBy('slug', slug))) {
-  throw new ResourceNotFoundException()
+	throw new ResourceNotFoundException();
 }
 
 // Act (data may have changed between check and act)
-const user = await User.findOrFail(id)
-await user.something()
+const user = await User.findOrFail(id);
+await user.something();
 ```
 
 Database constraints (unique indexes, foreign keys) catch some violations but provide poor error messages and don't cover all race conditions.

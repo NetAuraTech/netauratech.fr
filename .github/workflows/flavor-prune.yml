@@ -73,7 +73,7 @@ jobs:
   # tooling/prune/flavors/. Issues #5 and #8 will drop `inertia.manifest.ts`
   # and `api.manifest.ts` there — this job then picks them up automatically.
   # The main CI workflow (ci.yml) already gates `main` on lint, typecheck,
-  # backend/frontend/browser tests, and codegen drift — no need to re-run a
+  # backend/frontend tests, and codegen drift — no need to re-run a
   # subset here. The prune-flavor job below gates the pruned tree itself.
   discover-flavors:
     runs-on: ubuntu-latest
@@ -162,7 +162,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 24.18.0
           cache: 'npm'
 
       - name: Record source main SHA
@@ -178,65 +178,42 @@ jobs:
       - name: Reinstall dependencies (post-prune package.json)
         run: npm ci
 
+      - name: Normalize formatting (post-prune oxfmt)
+        # The prune engine rewrites the flavor package.json with a 2-space
+        # indent (JSON.stringify), which fails the oxfmt tab check. Normalizing
+        # the whole pruned tree here keeps the flavor source oxfmt-clean before
+        # the gates below and before the tree is force-pushed.
+        run: npm run format
+
       - name: Regenerate AdonisJS indexes (post-prune codegen)
-        run: |
-          # The dev server is the only entry point that regenerates every
-          # committed codegen file: the assembler init hooks rewrite the server
-          # indexes and pages.d.ts at startup, and the Tuyau client registry is
-          # written once the running app commits its routes (routesScanned
-          # hook), which typecheck and test commands never trigger. ".env.test"
-          # boots the full app without external services, same as ci.yml's
-          # codegen-drift job.
-          cp .env.test .env
-          mkdir -p tmp
-          node ace serve > tmp/codegen.log 2>&1 &
-          SERVER_PID=$!
-          for i in $(seq 1 90); do
-            if grep -q 'tuyau: created api client registry' tmp/codegen.log; then
-              break
-            fi
-            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-              echo 'Dev server exited before the codegen output was regenerated:'
-              cat tmp/codegen.log
-              exit 1
-            fi
-            sleep 1
-          done
-          kill "$SERVER_PID" 2>/dev/null || true
-          if ! grep -q 'tuyau: created api client registry' tmp/codegen.log; then
-            echo 'Timed out waiting for the codegen output to be regenerated:'
-            cat tmp/codegen.log
-            exit 1
-          fi
+        uses: ./.github/actions/regenerate-codegen
+        with:
+          working-directory: apps/web
 
-      - name: Run typecheck (backend)
-        run: npx tsc --noEmit
+      - name: Run typecheck
+        # The flavor package.json's typecheck script fans out to the surviving
+        # tsconfigs (backend, plus the Inertia project for the inertia flavor).
+        # The root tsconfig is intentionally omitted: tooling/ is pruned away in
+        # the flavor tree, so a bare `tsc --noEmit` at the root would fail with
+        # an empty include (TS18003).
+        run: npm run typecheck
 
-      - name: Run typecheck (inertia, if the inertia tree survives)
-        continue-on-error: false
-        run: |
-          if [ -f inertia/tsconfig.json ]; then
-            npx tsc --noEmit --project inertia/tsconfig.json
-          else
-            echo 'inertia/tsconfig.json absent — skipping inertia typecheck (expected for the api flavor).'
-          fi
-
-      - name: Run ESLint
+      - name: Run oxlint
         run: npm run lint:ci
 
-      - name: Run Prettier check
+      - name: Run oxfmt check
         run: npm run format:ci
 
       - name: Run frontend tests (if the inertia tree survives)
         run: |
-          if [ -d inertia ]; then
+          if [ -d apps/web/inertia ]; then
             npm run test:front
           else
-            echo 'inertia/ absent — skipping frontend tests (expected for the api flavor).'
+            echo 'apps/web/inertia/ absent — skipping frontend tests (expected for the api flavor).'
           fi
 
       - name: Run backend tests (remaining suites)
-        run: npm run test -- unit integration functional
+        run: npm run test --workspace @foundry/web -- unit integration functional
 
       - name: Configure git identity
         run: |

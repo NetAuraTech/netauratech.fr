@@ -1,0 +1,42 @@
+name: Regenerate codegen output
+description: >-
+  Runs "node ace codegen" (warmup) — the entry point that regenerates every
+  committed codegen file: the assembler init hooks rewrite the server indexes
+  and pages.d.ts at startup, and the Tuyau client registry is written once the
+  app commits its routes (routesScanned hook), which the build, typecheck and
+  test commands never trigger. It is watched on its own completion marker
+  ("Codegen files generated") instead of a registry log line. ".env.test" boots
+  the full app without external services (lazy Redis, memory session/limiter),
+  so callers need no service containers.
+inputs:
+  working-directory:
+    description: The app workspace directory holding ".env.test" (apps/web).
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Wait for the codegen completion marker
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        cp .env.test .env
+        mkdir -p tmp
+        node ace codegen > tmp/codegen.log 2>&1 &
+        CODEGEN_PID=$!
+        for i in $(seq 1 90); do
+          if grep -q 'Codegen files generated' tmp/codegen.log; then
+            break
+          fi
+          if ! kill -0 "$CODEGEN_PID" 2>/dev/null; then
+            echo 'Codegen exited before the completion marker was logged:'
+            cat tmp/codegen.log
+            exit 1
+          fi
+          sleep 1
+        done
+        kill "$CODEGEN_PID" 2>/dev/null || true
+        if ! grep -q 'Codegen files generated' tmp/codegen.log; then
+          echo 'Timed out waiting for the codegen completion marker:'
+          cat tmp/codegen.log
+          exit 1
+        fi

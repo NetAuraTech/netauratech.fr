@@ -1,0 +1,56 @@
+{
+	"title": "Maintenance Mode",
+	"default_message": "We're performing scheduled maintenance. Please check back soon.",
+	"retry_in": "Retry in:",
+	"retry_now": "Retry Now",
+	"admin": {
+		"value": "Maintenance mode",
+		"sub_title": "Configure application maintenance mode",
+		"status": {
+			"label": "Status",
+			"inactive": "Inactive",
+			"active_redis": "Active (Redis)",
+			"active_memory": "Active (Memory fallback)"
+		},
+		"source": {
+			"redis": "Redis",
+			"memory": "Memory fallback",
+			"memory_warning": "Running on memory fallback — changes lost on restart",
+			"redis_unavailable": "Redis unavailable"
+		},
+		"toggle": {
+			"label": "Enable maintenance mode",
+			"enable": "Enable",
+			"disable": "Disable",
+			"is_enabled": "Maintenance mode is enabled",
+			"is_disabled": "Maintenance mode is disabled"
+		},
+		"message": {
+			"label": "Maintenance message",
+			"placeholder": "We're performing scheduled maintenance. Expected back: 14:00 UTC",
+			"value": "Message"
+		},
+		"allowed_ips": {
+			"label": "Allowed IPs (CIDR notation, one per line)",
+			"placeholder": "192.168.1.0/24\n10.0.0.5/32",
+			"help": "IP ranges allowed to bypass maintenance mode. Supports IPv4 and IPv6 CIDR notation."
+		},
+		"schedule": {
+			"title": "Scheduled maintenance",
+			"enable": "Enable scheduled maintenance window",
+			"start": "Start",
+			"end": "End",
+			"help": "Maintenance mode turns on automatically from start to end. Enter dates in your local time."
+		},
+		"submit": "Save changes",
+		"memory": {
+			"title": "Memory fallback active",
+			"description": "Maintenance mode is running on memory fallback because Redis is unavailable. Configuration was explicitly set by an admin during Redis outage. Will sync to Redis on recovery."
+		},
+		"redis_down": {
+			"title": "Redis unavailable",
+			"description": "Cannot connect to Redis. Maintenance mode is running on memory fallback with safe defaults (maintenance OFF).",
+			"help": "Check Redis connection. Admin changes during outage will be pushed to Redis on recovery."
+		}
+	}
+}
