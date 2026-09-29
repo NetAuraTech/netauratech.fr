@@ -83,7 +83,7 @@ test.group('Registration E2E', (group) => {
     await page.assertPath('/register')
 
     // Check for client-side validation error message
-    const errorMessage = page.locator('p.text-danger:has-text("at least 8")')
+    const errorMessage = page.locator('p.paragraph__error:has-text("at least 8")')
     await assert.isTrue(await errorMessage.isVisible())
   })
 
@@ -110,7 +110,7 @@ test.group('Registration E2E', (group) => {
     await page.assertPath('/register')
 
     // Check for client-side validation error message
-    const errorMessage = page.locator('p.text-danger:has-text("match")')
+    const errorMessage = page.locator('p.paragraph__error:has-text("match")')
     await assert.isTrue(await errorMessage.isVisible())
   })
 
