@@ -612,6 +612,78 @@ const routes = {
     tokens: [{"old":"/api/v1/admin/permissions","type":0,"val":"api","end":""},{"old":"/api/v1/admin/permissions","type":0,"val":"v1","end":""},{"old":"/api/v1/admin/permissions","type":0,"val":"admin","end":""},{"old":"/api/v1/admin/permissions","type":0,"val":"permissions","end":""}],
     types: placeholder as Registry['api.v1.admin.permissions_api.index']['types'],
   },
+  'api.v1.auth.token.execute': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/login',
+    tokens: [{"old":"/api/v1/auth/login","type":0,"val":"api","end":""},{"old":"/api/v1/auth/login","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/login","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/login","type":0,"val":"login","end":""}],
+    types: placeholder as Registry['api.v1.auth.token.execute']['types'],
+  },
+  'api.v1.auth.register_api.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/register',
+    tokens: [{"old":"/api/v1/auth/register","type":0,"val":"api","end":""},{"old":"/api/v1/auth/register","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/register","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/register","type":0,"val":"register","end":""}],
+    types: placeholder as Registry['api.v1.auth.register_api.store']['types'],
+  },
+  'api.v1.auth.forgot_password_api.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/forgot-password',
+    tokens: [{"old":"/api/v1/auth/forgot-password","type":0,"val":"api","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"forgot-password","end":""}],
+    types: placeholder as Registry['api.v1.auth.forgot_password_api.store']['types'],
+  },
+  'api.v1.auth.reset_password_api.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/reset-password',
+    tokens: [{"old":"/api/v1/auth/reset-password","type":0,"val":"api","end":""},{"old":"/api/v1/auth/reset-password","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/reset-password","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/reset-password","type":0,"val":"reset-password","end":""}],
+    types: placeholder as Registry['api.v1.auth.reset_password_api.store']['types'],
+  },
+  'api.v1.auth.email_verification_api.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/verify-email/:token',
+    tokens: [{"old":"/api/v1/auth/verify-email/:token","type":0,"val":"api","end":""},{"old":"/api/v1/auth/verify-email/:token","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/verify-email/:token","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/verify-email/:token","type":0,"val":"verify-email","end":""},{"old":"/api/v1/auth/verify-email/:token","type":1,"val":"token","end":""}],
+    types: placeholder as Registry['api.v1.auth.email_verification_api.store']['types'],
+  },
+  'api.v1.auth.accept_invitation_api.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/accept-invitation',
+    tokens: [{"old":"/api/v1/auth/accept-invitation","type":0,"val":"api","end":""},{"old":"/api/v1/auth/accept-invitation","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/accept-invitation","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/accept-invitation","type":0,"val":"accept-invitation","end":""}],
+    types: placeholder as Registry['api.v1.auth.accept_invitation_api.store']['types'],
+  },
+  'api.v1.auth.token.destroy': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/logout',
+    tokens: [{"old":"/api/v1/auth/logout","type":0,"val":"api","end":""},{"old":"/api/v1/auth/logout","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/logout","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/logout","type":0,"val":"logout","end":""}],
+    types: placeholder as Registry['api.v1.auth.token.destroy']['types'],
+  },
+  'api.v1.auth.me.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/auth/me',
+    tokens: [{"old":"/api/v1/auth/me","type":0,"val":"api","end":""},{"old":"/api/v1/auth/me","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/me","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/me","type":0,"val":"me","end":""}],
+    types: placeholder as Registry['api.v1.auth.me.show']['types'],
+  },
+  'api.v1.profile.profile_api.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/profile',
+    tokens: [{"old":"/api/v1/profile","type":0,"val":"api","end":""},{"old":"/api/v1/profile","type":0,"val":"v1","end":""},{"old":"/api/v1/profile","type":0,"val":"profile","end":""}],
+    types: placeholder as Registry['api.v1.profile.profile_api.show']['types'],
+  },
+  'api.v1.profile.profile_api.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/profile',
+    tokens: [{"old":"/api/v1/profile","type":0,"val":"api","end":""},{"old":"/api/v1/profile","type":0,"val":"v1","end":""},{"old":"/api/v1/profile","type":0,"val":"profile","end":""}],
+    types: placeholder as Registry['api.v1.profile.profile_api.update']['types'],
+  },
+  'api.v1.account.account_api.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/account',
+    tokens: [{"old":"/api/v1/account","type":0,"val":"api","end":""},{"old":"/api/v1/account","type":0,"val":"v1","end":""},{"old":"/api/v1/account","type":0,"val":"account","end":""}],
+    types: placeholder as Registry['api.v1.account.account_api.update']['types'],
+  },
+  'api.v1.account.account_api.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account',
+    tokens: [{"old":"/api/v1/account","type":0,"val":"api","end":""},{"old":"/api/v1/account","type":0,"val":"v1","end":""},{"old":"/api/v1/account","type":0,"val":"account","end":""}],
+    types: placeholder as Registry['api.v1.account.account_api.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

@@ -105,6 +105,18 @@ export type ScannedRoutes = {
     'api.v1.admin.maintenance_api.update': { paramsTuple?: []; params?: {} }
     'api.v1.admin.maintenance_api.toggle': { paramsTuple?: []; params?: {} }
     'api.v1.admin.permissions_api.index': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.token.execute': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.register_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.forgot_password_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.reset_password_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.email_verification_api.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'api.v1.auth.accept_invitation_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.token.destroy': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
+    'api.v1.profile.profile_api.show': { paramsTuple?: []; params?: {} }
+    'api.v1.profile.profile_api.update': { paramsTuple?: []; params?: {} }
+    'api.v1.account.account_api.update': { paramsTuple?: []; params?: {} }
+    'api.v1.account.account_api.destroy': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -159,6 +171,8 @@ export type ScannedRoutes = {
     'api.v1.admin.logs_api.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.maintenance_api.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.permissions_api.index': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
+    'api.v1.profile.profile_api.show': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -213,6 +227,8 @@ export type ScannedRoutes = {
     'api.v1.admin.logs_api.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.maintenance_api.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.permissions_api.index': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
+    'api.v1.profile.profile_api.show': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'auth.session.execute': { paramsTuple?: []; params?: {} }
@@ -244,6 +260,13 @@ export type ScannedRoutes = {
     'api.v1.admin.files_upload_api.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.folders_api.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.theme.execute': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.token.execute': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.register_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.forgot_password_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.reset_password_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.email_verification_api.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'api.v1.auth.accept_invitation_api.store': { paramsTuple?: []; params?: {} }
+    'api.v1.auth.token.destroy': { paramsTuple?: []; params?: {} }
   }
   DELETE: {
     'settings.account.destroy': { paramsTuple?: []; params?: {} }
@@ -258,6 +281,7 @@ export type ScannedRoutes = {
     'api.v1.admin.files_delete_api.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.files_alt_api.delete_alt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.folders_delete_api.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'api.v1.account.account_api.destroy': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'admin.file_folders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -268,6 +292,8 @@ export type ScannedRoutes = {
     'api.v1.admin.folders_update_api.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.maintenance_api.update': { paramsTuple?: []; params?: {} }
     'api.v1.admin.maintenance_api.toggle': { paramsTuple?: []; params?: {} }
+    'api.v1.profile.profile_api.update': { paramsTuple?: []; params?: {} }
+    'api.v1.account.account_api.update': { paramsTuple?: []; params?: {} }
   }
 }
 declare module '@adonisjs/core/types/http' {

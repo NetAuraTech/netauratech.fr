@@ -91,7 +91,7 @@ test.group('Forgot Password E2E', (group) => {
     await page.assertPath('/forgot-password')
 
     // Check for client-side validation error
-    const errorMessage = page.locator('p.text-danger:has-text("email")')
+    const errorMessage = page.locator('p.paragraph__error:has-text("email")')
     await assert.isTrue(await errorMessage.isVisible())
   })
 })

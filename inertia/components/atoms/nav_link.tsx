@@ -27,14 +27,7 @@ type NavLinkBaseProps = {
    * - `'admin_nav'` — button-shaped link used inside Administration.
    */
   variant?:
-    | 'link'
-    | 'nav'
-    | 'setting_nav'
-    | 'pagination'
-    | 'admin_nav'
-    | 'external'
-    | 'footer'
-    | 'front'
+    'link' | 'nav' | 'setting_nav' | 'pagination' | 'admin_nav' | 'external' | 'footer' | 'front'
   fitContent?: boolean
   /** Disables pointer events and applies a reduced-opacity style. */
   disabled?: boolean
@@ -72,8 +65,7 @@ type NavLinkNoRouteProps = NavLinkBaseProps & {
 }
 
 type NavLinkProps<R extends NonNullable<LinkProps['route']>> =
-  | NavLinkRouteProps<R>
-  | NavLinkNoRouteProps
+  NavLinkRouteProps<R> | NavLinkNoRouteProps
 
 export const variants = {
   link: 'text-secondary hover:text-secondary-deep',

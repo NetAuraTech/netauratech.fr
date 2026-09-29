@@ -16,9 +16,7 @@ export default class ExampleController {
 
   async render(ctx: HttpContext) {
     return ctx.inertia.render('path/to/page', {
-      translations: {
-        /* i18n */
-      },
+      translations: {/* i18n */},
     })
   }
 

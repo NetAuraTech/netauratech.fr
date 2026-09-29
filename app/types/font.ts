@@ -2,19 +2,7 @@
  * Base Tailwind font-size scale, mapping directly to the `text-*` utilities.
  */
 export type BaseFontSize =
-  | 'xs'
-  | 'sm'
-  | 'base'
-  | 'lg'
-  | 'xl'
-  | '2xl'
-  | '3xl'
-  | '4xl'
-  | '5xl'
-  | '6xl'
-  | '7xl'
-  | '8xl'
-  | '9xl'
+  'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | '8xl' | '9xl'
 
 /**
  * A font size that can optionally be scoped to a Tailwind responsive breakpoint.

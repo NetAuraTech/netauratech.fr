@@ -1219,4 +1219,148 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/permissions_api_controller').default['index']>>>
     }
   }
+  'api.v1.auth.token.execute': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/login'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth').loginValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth').loginValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/token_controller').default['execute']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/token_controller').default['execute']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.auth.register_api.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/register'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth').registerValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth').registerValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/register_api_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/register_api_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.auth.forgot_password_api.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/forgot-password'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth').forgotPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth').forgotPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/forgot_password_api_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/forgot_password_api_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.auth.reset_password_api.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/reset-password'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth').resetPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth').resetPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/reset_password_api_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/reset_password_api_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.auth.email_verification_api.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/verify-email/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/email_verification_api_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/email_verification_api_controller').default['store']>>>
+    }
+  }
+  'api.v1.auth.accept_invitation_api.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/accept-invitation'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth').invitationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth').invitationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/accept_invitation_api_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/accept_invitation_api_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.auth.token.destroy': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/logout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/token_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/token_controller').default['destroy']>>>
+    }
+  }
+  'api.v1.auth.me.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/auth/me'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/api/me_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/api/me_controller').default['show']>>>
+    }
+  }
+  'api.v1.profile.profile_api.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/profile/api/profile_api_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/profile/api/profile_api_controller').default['show']>>>
+    }
+  }
+  'api.v1.profile.profile_api.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/profile/api/profile_api_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/profile/api/profile_api_controller').default['update']>>>
+    }
+  }
+  'api.v1.account.account_api.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/account'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').updatePasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').updatePasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account/api/account_api_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account/api/account_api_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'api.v1.account.account_api.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').deleteAccountValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').deleteAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account/api/account_api_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account/api/account_api_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
 }
