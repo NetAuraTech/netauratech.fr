@@ -37,8 +37,7 @@ type PaginationNoRouteProps = PaginationBaseProps & {
 }
 
 type PaginationProps<R extends NonNullable<LinkProps['route']>> =
-  | PaginationRouteProps<R>
-  | PaginationNoRouteProps
+  PaginationRouteProps<R> | PaginationNoRouteProps
 
 type PageItem = number | '...'
 

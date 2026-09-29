@@ -52,8 +52,8 @@
     "#prune/*": "./tooling/prune/*.js"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^8.0.0",
-    "@adonisjs/eslint-config": "^3.0.0",
+    "@adonisjs/assembler": "~8.4.0",
+    "@adonisjs/eslint-config": "^3.1.0",
     "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^2.0.0",
     "@japa/api-client": "^3.2.1",
@@ -66,8 +66,8 @@
     "@types/dompurify": "^3.0.5",
     "@types/jsdom": "^28.0.1",
     "@types/luxon": "^3.7.3",
-    "@types/node": "~24.11.0",
-    "@types/react": "^19.2.14",
+    "@types/node": "~26.2.0",
+    "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.3",
     "@types/sinon": "^21.0.0",
     "@types/three": "^0.185.4",
@@ -97,7 +97,7 @@
     "@adonisjs/shield": "^9.0.0",
     "@adonisjs/static": "^2.0.0",
     "@adonisjs/vite": "^5.1.0",
-    "@aws-sdk/client-s3": "^3.1102.0",
+    "@aws-sdk/client-s3": "^3.1106.0",
     "@aws-sdk/s3-request-presigner": "^3.1102.0",
     "@fontsource/cormorant-garamond": "^5.2.11",
     "@fontsource/fraunces": "^5.3.0",
@@ -110,17 +110,17 @@
     "@tailwindcss/vite": "^4.2.1",
     "@tuyau/core": "^1.0.0",
     "@vinejs/vine": "^4.3.0",
-    "better-sqlite3": "^12.6.2",
+    "better-sqlite3": "^13.0.3",
     "dompurify": "^3.4.13",
-    "edge.js": "^6.5.0",
+    "edge.js": "^6.5.1",
     "gsap": "^3.15.0",
     "html-to-image": "^1.11.13",
-    "ipaddr.js": "^2.4.0",
+    "ipaddr.js": "^2.5.0",
     "jsdom": "^29.0.1",
     "luxon": "^3.7.2",
     "patch-package": "^8.0.1",
     "pg": "^8.22.0",
-    "react": "^19.2.4",
+    "react": "^19.2.8",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "reflect-metadata": "^0.2.2",
@@ -139,5 +139,10 @@
       "./app/http/middleware/**/*.ts"
     ]
   },
-  "prettier": "@adonisjs/prettier-config"
+  "prettier": "@adonisjs/prettier-config",
+  "allowScripts": {
+    "@swc/core@1.15.47": true,
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.28.2": true
+  }
 }

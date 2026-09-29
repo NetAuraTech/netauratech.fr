@@ -70,8 +70,7 @@ type ButtonNoRouteProps = ButtonBaseProps & {
 }
 
 type ButtonProps<R extends NonNullable<LinkProps['route']>> =
-  | ButtonRouteProps<R>
-  | ButtonNoRouteProps
+  ButtonRouteProps<R> | ButtonNoRouteProps
 
 /**
  * Polymorphic button component that renders as a `<button>`, an Inertia

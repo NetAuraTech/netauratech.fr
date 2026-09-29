@@ -230,6 +230,42 @@ export interface ApiDefinition {
           index: typeof routes['api.v1.admin.permissions_api.index']
         }
       }
+      auth: {
+        token: {
+          execute: typeof routes['api.v1.auth.token.execute']
+          destroy: typeof routes['api.v1.auth.token.destroy']
+        }
+        registerApi: {
+          store: typeof routes['api.v1.auth.register_api.store']
+        }
+        forgotPasswordApi: {
+          store: typeof routes['api.v1.auth.forgot_password_api.store']
+        }
+        resetPasswordApi: {
+          store: typeof routes['api.v1.auth.reset_password_api.store']
+        }
+        emailVerificationApi: {
+          store: typeof routes['api.v1.auth.email_verification_api.store']
+        }
+        acceptInvitationApi: {
+          store: typeof routes['api.v1.auth.accept_invitation_api.store']
+        }
+        me: {
+          show: typeof routes['api.v1.auth.me.show']
+        }
+      }
+      profile: {
+        profileApi: {
+          show: typeof routes['api.v1.profile.profile_api.show']
+          update: typeof routes['api.v1.profile.profile_api.update']
+        }
+      }
+      account: {
+        accountApi: {
+          update: typeof routes['api.v1.account.account_api.update']
+          destroy: typeof routes['api.v1.account.account_api.destroy']
+        }
+      }
     }
   }
 }
