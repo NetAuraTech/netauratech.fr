@@ -20,7 +20,7 @@ export const FileFactory = factory
 			mimeType: mimeMap[ext],
 			extension: ext,
 			size: faker.number.int({ min: 1024, max: 10 * 1024 * 1024 }),
-			path: `cms/files/${filename}`,
+			path: `files/${filename}`,
 			disk: 'fs' as const,
 			folderId: null,
 			uploadedBy: null,

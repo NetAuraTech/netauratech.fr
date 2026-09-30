@@ -5,41 +5,39 @@ import type { StorageDisk } from '#types/file';
 /**
  * Abstraction layer over AdonisJS Drive for the CMS filesystem.
  *
- * All CMS files are stored under the `cms/` prefix to avoid colliding with
- * the `backup/` folder used by the backup system. The active disk is resolved
- * from `CMS_STORAGE_DISK` in the environment and must match one of the keys
+ * CMS files are stored under the `files/` namespace, which does not collide
+ * with the `backup/` folder used by the backup system. The active disk is
+ * resolved from `DRIVE_DISK` in the environment and must match one of the keys
  * declared in `config/drive.ts` (`local`, `s3`, or `r2`).
  *
  * This service is intentionally thin — it delegates all actual I/O to
- * AdonisJS Drive and only adds path prefixing, env-based disk resolution,
- * and silent-delete semantics.
+ * AdonisJS Drive and only adds env-based disk resolution and silent-delete
+ * semantics.
  */
 export class StorageService {
-	private readonly prefix = 'cms';
-
 	/**
 	 * Returns the configured CMS storage disk from the environment.
-	 * Falls back to `'fs'` if `CMS_STORAGE_DISK` is not set.
+	 * Falls back to `'fs'` if `DRIVE_DISK` is not set.
 	 */
 	disk(): StorageDisk {
-		return env.get('CMS_STORAGE_DISK', 'fs') as StorageDisk;
+		return env.get('DRIVE_DISK', 'fs') as StorageDisk;
 	}
 
 	/**
-	 * Builds the full storage path for a file, prefixed with `cms/`.
+	 * Builds the full storage path for a file.
 	 *
 	 * @param relativePath - Path relative to the CMS root (e.g. `files/photo.jpg`)
-	 * @returns The full storage path (e.g. `cms/files/photo.jpg`)
+	 * @returns The full storage path (e.g. `files/photo.jpg`)
 	 */
 	buildPath(relativePath: string): string {
-		return `${this.prefix}/${relativePath}`;
+		return relativePath;
 	}
 
 	/**
 	 * Uploads a buffer to the given path on the given disk.
 	 *
 	 * @param contents - File contents as a `Buffer` or `Uint8Array`
-	 * @param path - Full storage path (already prefixed via {@link buildPath})
+	 * @param path - Full storage path (already built via {@link buildPath})
 	 * @param disk - Target storage disk
 	 * @param options - Optional content type and visibility
 	 * @throws If the underlying Drive adapter fails to write the file

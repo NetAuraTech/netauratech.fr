@@ -53,10 +53,13 @@ export class ImageOptimizerService {
 	 * 5. Return the metadata and public URLs for all variants.
 	 *
 	 * @param file - The storage-location surface of the original image.
-	 * @param widths - Array of target widths to generate. Defaults to [400, 800, 1200].
+	 * @param widths - Array of target widths to generate. Defaults to [400, 800, 1200, 1600].
 	 * @returns A promise resolving to the optimization results (dimensions + variants).
 	 */
-	public async optimize(file: OptimizableFile, widths: number[] = [400, 800, 1200]): Promise<OptimizedImageResult> {
+	public async optimize(
+		file: OptimizableFile,
+		widths: number[] = [400, 800, 1200, 1600],
+	): Promise<OptimizedImageResult> {
 		const result: OptimizedImageResult = {
 			variants: {},
 		};

@@ -14,7 +14,7 @@ test.group('ListFileAltsAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/listalt_file.jpg',
+			path: 'files/listalt_file.jpg',
 			disk: 'fs',
 		});
 

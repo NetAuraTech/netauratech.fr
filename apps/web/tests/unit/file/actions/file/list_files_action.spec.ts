@@ -13,7 +13,7 @@ test.group('ListFilesAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/file1_list.jpg',
+			path: 'files/file1_list.jpg',
 			disk: 'fs',
 		});
 

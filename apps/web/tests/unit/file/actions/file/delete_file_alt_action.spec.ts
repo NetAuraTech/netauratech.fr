@@ -14,7 +14,7 @@ test.group('DeleteFileAltAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/delalt_file.jpg',
+			path: 'files/delalt_file.jpg',
 			disk: 'fs',
 		});
 

@@ -20,7 +20,7 @@ test.group('FileTransformer', (group) => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 2048,
-			path: 'cms/files/hero.jpg',
+			path: 'files/hero.jpg',
 			disk: 'fs',
 			folderId: null,
 			alts,
