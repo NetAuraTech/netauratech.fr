@@ -130,7 +130,7 @@ export default function FilesIndexPage(props: Props) {
 									{t('search.filter')}
 								</Button>
 							</Form>
-							<div className="flex border border-edge rounded-lg overflow-hidden">
+							<div className="flex border border-ink-inverted/10 rounded-lg overflow-hidden">
 								<Button type="button" onClick={toggleViewMode}>
 									{viewMode === 'grid' ? <Icon name="LayoutGrid" /> : <Icon name="List" />}
 								</Button>
@@ -159,16 +159,16 @@ export default function FilesIndexPage(props: Props) {
 									{files.data.map((file) => (
 										<button
 											key={`file-${file.id}`}
-											className={`group relative aspect-square rounded-xl border overflow-hidden transition-all ${selectedId === file.id ? 'border-primary ring-2 ring-primary-light' : 'border-edge hover:border-primary-soft'}`}
+											className={`group relative aspect-square rounded-xl border overflow-hidden transition-all ${selectedId === file.id ? 'border-primary ring-2 ring-primary-light' : 'border-ink-inverted/20 hover:border-primary-soft'}`}
 											onClick={() => setSelectedId(selectedId === file.id ? null : file.id)}
 										>
 											{isImage(file.mimeType) ? (
 												<img src={file.url} alt={file.originalName} className="w-full h-full object-cover" />
 											) : (
-												<div className="w-full h-full flex flex-col items-center justify-center bg-sunken gap-1 text-ink-subtle">
+												<div className="w-full h-full flex flex-col items-center justify-center bg-white/10 gap-1 text-ink-inverted-subtle">
 													<Icon name="FileText" size={64} />
-													<span className="font-medium text-ink truncate max-w-48">{file.originalName}</span>
-													<span className="text-xs text-ink-subtle">{humanSize(file.size)}</span>
+													<span className="font-medium text-ink-inverted truncate max-w-48">{file.originalName}</span>
+													<span className="text-xs text-ink-inverted-subtle">{humanSize(file.size)}</span>
 												</div>
 											)}
 											<div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
@@ -197,14 +197,16 @@ export default function FilesIndexPage(props: Props) {
 														<img
 															src={file.url}
 															alt={file.originalName}
-															className="w-24 h-24 rounded object-cover border border-edge shrink-0"
+															className="w-24 h-24 rounded object-cover border border-ink-inverted/20 shrink-0"
 														/>
 													) : (
-														<div className="w-24 h-24 rounded bg-sunken border border-egde flex items-center justify-center shrink-0 text-ink-subtle">
+														<div className="w-24 h-24 rounded bg-white/10 border border-ink-inverted/20 flex items-center justify-center shrink-0 text-ink-inverted-subtle">
 															<Icon name="FileText" size={32} />
 														</div>
 													)}
-													<span className="text-xs font-medium text-ink truncate max-w-48">{file.originalName}</span>
+													<span className="text-xs font-medium text-ink-inverted truncate max-w-48">
+														{file.originalName}
+													</span>
 												</Table.Cell>
 												<Table.Cell data-label={t('type')}>{file.mimeType}</Table.Cell>
 												<Table.Cell data-label={t('size')}>{humanSize(file.size)}</Table.Cell>
@@ -245,7 +247,7 @@ export default function FilesIndexPage(props: Props) {
 							)}
 						</div>
 						{selectedFile && (
-							<div className="border-l border-l-edge bg-sunken p-4 w-90">
+							<div className="border-l border-l-ink-inverted/10 bg-white/10 p-4 w-90">
 								<Card padding="p-0">
 									{isImage(selectedFile.mimeType) ? (
 										<img
@@ -254,14 +256,14 @@ export default function FilesIndexPage(props: Props) {
 											className="w-full aspect-video object-cover"
 										/>
 									) : (
-										<div className="w-full aspect-video bg-sunken flex items-center justify-center text-ink-subtle">
+										<div className="w-full aspect-video bg-white/10 flex items-center justify-center text-ink-inverted-subtle">
 											<Icon name="FileText" size={64} />
 										</div>
 									)}
 									<div className="p-3 space-y-2">
-										<p className="text-xs font-medium text-ink truncate">{selectedFile.originalName}</p>
-										<p className="text-xs text-ink-muted">{humanSize(selectedFile.size)}</p>
-										<p className="text-xs font-mono text-ink-subtle break-all bg-sunken px-2 py-1 rounded">
+										<p className="text-xs font-medium text-ink-inverted truncate">{selectedFile.originalName}</p>
+										<p className="text-xs text-ink-inverted-muted">{humanSize(selectedFile.size)}</p>
+										<p className="text-xs font-mono text-ink-inverted-subtle break-all bg-white/10 px-2 py-1 rounded">
 											ID: {selectedFile.id}
 										</p>
 										<div className="pt-1 flex flex-col gap-1">
@@ -299,7 +301,7 @@ export default function FilesIndexPage(props: Props) {
 													</Form>
 												</CanAccess>
 											</div>
-											<div className="pt-2 border-t border-edge">
+											<div className="pt-2 border-t border-ink-inverted/10">
 												<FileAltEditor file={selectedFile} translations={translations} />
 											</div>
 										</div>

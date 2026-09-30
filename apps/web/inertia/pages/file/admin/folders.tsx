@@ -46,7 +46,7 @@ export default function FileFoldersPage(props: PageProps) {
 						<CreateFolderForm parentId={null} label={t('name.root')} translations={translations} />
 					</CanAccess>
 					{roots.length === 0 ? (
-						<div className="text-center py-16 rounded-xl border border-dashed border-edge">
+						<div className="text-center py-16 rounded-xl border border-dashed border-ink-inverted/20">
 							<Paragraph variant="muted">{t('empty.value')}</Paragraph>
 							<Paragraph variant="subtle">{t('empty.help')}</Paragraph>
 						</div>
@@ -90,13 +90,13 @@ function FolderNode(props: FolderNodeProps) {
 
 	return (
 		<div className={indentClass[depth]}>
-			<div className="flex flex-col md:flex-row items-center gap-2 justify-between rounded-xl border border-edge bg-canvas px-4 py-3 hover:border-primary-soft transition-colors">
+			<div className="flex flex-col md:flex-row items-center gap-2 justify-between rounded-xl border border-ink-inverted/10 bg-white/5 px-4 py-3 hover:border-primary-soft transition-colors">
 				<div className="flex items-center gap-1">
 					<button
 						type="button"
 						onClick={() => setExpanded(!expanded)}
 						className={`w-5 h-5 flex items-center justify-center rounded transition-colors shrink-0 ${
-							hasChildren ? 'text-ink-muted hover:text-ink' : 'text-transparent cursor-default'
+							hasChildren ? 'text-ink-inverted-muted hover:text-ink-inverted' : 'text-transparent cursor-default'
 						}`}
 						aria-label={expanded ? 'Collapse' : 'Expand'}
 						disabled={!hasChildren}
@@ -125,12 +125,12 @@ function FolderNode(props: FolderNodeProps) {
 							)}
 						</Form>
 					) : (
-						<span className="text-sm font-medium text-ink flex-1 min-w-0 truncate">{folder.name}</span>
+						<span className="text-sm font-medium text-ink-inverted flex-1 min-w-0 truncate">{folder.name}</span>
 					)}
 				</div>
 				<div className="flex items-center gap-1">
 					{hasChildren && (
-						<span className="text-xs text-ink-subtle bg-sunken border border-edge px-1.5 py-0.5 rounded-full shrink-0">
+						<span className="text-xs text-ink-inverted-subtle bg-white/10 border border-ink-inverted/20 px-1.5 py-0.5 rounded-full shrink-0">
 							{folder.children?.length}
 						</span>
 					)}
@@ -236,7 +236,7 @@ function CreateFolderForm(props: CreateFolderFormProps) {
 						<Button type="submit" variant="primary" disabled={processing} fitContent>
 							{t('actions.create')}
 						</Button>
-						{parentId !== null && <p className="text-xs text-ink-subtle mt-1.5">{t('help')}</p>}
+						{parentId !== null && <p className="text-xs text-ink-inverted-subtle mt-1.5">{t('help')}</p>}
 					</>
 				)}
 			</Form>

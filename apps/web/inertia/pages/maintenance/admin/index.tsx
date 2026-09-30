@@ -114,7 +114,7 @@ export default function MaintenancePage(props: PageProps) {
 									<Label label={config.enabled ? t('toggle.is_enabled') : t('toggle.is_disabled')} htmlFor="enabled" />
 								</div>
 
-								<hr className="border-edge" />
+								<hr className="border-ink-inverted/10" />
 
 								<Field
 									label={t('message.label')}
@@ -141,7 +141,7 @@ export default function MaintenancePage(props: PageProps) {
 									{t('allowed_ips.help')}
 								</Paragraph>
 
-								<hr className="border-edge" />
+								<hr className="border-ink-inverted/10" />
 
 								<Heading level={4}>{t('schedule.title')}</Heading>
 								<Paragraph variant="muted" spacing="xs">

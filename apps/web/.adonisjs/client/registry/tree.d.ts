@@ -85,6 +85,15 @@ export interface ApiDefinition {
     }
   }
   core: {
+    projects: {
+      render: typeof routes['core.projects.render']
+      show: {
+        render: typeof routes['core.projects.show.render']
+      }
+    }
+    services: {
+      render: typeof routes['core.services.render']
+    }
     sitemap: {
       show: typeof routes['core.sitemap.show']
     }

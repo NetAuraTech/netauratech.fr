@@ -222,6 +222,24 @@ const routes = {
     tokens: [{"old":"/admin/settings/maintenance/toggle","type":0,"val":"admin","end":""},{"old":"/admin/settings/maintenance/toggle","type":0,"val":"settings","end":""},{"old":"/admin/settings/maintenance/toggle","type":0,"val":"maintenance","end":""},{"old":"/admin/settings/maintenance/toggle","type":0,"val":"toggle","end":""}],
     types: placeholder as Registry['admin.core.maintenance.toggle']['types'],
   },
+  'core.projects.render': {
+    methods: ["GET","HEAD"],
+    pattern: '/projets',
+    tokens: [{"old":"/projets","type":0,"val":"projets","end":""}],
+    types: placeholder as Registry['core.projects.render']['types'],
+  },
+  'core.projects.show.render': {
+    methods: ["GET","HEAD"],
+    pattern: '/projets/:slug',
+    tokens: [{"old":"/projets/:slug","type":0,"val":"projets","end":""},{"old":"/projets/:slug","type":1,"val":"slug","end":""}],
+    types: placeholder as Registry['core.projects.show.render']['types'],
+  },
+  'core.services.render': {
+    methods: ["GET","HEAD"],
+    pattern: '/services',
+    tokens: [{"old":"/services","type":0,"val":"services","end":""}],
+    types: placeholder as Registry['core.services.render']['types'],
+  },
   'core.sitemap.show': {
     methods: ["GET","HEAD"],
     pattern: '/sitemap.xml',

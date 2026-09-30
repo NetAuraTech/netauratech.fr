@@ -3,13 +3,13 @@ import { getFontSizeClass, type FontSize, type ParagraphSpacing, type ParagraphV
 import type { ReactNode } from 'react';
 
 const paragraph = tv({
-	base: '',
+	base: 'text-ink-inverted/70',
 	variants: {
 		variant: {
-			ink: 'text-ink',
+			ink: 'text-ink-inverted/80',
 			'ink-inverted': 'text-ink-inverted',
-			muted: 'text-ink-muted',
-			subtle: 'text-ink-subtle',
+			muted: 'text-ink-inverted-muted',
+			subtle: 'text-ink-inverted-subtle',
 			error: 'text-danger',
 			'primary-light': 'text-primary-light',
 			'primary-soft': 'text-primary-soft',
@@ -30,10 +30,15 @@ const paragraph = tv({
 			base: '[&:not(:first-child)]:mt-4',
 			xl: '[&:not(:first-child)]:mt-6',
 		},
+		uppercase: {
+			true: 'uppercase',
+			false: '',
+		},
 	},
 	defaultVariants: {
 		variant: 'ink',
 		spacing: 'base',
+		uppercase: false,
 	},
 });
 
@@ -44,9 +49,9 @@ interface ParagraphProps {
 	/**
 	 * Text color variant.
 	 *
-	 * - `'ink'` — primary text color (`text-ink`), default.
-	 * - `'muted'` — secondary text color (`text-ink-muted`).
-	 * - `'subtle'` — tertiary text color (`text-ink-subtle`).
+	 * - `'ink'` — primary body text (`text-ink-inverted/80`), default.
+	 * - `'muted'` — secondary text color (`text-ink-inverted-muted`).
+	 * - `'subtle'` — tertiary text color (`text-ink-inverted-subtle`).
 	 * - `'error'` — danger text color (`text-danger`).
 	 * - any other {@link ParagraphVariants} value for semantic brand colors.
 	 */
@@ -61,6 +66,8 @@ interface ParagraphProps {
 	 * - `'xl'` — `mt-6`.
 	 */
 	spacing?: ParagraphSpacing;
+	/** Renders the text in uppercase. */
+	uppercase?: boolean;
 	/** Additional Tailwind classes. */
 	className?: string;
 }
@@ -81,10 +88,10 @@ export type ParagraphVariant = NonNullable<VariantProps<typeof paragraph>['varia
  * <Paragraph variant="error">Validation failed.</Paragraph>
  */
 export function Paragraph(props: ParagraphProps) {
-	const { children, variant = 'ink', fs = 'base', spacing = 'base', className = 'text-balance leading-7' } = props;
+	const { children, variant = 'ink', fs = 'base', spacing = 'base', uppercase, className } = props;
 
 	const fontSizeClass = getFontSizeClass(fs);
-	const classNames = cn(paragraph({ variant, spacing }), fontSizeClass, className);
+	const classNames = cn(paragraph({ variant, spacing, uppercase }), fontSizeClass, 'text-balance leading-7', className);
 
 	return <p className={classNames}>{children}</p>;
 }

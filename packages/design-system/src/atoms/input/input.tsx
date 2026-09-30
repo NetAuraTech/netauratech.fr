@@ -24,8 +24,8 @@ interface InputProps {
  * Base text input component.
  *
  * Applies the `input` utility class from the design system, which covers
- * background (`bg-sunken`), text color (`text-ink`), border (`border-edge`),
- * placeholder color (`text-ink-subtle`), disabled state, and focus ring.
+ * the transparent field on the near-black canvas, the full hairline border,
+ * light text, placeholder color, disabled state, and the accent focus border.
  *
  * The `name` prop is used for both `name` and `id` so that a sibling
  * `<Label>` with the matching `htmlFor` associates correctly.

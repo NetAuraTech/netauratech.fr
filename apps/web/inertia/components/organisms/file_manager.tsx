@@ -145,7 +145,7 @@ export function FileManager(props: FileManagerProps) {
 							{files.data.map((file) => (
 								<button
 									key={`file-${file.id}`}
-									className={`group relative aspect-square rounded-xl border overflow-hidden transition-all border-edge hover:border-primary-soft`}
+									className={`group relative aspect-square rounded-xl border overflow-hidden transition-all border-ink-inverted/20 hover:border-primary-soft`}
 									onClick={() => handleClick(file)}
 								>
 									<img src={file.url} alt={file.originalName} className="w-full h-full object-cover" />

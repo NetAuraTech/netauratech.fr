@@ -48,6 +48,7 @@
 	--color-ink-inverted-subtle: oklch(0.65 0.01 263);
 
 	--color-canvas: oklch(0.15 0.012 292);
+	--color-noir: #050505;
 	--color-surface: oklch(0.9322 0.0226 87.15);
 	--color-sunken: oklch(0.94 0.007 263);
 	--color-overlay: oklch(0.995 0.002 263);
@@ -64,6 +65,29 @@
 	--color-danger-soft: oklch(0.93 0.04 25);
 	--color-info: oklch(0.55 0.12 240);
 	--color-info-soft: oklch(0.93 0.03 240);
+
+	--animate-marquee: marquee 28s linear infinite;
+	--animate-fade-in: fade-in 0.3s ease-out;
+
+	@keyframes marquee {
+		from {
+			transform: translateX(0);
+		}
+
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
 }
 
 @layer base {
@@ -72,11 +96,7 @@
 	}
 
 	body {
-		@apply font-jost bg-surface;
-	}
-
-	#page-wrapper {
-		@apply relative flex flex-col w-full min-h-screen bg-canvas text-ink;
+		@apply font-jost bg-canvas text-ink-inverted;
 	}
 
 	a {
@@ -93,120 +113,15 @@
 	}
 
 	::-webkit-scrollbar-track {
-		@apply bg-sunken;
+		@apply bg-transparent;
 	}
 
 	::-webkit-scrollbar-thumb {
-		@apply bg-edge rounded;
+		@apply bg-ink-inverted/20 rounded;
 	}
 
 	::-webkit-scrollbar-thumb:hover {
-		@apply bg-edge-strong;
-	}
-
-	::view-transition-old(root),
-	::view-transition-new(root) {
-		animation: none;
-		mix-blend-mode: normal;
-	}
-
-	.reveal {
-		@apply opacity-0 translate-y-6 transition-transform duration-300;
-
-		&.in {
-			@apply opacity-100 translate-y-0;
-		}
-	}
-
-	#site {
-		@apply opacity-0;
-		transition: opacity 0.6s ease;
-
-		&.visible {
-			@apply opacity-100;
-		}
-	}
-
-	#intro {
-		clip-path: circle(150% at 50% 50%);
-
-		&.exit {
-			animation: circOut 1.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-			@apply pointer-events-none;
-		}
-	}
-
-	@keyframes circOut {
-		from {
-			clip-path: circle(150% at 50% 50%);
-		}
-		to {
-			clip-path: circle(0% at 50% 50%);
-		}
-	}
-
-	@property --len {
-		syntax: '<number>';
-		inherits: true;
-		initial-value: 0;
-	}
-
-	#svg_logo {
-		image {
-			@apply transition-opacity opacity-0;
-			animation: colorize 1800ms ease-in-out forwards;
-			animation-delay: 1800ms;
-		}
-
-		path {
-			@apply transition-none fill-transparent stroke-black stroke-1 opacity-100;
-			stroke-linecap: round;
-			stroke-linejoin: round;
-			stroke-dasharray: var(--len);
-			stroke-dashoffset: var(--len);
-			animation: draw 4800ms ease-in-out forwards;
-		}
-	}
-
-	.nameIn {
-		opacity: 0.0001;
-		animation: nameReveal 0.9s ease forwards 2.2s;
-	}
-
-	@keyframes nameReveal {
-		from {
-			opacity: 0.0001;
-			transform: translateY(10px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
-	}
-
-	@keyframes draw {
-		0% {
-			fill: transparent;
-		}
-		40% {
-			fill: transparent;
-		}
-		80% {
-			fill: black;
-		}
-		100% {
-			fill: black;
-			stroke-dashoffset: 0;
-		}
-	}
-
-	@keyframes colorize {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
+		@apply bg-ink-inverted/30;
 	}
 
 	main {
@@ -219,34 +134,38 @@
 }
 
 @layer components {
+	/* Content container of the back-office and auth screens: a hairline
+	   outlined panel floating on the near-black canvas. */
+	.card {
+		@apply flex flex-col rounded-2xl border border-ink-inverted/10 bg-white/5 overflow-hidden;
+	}
+
 	.header {
-		@apply bg-surface z-50 top-0 fixed w-full flex justify-between items-center shadow p-2;
+		@apply z-50 fixed top-0 w-full flex justify-between items-center bg-surface p-2 shadow;
 
 		@variant md {
 			@apply px-20 py-3;
 		}
 
 		.header__logo img {
-			@apply w-15 h-auto mr-4;
+			@apply mr-4 h-auto w-15;
 		}
 
 		.header__nav {
-			@apply fixed p-4 grid gap-3 shadow-2xl transition-all duration-500
-      top-16 -right-75 bottom-0 w-3xs h-max
-      opacity-0 rounded-bl-lg items-center bg-surface;
+			@apply fixed top-16 -right-75 bottom-0 h-max w-3xs overflow-hidden rounded-bl-lg bg-surface p-4 opacity-0 shadow-2xl transition-all duration-500 grid gap-3;
 
 			&[aria-expanded='true'] {
 				@apply right-0 opacity-100;
 			}
 
 			@variant md {
-				@apply relative flex gap-6 w-auto h-auto opacity-100 top-0 right-0 bg-transparent;
+				@apply relative top-0 right-0 h-auto w-auto bg-transparent opacity-100 flex gap-6;
 				box-shadow: none;
 			}
 		}
 
 		.header__burger {
-			@apply overflow-hidden bg-transparent cursor-pointer;
+			@apply cursor-pointer overflow-hidden bg-transparent;
 
 			&[aria-expanded='true'] svg {
 				translate: 3px 0;
@@ -275,55 +194,50 @@
 		}
 	}
 
-	.card {
-		@apply flex flex-col rounded-2xl bg-surface shadow-2xl overflow-hidden;
-	}
+	/* Dark variant of the shared header, used by the front layout. */
+	.header--dark {
+		@apply border-b border-ink-inverted/10 bg-canvas/70 text-ink-inverted shadow-none backdrop-blur-sm;
 
-	.textarea {
-		@apply input min-h-30;
-		field-sizing: content;
-	}
+		.header__logo {
+			@apply text-ink-inverted;
+		}
 
-	.select {
-		@apply input;
+		.header__burger {
+			@apply text-ink-inverted;
+		}
 
-		option {
-			@apply p-2;
+		.header__nav {
+			@apply bg-canvas text-ink-inverted;
 
-			&:checked {
-				@apply bg-secondary-light;
-			}
-
-			&::checkmark {
-				display: none;
+			@variant md {
+				@apply bg-transparent;
 			}
 		}
 	}
 
-	.checkbox {
-		aspect-ratio: 1;
-		@apply input cursor-pointer w-5 accent-secondary-deep rounded-lg;
-
-		& + label {
-			@apply cursor-pointer;
-		}
+	/* Letter hover base — each char holds two stacked copies for the roll, the
+	   mask clips the roll to a single line (see use_button_text). */
+	.roll-letter {
+		display: inline-block;
+		position: relative;
 	}
 
-	.button {
-		@apply flex items-center justify-center font-bold transition-colors duration-300
-    cursor-pointer rounded-lg py-3 px-8 gap-3;
+	.roll-letter > span:last-child {
+		position: absolute;
+		bottom: 100%;
+		left: 0;
 	}
 
 	.admin {
 		--sidebar-width: 350px;
 		--main-width: calc(100% - var(--sidebar-width));
 
-		@apply flex min-h-screen bg-canvas text-ink;
+		@apply flex min-h-screen bg-canvas text-ink-inverted;
 
 		.sidebar {
 			@apply fixed top-0 left-0 bottom-0 z-50 transition-transform
       w-(--sidebar-width) p-4 flex flex-col gap-3 mt-18
-      -translate-x-full bg-surface border-r-2 border-edge;
+      -translate-x-full bg-canvas border-r border-ink-inverted/10;
 
 			&[aria-expanded='true'] {
 				@apply translate-x-0;
@@ -345,23 +259,60 @@
 }
 
 @utility input {
-	@apply bg-sunken text-ink p-2 rounded-lg border border-solid border-edge;
+	@apply w-full border border-ink-inverted/30 bg-transparent px-4 py-2.5 font-news text-base text-ink-inverted transition-colors;
 
 	&::placeholder {
-		@apply text-ink-subtle;
+		@apply text-ink-inverted-subtle;
 	}
 
 	&:disabled {
-		@apply text-ink-subtle opacity-60 cursor-not-allowed;
+		@apply cursor-not-allowed opacity-50;
 	}
 
 	&:focus-visible {
 		@apply border-primary outline-none;
-		box-shadow: 0 0 0 3px oklch(0.759 0.029 263 / 0.35);
+		box-shadow: none;
+	}
+}
 
-		@variant dark {
-			box-shadow: 0 0 0 3px oklch(0.345 0.047 264 / 0.3);
+@utility button {
+	@apply inline-flex cursor-pointer items-center justify-center gap-3 border border-ink-inverted/40 px-7 py-3.5 font-news text-xs font-bold uppercase tracking-[0.18em] text-ink-inverted transition-colors;
+}
+
+@utility textarea {
+	@apply input min-h-30;
+	field-sizing: content;
+}
+
+@utility select {
+	@apply input appearance-none pr-10;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23EDEBE2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-position: right 0.75rem center;
+	background-size: 1.125rem;
+	background-repeat: no-repeat;
+
+	& > option {
+		@apply p-2 text-ink-inverted;
+		background-color: #0b0b0d;
+
+		&:checked,
+		&:hover,
+		&:focus {
+			@apply bg-primary-deep text-ink-inverted;
 		}
+
+		&::checkmark {
+			display: none;
+		}
+	}
+}
+
+@utility checkbox {
+	aspect-ratio: 1;
+	@apply h-4 w-4 shrink-0 cursor-pointer accent-primary;
+
+	& + label {
+		@apply cursor-pointer;
 	}
 }
 
@@ -405,14 +356,14 @@
 
 	tbody {
 		tr {
-			@apply block mb-6 border border-edge rounded-lg p-4;
+			@apply block mb-6 border border-ink-inverted/15 bg-white/5 p-4;
 
 			@variant lg {
-				@apply table-row mb-0 border-0 border-b border-edge rounded-none p-0;
+				@apply table-row mb-0 border-0 border-b border-ink-inverted/15 bg-transparent p-0;
 			}
 
 			&:last-child {
-				@apply border border-edge;
+				@apply border border-ink-inverted/15;
 
 				@variant lg {
 					@apply border-0;

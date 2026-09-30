@@ -22,7 +22,7 @@ const LEVELS = ['debug', 'info', 'warn', 'error', 'fatal'] as const;
 const CATEGORIES = ['system', 'security', 'business', 'auth', 'api', 'database', 'performance'] as const;
 
 const LEVEL_BADGE_CLASSES: Record<string, string> = {
-	debug: 'text-ink-muted border-ink-muted',
+	debug: 'text-ink-inverted-muted border-ink-muted',
 	info: 'text-secondary border-secondary bg-secondary-light/20',
 	warn: 'text-warning border-warning bg-warning-soft',
 	error: 'text-danger border-danger bg-danger-soft',
@@ -152,7 +152,7 @@ export default function LogsIndexPage(props: PageProps) {
 										</span>
 									</Table.Cell>
 									<Table.Cell data-label={t('columns.category')}>
-										<span className="text-ink-muted">{t(`category.${entry.category}` as any)}</span>
+										<span className="text-ink-inverted-muted">{t(`category.${entry.category}` as any)}</span>
 									</Table.Cell>
 									<Table.Cell data-label={t('columns.message')}>
 										<span className="break-all">{entry.message}</span>
@@ -172,7 +172,7 @@ export default function LogsIndexPage(props: PageProps) {
 													<summary className="cursor-pointer text-secondary text-left lg:text-right">
 														{t('context.view')}
 													</summary>
-													<pre className="mt-2 max-w-md overflow-x-auto text-left text-xs text-ink-muted">
+													<pre className="mt-2 max-w-md overflow-x-auto text-left text-xs text-ink-inverted-muted">
 														{JSON.stringify(
 															{
 																...(entry.ip ? { ip: entry.ip } : {}),
@@ -187,7 +187,7 @@ export default function LogsIndexPage(props: PageProps) {
 													</pre>
 												</details>
 											) : (
-												<span className="text-ink-muted">{t('context.empty')}</span>
+												<span className="text-ink-inverted-muted">{t('context.empty')}</span>
 											)}
 										</div>
 									</Table.Cell>

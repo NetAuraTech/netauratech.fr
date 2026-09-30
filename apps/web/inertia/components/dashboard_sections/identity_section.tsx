@@ -30,7 +30,7 @@ function IdentityStatCard({ stats, translations }: DashboardSectionCardProps) {
 				{identity.usersByRole.length > 0 && (
 					<div className="mt-4 flex flex-wrap gap-2 text-sm">
 						{identity.usersByRole.map((role) => (
-							<span key={role.name ?? 'no-role'} className="text-ink-muted">
+							<span key={role.name ?? 'no-role'} className="text-ink-inverted-muted">
 								{`${role.count} ${role.name ?? t('cards.no_role')}`}
 							</span>
 						))}

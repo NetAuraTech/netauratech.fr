@@ -21,6 +21,19 @@ import { controllers } from '#generated/controllers';
 import { middleware } from '#start/kernel';
 import { maintenanceMiddleware } from '#transport/core/maintenance';
 
+// Content-driven front pages. The route collector picks up every parameter-free
+// `core.*.render` GET route for the sitemap, so `core.projects.render` and
+// `core.services.render` are listed automatically; the parameterised
+// `core.projects.show.render` route is enumerated by the project sitemap
+// contributor instead (see `start/sitemap.ts`).
+router
+	.group(() => {
+		router.get('/projets', [controllers.core.front.Projects, 'render']).as('core.projects.render');
+		router.get('/projets/:slug', [controllers.core.front.Project, 'render']).as('core.projects.show.render');
+		router.get('/services', [controllers.core.front.Services, 'render']).as('core.services.render');
+	})
+	.use(maintenanceMiddleware);
+
 router
 	.group(() => {
 		router.get('/sitemap.xml', [controllers.core.front.Sitemap, 'show']).as('core.sitemap.show');

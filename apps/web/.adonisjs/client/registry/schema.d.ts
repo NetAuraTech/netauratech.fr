@@ -439,6 +439,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/admin/maintenance_controller').default['toggle']>>>
     }
   }
+  'core.projects.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
+    }
+  }
+  'core.projects.show.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets/:slug'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { slug: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
+    }
+  }
+  'core.services.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/services'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
+    }
+  }
   'core.sitemap.show': {
     methods: ["GET","HEAD"]
     pattern: '/sitemap.xml'

@@ -1,7 +1,7 @@
 import { cn, tv } from 'tailwind-variants';
 
 const labelStyles = tv({
-	base: 'text-ink font-bold',
+	base: 'text-ink-inverted font-bold',
 });
 
 interface LabelProps {

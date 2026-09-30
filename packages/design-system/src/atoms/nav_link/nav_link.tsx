@@ -7,16 +7,18 @@ const navLink = tv({
 	base: '',
 	variants: {
 		variant: {
-			link: 'text-secondary hover:text-secondary-deep',
-			nav: 'uppercase text-xs text-ink current:text-secondary hover:text-secondary',
+			link: 'text-primary-soft hover:text-primary-light',
+			nav: 'uppercase text-xs text-ink-inverted-muted current:text-primary-soft hover:text-primary-soft',
 			setting_nav:
-				'px-4 py-2.5 border-b-2 -mb-px border-transparent current:border-secondary hover:border-secondary text-ink-muted current:text-secondary hover:text-secondary cursor-pointer',
+				'px-4 py-2.5 border-b-2 -mb-px border-transparent current:border-primary-soft hover:border-primary-soft text-ink-inverted-muted current:text-primary-soft hover:text-primary-soft cursor-pointer',
 			pagination:
 				'button font-normal hover:bg-primary hover:text-ink-inverted current:bg-primary current:text-ink-inverted px-2 py-1',
 			admin_nav:
 				'flex items-center gap-2 p-3 rounded hover:text-ink-inverted hover:bg-primary-deep current:text-ink-inverted current:bg-primary-deep',
 			external: 'text-secondary hover:text-secondary-light font-semibold font-cormorant tracking-wide italic text-lg',
 			footer: 'text-ink-inverted hover:text-primary-light text-sm flex items-center',
+			front:
+				'text-ink-inverted/70 hover:text-ink-inverted current:text-primary-soft text-[11px] uppercase tracking-[0.2em]',
 		},
 		state: {
 			active: '',

@@ -96,7 +96,7 @@ export default function RolesShowPage(props: PageProps) {
 										</Badge>
 									)}
 								</span>
-								<span className="text-xs text-ink-muted">{t(`roles.${role.slug}.description` as any)}</span>
+								<span className="text-xs text-ink-inverted-muted">{t(`roles.${role.slug}.description` as any)}</span>
 							</div>
 						</div>
 						<div className="grid gap-3">

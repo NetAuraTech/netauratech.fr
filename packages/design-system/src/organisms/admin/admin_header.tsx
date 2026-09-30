@@ -1,7 +1,7 @@
 import { cn, tv } from 'tailwind-variants';
 
 const adminHeader = tv({
-	base: 'flex items-center justify-between p-4 bg-surface border-b-2 border-edge sticky top-0 z-50',
+	base: 'flex items-center justify-between p-4 bg-canvas border-b border-ink-inverted/10 sticky top-0 z-50',
 });
 
 interface AdminHeaderProps {

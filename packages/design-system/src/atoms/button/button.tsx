@@ -1,24 +1,28 @@
 import { Link } from '@inertiajs/react';
+import { useRef } from 'react';
 import { cn, tv, type VariantProps } from 'tailwind-variants';
+import { useButtonText } from './use_button_text';
 import type { ReactNode } from 'react';
 
 const button = tv({
 	base: 'button',
 	variants: {
 		variant: {
-			primary: 'bg-primary text-ink-inverted hover:bg-primary-deep',
-			secondary: 'bg-secondary text-ink-inverted hover:bg-secondary-deep',
-			danger: 'bg-danger text-ink-inverted hover:opacity-90',
-			success: 'bg-success text-ink-inverted hover:opacity-90',
+			primary: 'hover:border-primary-soft hover:bg-primary-soft/10',
+			secondary: 'border-primary-soft bg-primary-soft/10 text-primary-soft hover:bg-primary-soft/20',
 			outline: 'border-2 border-solid border-primary text-primary hover:bg-primary hover:text-ink-inverted',
-			social: 'bg-surface border border-solid border-edge hover:border-edge-strong shadow text-ink',
-			icon: 'hover:bg-primary-soft hover:text-ink-inverted p-2',
-			icon_success: 'bg-success-soft text-success hover:bg-success hover:text-ink-inverted p-2',
-			icon_danger: 'bg-danger-soft text-danger hover:bg-danger hover:text-ink-inverted p-2',
-			icon_warning: 'bg-warning-soft text-warning hover:bg-warning hover:text-ink-inverted p-2',
-			icon_info: 'bg-info-soft text-info hover:bg-info hover:text-ink-inverted p-2',
-			link_muted: 'text-ink-muted hover:text-primary p-0 font-normal',
-			link_secondary: 'text-secondary hover:text-secondary-light p-0',
+			danger: 'border-danger/40 text-danger hover:border-danger hover:bg-danger/10',
+			success: 'border-success/40 text-success hover:border-success hover:bg-success/10',
+			social: 'border-ink-inverted/25 bg-white/5 text-ink-inverted hover:bg-white/10',
+			icon: 'p-3 hover:border-primary-soft hover:text-primary-soft',
+			icon_success: 'bg-success/15 text-success hover:bg-success/25',
+			icon_danger: 'bg-danger/15 text-danger hover:bg-danger/25',
+			icon_warning: 'bg-warning/15 text-warning hover:bg-warning/25',
+			icon_info: 'bg-info/15 text-info hover:bg-info/25',
+			link_muted:
+				'border-0 p-0 font-normal text-sm normal-case tracking-normal text-ink-inverted-muted hover:text-ink-inverted',
+			link_secondary:
+				'border-0 p-0 font-normal text-sm normal-case tracking-normal text-primary-soft hover:text-primary-light',
 		},
 		state: {
 			active: '',
@@ -50,14 +54,13 @@ interface ButtonProps {
 	/**
 	 * Visual variant.
 	 *
-	 * - `primary` — filled primary color, default CTA.
-	 * - `secondary` — filled secondary color, secondary CTA.
-	 * - `danger` — filled danger color, destructive actions.
-	 * - `success` — filled success color, confirmations.
-	 * - `outline` — transparent with a primary border.
-	 * - `social` — surface background with a subtle border, for OAuth buttons.
+	 * - `primary` — hairline border that lights up with the accent on hover, default CTA.
+	 * - `secondary` — accent-tinted border and fill, secondary CTA.
+	 * - `outline` — solid accent border, inverted on hover.
+	 * - `danger` / `success` — hairline semantic border, tinted on hover.
+	 * - `social` — subtle surface fill with a hairline border, for OAuth buttons.
 	 * - `icon` — no background, hover text only, square padding.
-	 * - `icon_danger` / `icon_warning` / `icon_info` — soft-background icon buttons.
+	 * - `icon_danger` / `icon_warning` / `icon_info` — tinted icon buttons.
 	 *
 	 * Defaults to `'primary'`.
 	 */
@@ -101,6 +104,9 @@ interface ButtonProps {
  * destination URL is injected by the caller — the component never resolves
  * routes itself.
  *
+ * Text-only labels carry the letter roll hover effect (letters slide down,
+ * staggered); buttons with icon children are left untouched.
+ *
  * @example
  * // Standard submit button
  * <Button type="submit" loading={processing}>Save</Button>
@@ -131,6 +137,9 @@ export function Button(props: ButtonProps) {
 		className,
 	} = props;
 
+	const buttonRef = useRef<HTMLElement>(null);
+	useButtonText(buttonRef, variant === 'secondary');
+
 	const state = loading || disabled ? 'disabled' : 'active';
 	const size = fitContent ? 'fit' : 'full';
 	const classNames = cn(button({ variant, state, size }), className);
@@ -147,21 +156,31 @@ export function Button(props: ButtonProps) {
 					/>
 				</svg>
 			)}
-			{children}
+			<span data-roll className="inline-block overflow-hidden whitespace-nowrap">
+				{children}
+			</span>
 		</>
 	);
 
 	if (href) {
 		if (external) {
 			return (
-				<a href={href} className={classNames} title={title} onClick={onClick}>
+				<a
+					ref={(el) => {
+						buttonRef.current = el;
+					}}
+					href={href}
+					className={classNames}
+					title={title}
+					onClick={onClick}
+				>
 					{content}
 				</a>
 			);
 		}
 
 		return (
-			<Link href={href} className={classNames} onClick={onClick} title={title}>
+			<Link ref={buttonRef} href={href} className={classNames} onClick={onClick} title={title}>
 				{content}
 			</Link>
 		);
@@ -169,6 +188,9 @@ export function Button(props: ButtonProps) {
 
 	return (
 		<button
+			ref={(el) => {
+				buttonRef.current = el;
+			}}
 			disabled={loading || disabled}
 			type={type}
 			onClick={onClick}

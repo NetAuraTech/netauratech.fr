@@ -50,8 +50,8 @@ export function ThemeToggle(props: ThemeToggleProps) {
 	const isDark = theme === 'dark';
 
 	const dotStyles: Record<Theme, string> = {
-		light: 'translate-x-0 bg-raised text-warning',
-		dark: 'translate-x-7 bg-raised text-info',
+		light: 'translate-x-0 bg-ink-inverted text-warning',
+		dark: 'translate-x-7 bg-ink-inverted text-info',
 	};
 
 	return (
@@ -70,7 +70,7 @@ export function ThemeToggle(props: ThemeToggleProps) {
       rounded-full border-2
       transition-colors duration-300 ease-in-out
       focus-visible:outline-none focus-visible:border-primary
-      bg-sunken border-edge
+      bg-white/10 border-ink-inverted/20
     `}
 		>
 			<span
@@ -79,7 +79,7 @@ export function ThemeToggle(props: ThemeToggleProps) {
         w-5 h-5 rounded-full
         shadow-sm
         transition-transform duration-300 ease-in-out
-        border border-edge
+        border border-ink-inverted/20
         ${dotStyles[theme]}
       `}
 			>
