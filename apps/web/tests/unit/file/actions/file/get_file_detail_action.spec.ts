@@ -13,7 +13,7 @@ test.group('GetFileDetailAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 2048,
-			path: 'cms/files/detail_file.jpg',
+			path: 'files/detail_file.jpg',
 			disk: 'fs',
 		});
 

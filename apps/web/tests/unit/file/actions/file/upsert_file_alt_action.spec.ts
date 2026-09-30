@@ -13,7 +13,7 @@ test.group('UpsertFileAltAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/alt_file.jpg',
+			path: 'files/alt_file.jpg',
 			disk: 'fs',
 		});
 

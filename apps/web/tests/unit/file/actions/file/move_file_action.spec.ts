@@ -14,7 +14,7 @@ test.group('MoveFileAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/move_file.jpg',
+			path: 'files/move_file.jpg',
 			disk: 'fs',
 		});
 
@@ -34,7 +34,7 @@ test.group('MoveFileAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/move_root.jpg',
+			path: 'files/move_root.jpg',
 			disk: 'fs',
 			folderId: folder.id,
 		});

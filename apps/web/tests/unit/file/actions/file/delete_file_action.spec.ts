@@ -13,7 +13,7 @@ test.group('DeleteFileAction', () => {
 			mimeType: 'image/jpeg',
 			extension: 'jpg',
 			size: 1024,
-			path: 'cms/files/delete_file.jpg',
+			path: 'files/delete_file.jpg',
 			disk: 'fs',
 		});
 
