@@ -27,11 +27,11 @@ const backupConfig = {
 
 	/**
 	 * Storage configuration — uses @adonisjs/drive.
-	 * The disk must match one of the keys in config/drive.ts (fs, s3, r2).
+	 * The disk must match one of the keys in config/drive.ts (fs, s3, r2, r2-backup).
 	 * All backup files are stored under the `backup/` prefix.
 	 */
 	storage: {
-		disk: env.get('BACKUP_STORAGE_DISK', 'fs') as 'fs' | 's3' | 'r2',
+		disk: env.get('BACKUP_STORAGE_DISK', 'fs') as 'fs' | 's3' | 'r2' | 'r2-backup',
 		prefix: 'backup',
 	},
 

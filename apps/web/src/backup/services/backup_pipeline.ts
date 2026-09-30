@@ -32,7 +32,11 @@ export interface BackupPipelineOverrides {
 	_stat?: typeof defaultStat;
 	_unlink?: typeof defaultUnlink;
 	_writeFile?: typeof defaultWriteFile;
-	_createDatabaseDump?: (options: DumpOptions, _spawn?: any) => Promise<void>;
+	_createDatabaseDump?: (
+		options: DumpOptions,
+		_spawn?: any,
+		_sanitize?: (path: string) => Promise<void>,
+	) => Promise<void>;
 }
 
 /**
@@ -82,7 +86,11 @@ export class BackupPipeline {
 	private readonly statFn: typeof defaultStat;
 	private readonly unlinkFn: typeof defaultUnlink;
 	private readonly writeFileFn: typeof defaultWriteFile;
-	private readonly createDump: (options: DumpOptions, _spawn?: any) => Promise<void>;
+	private readonly createDump: (
+		options: DumpOptions,
+		_spawn?: any,
+		_sanitize?: (path: string) => Promise<void>,
+	) => Promise<void>;
 	private readonly tempFiles: string[] = [];
 
 	/**
