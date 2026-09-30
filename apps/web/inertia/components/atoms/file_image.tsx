@@ -3,6 +3,8 @@ import type { ImgHTMLAttributes } from 'react';
 
 interface FileImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'alt'> {
 	file: ResolvedFile;
+	/** Render the original file URL without the responsive srcset (e.g. fullscreen views). */
+	original?: boolean;
 }
 
 /**
@@ -11,20 +13,24 @@ interface FileImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'
  * Accepts the `ResolvedFile` prop produced by `FindFileAction` (or the
  * `FileTransformer` with a display intent) plus any standard `<img>` attribute.
  * Builds the `srcset` from the file's responsive variants and renders the
- * resolved alt. No fetching, no state — fully SSR-friendly.
+ * resolved alt. No fetching, no state — fully SSR-friendly. Set `original` to
+ * serve the untouched original file instead (no srcset), for zoom or fullscreen
+ * displays.
  *
  * Intended for images only; other file types are rendered directly from the
  * same prop (e.g. a download link).
  *
  * @example
  * <FileImage file={hero} alt="" className="rounded" />
+ * <FileImage file={hero} original className="gallery__lightbox-photo" />
  */
-export default function FileImage({ file, className, ...imgProps }: FileImageProps) {
-	const srcset = file.variants
-		? Object.entries(file.variants)
-				.map(([width, url]) => `${url} ${width}w`)
-				.join(', ')
-		: undefined;
+export default function FileImage({ file, original, className, ...imgProps }: FileImageProps) {
+	const srcset =
+		!original && file.variants
+			? Object.entries(file.variants)
+					.map(([width, url]) => `${url} ${width}w`)
+					.join(', ')
+			: undefined;
 
 	return (
 		<img

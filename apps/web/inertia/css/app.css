@@ -342,6 +342,548 @@
 			@apply ml-0 w-full;
 		}
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hand-written front (375 vocabulary)
+	|--------------------------------------------------------------------------
+	|
+	| The public front (home, projects, services) keeps its own editorial
+	| component classes, ported from the reference design. The front button
+	| and form controls are namespaced (`front-button`, `front-input`, …) so
+	| they never collide with the admin/DS `button`, `input`, `select` and
+	| `checkbox` classes above.
+	|
+	*/
+
+	/* Dark variant of the shared header, used by the front layout. */
+	.header--dark {
+		@apply bg-canvas/70 shadow-none backdrop-blur-sm border-b border-ink-inverted/10 text-ink-inverted;
+
+		.header__logo {
+			@apply text-ink-inverted;
+		}
+
+		.header__burger {
+			@apply text-ink-inverted;
+		}
+
+		.header__nav {
+			@apply bg-canvas text-ink-inverted;
+
+			@variant md {
+				@apply bg-transparent;
+			}
+		}
+	}
+
+	/* Letter hover base — each char holds two stacked copies for the roll, the
+	   mask clips the roll to a single line (see use_button_text). */
+	.roll-letter {
+		display: inline-block;
+		position: relative;
+	}
+
+	.roll-letter > span:last-child {
+		position: absolute;
+		bottom: 100%;
+		left: 0;
+	}
+
+	.marquee__wrapper {
+		@apply overflow-hidden border-y border-white/10 bg-[#050505] py-4;
+
+		.marquee {
+			@apply flex w-max items-center gap-10 whitespace-nowrap font-news text-[11px] uppercase tracking-[0.3em] text-ink-inverted/50 animate-[marquee_28s_linear_infinite];
+
+			.marquee__item-wrapper {
+				@apply flex items-center gap-10;
+
+				.marquee__item {
+					@apply flex items-center gap-10;
+
+					.marquee__item-separator {
+						@apply h-1.5 w-1.5 bg-primary-soft;
+					}
+				}
+			}
+		}
+	}
+
+	@keyframes marquee {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	.field {
+		@apply grid;
+
+		.field__flex {
+			@apply flex items-center gap-2;
+		}
+
+		.field__grid {
+			@apply grid gap-2;
+		}
+
+		.front-input,
+		.front-textarea,
+		.front-select {
+			@apply w-full;
+		}
+
+		.front-textarea {
+			@apply front-input min-h-30;
+			field-sizing: content;
+		}
+
+		.front-textarea,
+		.front-select {
+			&::placeholder {
+				@apply text-ink-inverted-subtle;
+			}
+
+			&:disabled {
+				@apply cursor-not-allowed opacity-50;
+			}
+
+			&:focus-visible {
+				@apply border-primary outline-none;
+				box-shadow: none;
+			}
+		}
+
+		.front-select {
+			@apply front-input pr-10 appearance-none;
+			background-color: #101014;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23EDEBE2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+			background-position: right 0.75rem center;
+			background-size: 1.125rem;
+			background-repeat: no-repeat;
+
+			option {
+				@apply p-2 text-ink-inverted;
+				background-color: #0b0b0d;
+
+				&:checked,
+				&:hover,
+				&:focus {
+					@apply bg-primary-deep text-ink-inverted;
+				}
+
+				&::checkmark {
+					display: none;
+				}
+			}
+		}
+
+		.front-checkbox {
+			aspect-ratio: 1;
+			@apply h-4 w-4 shrink-0 cursor-pointer accent-primary;
+
+			& + label {
+				@apply cursor-pointer;
+			}
+		}
+	}
+
+	.front-button {
+		@apply inline-flex cursor-pointer items-center justify-center border border-ink-inverted/40 px-7 py-3.5 font-news text-xs font-bold uppercase tracking-[0.18em] text-ink-inverted transition-colors;
+
+		&.front-button__primary {
+			@apply hover:border-primary-soft hover:bg-primary-soft/10;
+		}
+
+		&.front-button__secondary {
+			@apply border-primary-soft bg-primary-soft/10 text-primary-soft hover:bg-primary-soft/20;
+		}
+
+		&.front-button__outline {
+			@apply border-2 border-solid border-primary text-primary hover:bg-primary hover:text-ink-inverted;
+		}
+	}
+
+	.heading {
+		@apply font-news leading-[1.02] font-normal tracking-[-0.03em] [&_em]:italic [&_em]:text-primary-soft;
+
+		&.heading__1 {
+			@apply text-[clamp(2.7rem,8vw,6.5rem)] max-w-5xl text-balance;
+		}
+
+		&.heading__2 {
+			@apply text-[clamp(2rem,5vw,4rem)] max-w-3xl;
+		}
+
+		&.heading__3 {
+			@apply text-2xl;
+		}
+
+		&.heading__4 {
+			@apply text-base;
+		}
+
+		.heading__flex {
+			@apply flex gap-2 items-center;
+		}
+	}
+
+	.paragraph {
+		@apply text-ink-inverted/70;
+
+		&.paragraph__spacing-sm {
+			@apply not-first:mt-2;
+		}
+
+		&.paragraph__spacing {
+			@apply not-first:mt-4;
+		}
+
+		&.paragraph__spacing-xl {
+			@apply not-first:mt-6;
+		}
+
+		&.paragraph__muted {
+			@apply text-ink-muted;
+		}
+
+		&.paragraph__subtle {
+			@apply text-ink-subtle;
+		}
+
+		&.paragraph__error {
+			@apply text-danger;
+		}
+	}
+
+	.kicker {
+		@apply inline-flex items-center gap-3 font-news text-[11px] uppercase tracking-[0.3em] text-ink-inverted/50;
+
+		span {
+			@apply h-2 w-2 bg-primary-soft;
+		}
+	}
+
+	.section {
+		@apply bg-[#050505] px-6 py-24 md:px-10 md:py-32;
+
+		.section__header {
+			@apply flex items-center justify-between mb-8;
+
+			.section__header-index {
+				@apply font-news text-[11px] tracking-[0.3em] text-primary-soft;
+			}
+		}
+
+		.section__footer {
+			@apply mt-12 pt-6 flex gap-8 items-start flex-wrap justify-between border-t border-ink-inverted/12;
+		}
+	}
+
+	.project__cover {
+		@apply relative bg-[#050505] px-5 pt-32 pb-10 text-ink-inverted md:px-16 md:pt-44 md:pb-12;
+
+		.project__cover-inner {
+			@apply relative mx-auto w-full max-w-6xl;
+		}
+
+		.project__cover-meta {
+			@apply mt-16 flex flex-wrap items-end justify-between gap-x-8 gap-y-6 border-t border-ink-inverted/12 pt-5;
+		}
+
+		.project__cover-gallery {
+			@apply relative mx-auto mt-16 w-full max-w-6xl md:mt-24;
+
+			.project__cover-gallery-lead,
+			.project__cover-gallery-tile {
+				@apply relative block w-full cursor-pointer text-left;
+
+				img {
+					@apply h-auto w-full border border-ink-inverted/10 object-cover transition-transform duration-300 ease-in-out group-hover:scale-[1.02];
+				}
+
+				.project__cover-gallery-marker {
+					@apply absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center border border-ink-inverted/20 bg-[#050505]/70 font-news text-sm leading-none text-ink-inverted/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100;
+				}
+			}
+
+			.project__cover-gallery-grid {
+				@apply mt-4 grid grid-cols-2 gap-3 lg:gap-4;
+			}
+
+			.project__cover-gallery-caption {
+				@apply mt-4 flex items-center justify-between border-t border-ink-inverted/12 pt-3 font-news text-[11px] uppercase tracking-[0.25em] text-ink-inverted/50;
+			}
+		}
+	}
+
+	.gallery__lightbox {
+		@apply fixed inset-0 z-50 flex items-center justify-center bg-[#050505]/95 text-ink-inverted;
+
+		.gallery__lightbox-stage {
+			@apply absolute inset-0 cursor-zoom-out;
+		}
+
+		.gallery__lightbox-photo {
+			@apply relative z-10 max-h-[82vh] max-w-[90vw] object-contain;
+		}
+
+		.gallery__lightbox-arrow {
+			@apply absolute top-1/2 z-20 -translate-y-1/2 p-4 font-news text-4xl leading-none text-ink-inverted/50 transition-colors hover:text-primary-soft md:text-5xl;
+
+			&.gallery__lightbox-arrow-prev {
+				@apply left-2 md:left-6;
+			}
+
+			&.gallery__lightbox-arrow-next {
+				@apply right-2 md:right-6;
+			}
+		}
+
+		.gallery__lightbox-close {
+			@apply absolute right-4 top-4 z-20 flex items-center gap-3 font-news text-[11px] uppercase tracking-[0.25em] text-ink-inverted/60 transition-colors hover:text-ink-inverted;
+
+			span {
+				@apply text-sm;
+			}
+		}
+
+		.gallery__lightbox-counter {
+			@apply absolute bottom-4 left-4 z-20 font-news text-[11px] tracking-[0.25em] text-primary-soft;
+		}
+
+		.gallery__lightbox-caption {
+			@apply absolute bottom-4 right-4 z-20 hidden max-w-md text-right font-news text-[11px] uppercase tracking-[0.25em] text-ink-inverted/40 md:block;
+		}
+	}
+
+	@keyframes gallery-lightbox-fade {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.gallery__lightbox {
+			animation: gallery-lightbox-fade 0.3s ease-out;
+		}
+
+		.gallery__lightbox-photo {
+			animation: gallery-lightbox-fade 0.35s ease-out;
+		}
+	}
+
+	.form {
+		@apply mt-12 text-left;
+
+		.form__row {
+			@apply grid grid-cols-[3rem_1fr] gap-x-4 gap-y-1 items-center py-5 border-t border-ink-inverted/12;
+
+			.form__row-number {
+				@apply text-xs tracking-[0.2em] text-primary-soft;
+			}
+		}
+	}
+
+	.service__card {
+		@apply bg-[#050505] p-8 md:p-10;
+
+		&:hover {
+			.service__card-header {
+				.service__card-header-index {
+					@apply scale-[1.25];
+				}
+			}
+
+			.service__card-footer {
+				.service__card-footer-item {
+					.service__card-footer-dot {
+						@apply scale-[1.8];
+					}
+				}
+			}
+		}
+
+		.service__card-header {
+			@apply flex items-baseline justify-between border-b border-white/10 pb-4 font-news text-[11px] tracking-[0.2em] text-ink-inverted/40 mb-8;
+
+			.service__card-header-index {
+				@apply inline-block transition-[transform,color,scale] duration-250 ease-in-out text-primary-soft;
+			}
+		}
+
+		.service__card-footer {
+			@apply mt-6 space-y-3;
+
+			.service__card-footer-item {
+				@apply flex items-center gap-3 font-news text-sm font-light text-ink-inverted/60;
+
+				.service__card-footer-dot {
+					--i: 10;
+					@apply transition-transform duration-250 ease-in-out h-1 w-1 bg-primary-soft;
+					transition-delay: calc(0.02s + var(--i) * 0.04s);
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.service__card-header-index,
+				.service__card-footer-dot {
+					transform: none;
+					transition: none;
+				}
+			}
+		}
+	}
+
+	.service__detail {
+		@apply border-t border-white/10 py-16 md:py-24;
+
+		.service__detail-header {
+			@apply flex items-baseline justify-between gap-6;
+
+			.service__detail-index {
+				@apply font-news text-[11px] tracking-[0.2em] text-primary-soft;
+			}
+		}
+
+		.service__detail-items {
+			@apply mt-8 flex flex-wrap gap-2.5;
+
+			li {
+				@apply flex items-center gap-2 border border-ink-inverted/20 px-4 py-2 font-news text-[11px] uppercase tracking-[0.2em] text-ink-inverted/60;
+
+				.service__detail-item-dot {
+					@apply h-1 w-1 bg-primary-soft;
+				}
+			}
+		}
+
+		.service__detail-body {
+			@apply mt-10;
+		}
+
+		.service__detail-facts {
+			@apply mt-10 grid gap-4 md:grid-cols-2;
+
+			.service__detail-fact {
+				@apply border-l-2 border-primary-soft bg-white/5 p-6 md:p-8;
+
+				dt {
+					@apply font-news text-[11px] uppercase tracking-[0.3em] text-primary-soft;
+				}
+
+				dd {
+					@apply mt-3 font-news text-base font-light leading-relaxed text-ink-inverted/80;
+				}
+			}
+		}
+	}
+
+	.projects__frame {
+		@apply relative bg-[#050505] z-1 lg:grid lg:h-dvh lg:grid-cols-[3fr_2fr] lg:overflow-hidden;
+	}
+
+	.projects__webgl {
+		@apply pointer-events-none fixed inset-0;
+		z-index: -1;
+	}
+
+	.projects__info {
+		@apply flex flex-col justify-end px-6 py-12 md:px-12 lg:px-16 lg:py-16 lg:pt-28 lg:pb-32;
+
+		.projects__info-field {
+			@apply relative min-h-0 flex-1;
+		}
+
+		.projects__bottom {
+			@apply mt-12 flex flex-wrap items-end justify-between gap-x-8 gap-y-10 border-t border-white/10 pt-8;
+		}
+
+		.projects__filter {
+			@apply relative;
+
+			.projects__filter-list {
+				@apply absolute left-0 top-full z-10 mt-3 grid min-w-44 gap-1 border border-ink-inverted/15 bg-[#0a0a0b] p-2 opacity-0 shadow-xl transition-opacity duration-300 pointer-events-none;
+
+				&.is-open {
+					@apply opacity-100 pointer-events-auto;
+				}
+
+				@variant lg {
+					@apply bottom-full top-auto mb-3 mt-0;
+				}
+			}
+
+			.projects__filter-option {
+				@apply flex items-center gap-2 px-3 py-2 text-left font-news text-[11px] uppercase tracking-[0.2em] text-ink-inverted/60 transition-colors;
+
+				&:hover {
+					@apply text-ink-inverted;
+				}
+
+				.projects__filter-option-dot {
+					@apply h-1.5 w-1.5 bg-primary-soft opacity-0 transition-opacity;
+				}
+
+				&.is-active {
+					@apply text-primary-soft;
+
+					.projects__filter-option-dot {
+						@apply opacity-100;
+					}
+				}
+			}
+		}
+	}
+
+	.projects__list {
+		@apply px-6 pt-8 pb-16 lg:h-full lg:overflow-y-auto lg:overflow-x-hidden lg:px-10 lg:pt-16 lg:pb-10;
+
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.projects__track {
+		@apply flex flex-col;
+	}
+
+	.projects__row {
+		@apply relative block mb-3 lg:mb-4;
+
+		.projects__row-media {
+			@apply relative aspect-video overflow-hidden;
+
+			img {
+				@apply h-full w-full object-cover;
+			}
+		}
+	}
+
+	.hero__wrapper {
+		@apply relative bg-[#050505] text-ink-inverted px-5 pt-32 pb-16 md:px-16 md:pt-44 md:pb-24;
+
+		.hero {
+			@apply relative mx-auto max-w-6xl;
+
+			.hero__kicker {
+				@apply mb-10;
+			}
+
+			.hero__actions {
+				@apply mt-14 flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10;
+			}
+		}
+	}
 }
 
 @utility input {
@@ -362,6 +904,34 @@
 		@variant dark {
 			box-shadow: 0 0 0 3px oklch(0.345 0.047 264 / 0.3);
 		}
+	}
+}
+
+/*
+|--------------------------------------------------------------------------
+| Front input utility
+|--------------------------------------------------------------------------
+|
+| The hand-written front's boxed editorial input, on the dark canvas:
+| transparent background, full hairline border, light text and a purple
+| focus border. Namespaced so it never collides with the admin `input`
+| utility above.
+|
+*/
+@utility front-input {
+	@apply border border-ink-inverted/30 bg-transparent px-4 py-2.5 font-news text-base text-ink-inverted transition-colors;
+
+	&::placeholder {
+		@apply text-ink-inverted-subtle;
+	}
+
+	&:disabled {
+		@apply cursor-not-allowed opacity-50;
+	}
+
+	&:focus-visible {
+		@apply border-primary outline-none;
+		box-shadow: none;
 	}
 }
 

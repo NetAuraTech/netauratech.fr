@@ -15,6 +15,7 @@
 */
 
 import app from '@adonisjs/core/services/app';
+import { ProjectSitemapCollector } from '#core/services/project_sitemap_collector';
 import { RouteSitemapCollector } from '#core/services/route_sitemap_collector';
 import { SitemapRegistry } from '#core/services/sitemap_registry';
 
@@ -23,3 +24,4 @@ app.container.singleton(SitemapRegistry, () => new SitemapRegistry());
 const registry = await app.container.make(SitemapRegistry);
 
 registry.register('routes', () => app.container.make(RouteSitemapCollector));
+registry.register('projects', () => app.container.make(ProjectSitemapCollector));
