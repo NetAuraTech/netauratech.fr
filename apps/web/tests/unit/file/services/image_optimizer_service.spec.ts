@@ -90,6 +90,42 @@ test.group('ImageOptimizerService', (group) => {
 		drive.restore('s3');
 	});
 
+	test('generates the default responsive widths including 1600', async ({ assert }) => {
+		drive.fake('s3');
+		const disk = drive.use('s3');
+
+		// Create a 2000x2000 image so every default width (400/800/1200/1600) is smaller
+		const originalBuffer = await sharp({
+			create: {
+				width: 2000,
+				height: 2000,
+				channels: 4,
+				background: { r: 0, g: 0, b: 255, alpha: 1 },
+			},
+		})
+			.png()
+			.toBuffer();
+
+		await disk.put('uploads/default.png', originalBuffer);
+
+		const file = {
+			mimeType: 'image/png',
+			disk: 's3',
+			path: 'uploads/default.png',
+			filename: 'default.png',
+		} as any;
+
+		const result = await service.optimize(file);
+
+		assert.property(result.variants, '400');
+		assert.property(result.variants, '800');
+		assert.property(result.variants, '1200');
+		assert.property(result.variants, '1600');
+		assert.equal(Object.keys(result.variants).length, 4);
+
+		drive.restore('s3');
+	});
+
 	test('does not regenerate variant if it already exists', async ({ assert }) => {
 		drive.fake('s3');
 		const disk = drive.use('s3');
