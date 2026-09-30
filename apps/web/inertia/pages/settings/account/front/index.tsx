@@ -107,7 +107,7 @@ export default function AccountPage(props: PageProps) {
 					</Form>
 				</Card>
 				<Card title={t('oauth.title')} subtitle={t('oauth.sub_title')}>
-					<div className="divide-y divide-edge">
+					<div className="divide-y divide-ink-inverted/10">
 						{providers.map((provider) => {
 							const isConnected = user.connectedProviders[provider];
 
@@ -116,8 +116,8 @@ export default function AccountPage(props: PageProps) {
 									<div className="flex items-center gap-3">
 										{getIcon(provider)}
 										<div>
-											<p className="text-sm font-medium text-ink">{capitalize(provider)}</p>
-											<p className={`text-xs ${isConnected ? 'text-success' : 'text-ink-muted'}`}>
+											<p className="text-sm font-medium text-ink-inverted">{capitalize(provider)}</p>
+											<p className={`text-xs ${isConnected ? 'text-success' : 'text-ink-inverted-muted'}`}>
 												{isConnected ? t('oauth.connected') : t('oauth.not_connected')}
 											</p>
 										</div>
@@ -130,7 +130,7 @@ export default function AccountPage(props: PageProps) {
 										>
 											<button
 												type="submit"
-												className="cursor-pointer text-sm px-3 py-1.5 border border-danger text-danger rounded-lg hover:bg-danger-soft transition"
+												className="cursor-pointer text-sm px-3 py-1.5 border border-danger text-danger rounded-lg hover:bg-danger/15 transition"
 												title={t('oauth.unlink')}
 											>
 												{t('oauth.unlink.value')}
@@ -139,7 +139,7 @@ export default function AccountPage(props: PageProps) {
 									) : (
 										<a
 											href={urlFor('auth.social.redirect', { provider: provider })}
-											className="text-sm px-3 py-1.5 border text-ink-muted border-edge rounded-lg hover:bg-sunken transition"
+											className="text-sm px-3 py-1.5 border text-ink-inverted-muted border-ink-inverted/10 rounded-lg hover:bg-white/5 transition"
 											title={t('oauth.link')}
 										>
 											{t('oauth.link')}
@@ -217,14 +217,14 @@ export default function AccountPage(props: PageProps) {
 					{twoFactorPending ? (
 						<div className="grid gap-6">
 							<div className="flex flex-col items-start gap-4 md:flex-row">
-								<div className="rounded-lg border border-edge bg-white p-3">
+								<div className="rounded-lg border border-ink-inverted/10 bg-white p-3">
 									<QRCode value={twoFactorPending.otpauthUri} size={176} />
 								</div>
 								<div className="grid gap-2">
-									<p className="text-sm text-ink-muted">{t('two_factor.scan')}</p>
-									<p className="text-xs text-ink-muted">{t('two_factor.apps')}</p>
-									<p className="text-xs text-ink-muted">{t('two_factor.manual')}</p>
-									<code className="break-all rounded bg-sunken px-2 py-1 text-xs text-ink">
+									<p className="text-sm text-ink-inverted-muted">{t('two_factor.scan')}</p>
+									<p className="text-xs text-ink-inverted-muted">{t('two_factor.apps')}</p>
+									<p className="text-xs text-ink-inverted-muted">{t('two_factor.manual')}</p>
+									<code className="break-all rounded bg-white/10 px-2 py-1 text-xs text-ink-inverted">
 										{twoFactorPending.secret}
 									</code>
 								</div>
@@ -267,20 +267,20 @@ export default function AccountPage(props: PageProps) {
 					) : twoFactorEnabled ? (
 						<div className="grid gap-8">
 							<div className="flex flex-wrap items-center gap-3">
-								<span className="rounded-full bg-success-soft px-3 py-1 text-sm font-medium text-success">
+								<span className="rounded-full bg-success/15 px-3 py-1 text-sm font-medium text-success">
 									{t('two_factor.enabled')}
 								</span>
-								<p className="text-sm text-ink-muted">{t('two_factor.enabled_sub')}</p>
+								<p className="text-sm text-ink-inverted-muted">{t('two_factor.enabled_sub')}</p>
 							</div>
 
 							{twoFactorRecoveryCodes.length > 0 && (
 								<div className="grid gap-3">
 									<div className="grid gap-1">
-										<p className="text-sm font-medium text-ink">{t('two_factor.recovery.title')}</p>
-										<p className="text-sm text-ink-muted">{t('two_factor.recovery.sub_title')}</p>
-										<p className="text-xs text-ink-muted">{t('two_factor.recovery.info')}</p>
+										<p className="text-sm font-medium text-ink-inverted">{t('two_factor.recovery.title')}</p>
+										<p className="text-sm text-ink-inverted-muted">{t('two_factor.recovery.sub_title')}</p>
+										<p className="text-xs text-ink-inverted-muted">{t('two_factor.recovery.info')}</p>
 									</div>
-									<ul className="grid gap-1 rounded-lg border border-edge bg-sunken p-3 font-mono text-sm text-ink">
+									<ul className="grid gap-1 rounded-lg border border-ink-inverted/10 bg-white/10 p-3 font-mono text-sm text-ink-inverted">
 										{twoFactorRecoveryCodes.map((code) => (
 											<li key={code}>{code}</li>
 										))}
@@ -310,8 +310,8 @@ export default function AccountPage(props: PageProps) {
 
 							<div className="grid gap-4">
 								<div className="grid gap-1">
-									<p className="text-sm font-medium text-ink">{t('two_factor.disable.sub_title')}</p>
-									<p className="text-xs text-ink-muted">{t('two_factor.disable.warning')}</p>
+									<p className="text-sm font-medium text-ink-inverted">{t('two_factor.disable.sub_title')}</p>
+									<p className="text-xs text-ink-inverted-muted">{t('two_factor.disable.warning')}</p>
 								</div>
 								<Form
 									action={actionFor('account.account.execute')}

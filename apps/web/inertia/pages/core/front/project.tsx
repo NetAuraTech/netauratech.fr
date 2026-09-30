@@ -1,21 +1,19 @@
-import { Link } from '@adonisjs/inertia/react';
 import { SharedProps } from '@adonisjs/inertia/types';
-import { usePage } from '@inertiajs/react';
+import { Button } from '@foundry/design-system/button';
+import { ContactForm } from '@foundry/design-system/contact-form';
+import { Container } from '@foundry/design-system/container';
+import { Heading } from '@foundry/design-system/heading';
+import { Kicker } from '@foundry/design-system/kicker';
+import { LoupeCursor } from '@foundry/design-system/loupe-cursor';
+import { Marquee } from '@foundry/design-system/marquee';
+import { Paragraph } from '@foundry/design-system/paragraph';
+import { ProjectBlocks } from '@foundry/design-system/project-blocks';
+import { ProjectCover } from '@foundry/design-system/project-cover';
+import { Section } from '@foundry/design-system/section';
+import { SectionHeader } from '@foundry/design-system/section-header';
+import { Link, usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { useRef } from 'react';
-import { Button } from '~/components/atoms/button';
-import { Container } from '~/components/atoms/container';
-import { Heading } from '~/components/atoms/heading';
-import { Kicker } from '~/components/atoms/kicker';
-import { LoupeCursor } from '~/components/atoms/loupe_cursor';
-import { Marquee } from '~/components/atoms/marquee';
-import { Paragraph } from '~/components/atoms/paragraph';
-import { Section } from '~/components/atoms/section';
-import { ProjectBlocks } from '~/components/molecules/project_block';
-import { SectionHeader } from '~/components/molecules/section_header';
-import { ContactForm } from '~/components/organisms/contact_form';
-import { ProjectCover } from '~/components/organisms/project_cover';
-import { useTextSweep } from '~/hooks/animations/use_text_sweep';
+import { urlFor } from '~/client';
 import type { SiteProject } from '#types/site_content';
 
 interface ProjectPageProps {
@@ -28,26 +26,23 @@ interface ProjectPageProps {
 /**
  * Single project page of the public front, in the 375 vocabulary.
  *
- * The page opens on the project's typographic title page — the numbered
- * rubrique, the display headline, the editorial note and the project gallery
- * rendered as a framed figure cluster — then flows into the editorial story:
- * the markdown description of the committed source
- * (`content/projects/{slug}.md`) rendered as a lede and hairline-separated
- * chapters, a closing CTA back to the portfolio, a lead to the next project,
- * and the shared contact form.
+ * The page opens on the project's typographic title page (the `ProjectCover`
+ * organism, which owns its gallery lightbox) — the numbered rubrique, the
+ * display headline, the editorial note and the project gallery — then flows
+ * into the editorial story rendered by the `ProjectBlocks` organism, a closing
+ * CTA back to the portfolio, a lead to the next project, and the shared contact
+ * form. This page only resolves content, hrefs and the document head.
  */
 export default function ProjectPage(props: ProjectPageProps) {
 	const { project, projects } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
 	const { app_name } = sharedProps;
-	const projectTitleRef = useRef<HTMLHeadingElement>(null);
-
-	useTextSweep(projectTitleRef);
 
 	const index = projects.findIndex((entry) => entry.slug === project.slug);
 	const next = projects.length > 0 ? projects[(index + 1) % projects.length] : null;
 	const coverImages = project.blocks.flatMap((block) => (block.type === 'gallery' ? block.images : []));
 	const storyBlocks = project.blocks.filter((block) => block.type !== 'gallery');
+	const nextHref = next ? urlFor('core.projects.show.render', { slug: next.slug }) : undefined;
 
 	return (
 		<>
@@ -65,31 +60,31 @@ export default function ProjectPage(props: ProjectPageProps) {
 				images={coverImages}
 			/>
 			<Marquee />
-			<Section id="projet" className="overflow-x-clip">
+			<Section id="projet" variant="front" className="overflow-x-clip">
 				<Container>
-					<SectionHeader kicker="Le projet" index="01" titleRef={projectTitleRef}>
+					<SectionHeader kicker="Le projet" index="01">
 						Un projet écrit à la <em>main</em>.
 					</SectionHeader>
 					<div className="mt-6">
 						<ProjectBlocks blocks={storyBlocks} />
 					</div>
-					<div className="section__footer">
+					<div className="mt-12 flex flex-wrap items-start justify-between gap-8 border-t border-ink-inverted/12 pt-6">
 						<Paragraph fs="xs" spacing="xs" className="font-news tracking-[0.3em]" uppercase>
 							{project.rubrique} — {app_name}
 						</Paragraph>
-						<Button variant="secondary" route="core.projects.render" fitContent>
+						<Button variant="secondary" href={urlFor('core.projects.render')} fitContent>
 							Voir tous les projets
 						</Button>
 					</div>
 				</Container>
 			</Section>
-			{next && (
-				<Section className="overflow-x-clip border-t border-white/10">
+			{next && nextHref && (
+				<Section variant="front" className="overflow-x-clip border-t border-white/10">
 					<Container>
 						<div className="flex items-start justify-between gap-6">
 							<div>
 								<Kicker>Projet suivant</Kicker>
-								<Link route="core.projects.show.render" routeParams={{ slug: next.slug }} className="mt-8 block">
+								<Link href={nextHref} className="mt-8 block">
 									<Heading level={2} className="max-w-3xl text-balance">
 										{next.title}
 									</Heading>
@@ -98,12 +93,7 @@ export default function ProjectPage(props: ProjectPageProps) {
 									{next.note}
 								</Paragraph>
 							</div>
-							<Link
-								route="core.projects.show.render"
-								routeParams={{ slug: next.slug }}
-								className="mt-12 text-primary-soft"
-								aria-label={`Voir le projet ${next.title}`}
-							>
+							<Link href={nextHref} className="mt-12 text-primary-soft" aria-label={`Voir le projet ${next.title}`}>
 								<span className="block text-3xl leading-none md:text-5xl" aria-hidden="true">
 									→
 								</span>
@@ -113,6 +103,7 @@ export default function ProjectPage(props: ProjectPageProps) {
 				</Section>
 			)}
 			<ContactForm
+				email={sharedProps.email}
 				title={
 					<>
 						Un projet <em>similaire</em> en tête ?

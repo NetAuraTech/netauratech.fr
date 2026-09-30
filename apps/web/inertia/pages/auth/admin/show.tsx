@@ -85,7 +85,7 @@ export default function UsersShowPage(props: PageProps) {
 							<Separator />
 							<div className="grid">
 								<span className="font-bold">{t('info.email')}</span>
-								<span className="flex gap-2 items-center text-ink-muted">
+								<span className="flex gap-2 items-center text-ink-inverted-muted">
 									{user.email}{' '}
 									<UserStatus
 										status={toUserStatusKind(user.status)}
@@ -95,7 +95,7 @@ export default function UsersShowPage(props: PageProps) {
 							</div>
 							<div className="grid">
 								<span className="font-bold">{t('info.username')}</span>
-								<span className="text-ink-muted">{user.username}</span>
+								<span className="text-ink-inverted-muted">{user.username}</span>
 							</div>
 						</div>
 						<div className="grid gap-3">
@@ -104,7 +104,7 @@ export default function UsersShowPage(props: PageProps) {
 							{user.createdAt && (
 								<div className="grid">
 									<span className="font-bold">{t('history.created_at')}</span>
-									<span className="text-ink-muted">
+									<span className="text-ink-inverted-muted">
 										{format(new Date(user.createdAt), 'medium', pageProps.locale as Lang)}
 									</span>
 								</div>
@@ -112,7 +112,7 @@ export default function UsersShowPage(props: PageProps) {
 							{user.updatedAt && (
 								<div className="grid">
 									<span className="font-bold">{t('history.updated_at')}</span>
-									<span className="text-ink-muted">
+									<span className="text-ink-inverted-muted">
 										{format(new Date(user.updatedAt), 'medium', pageProps.locale as Lang)}
 									</span>
 								</div>
@@ -120,7 +120,7 @@ export default function UsersShowPage(props: PageProps) {
 							{user.emailVerifiedAt && (
 								<div className="grid">
 									<span className="font-bold">{t('history.verified_at')}</span>
-									<span className="text-ink-muted">
+									<span className="text-ink-inverted-muted">
 										{format(new Date(user.emailVerifiedAt), 'medium', pageProps.locale as Lang)}
 									</span>
 								</div>
@@ -137,8 +137,8 @@ export default function UsersShowPage(props: PageProps) {
 										<div className="flex items-center gap-3">
 											{getIcon(provider)}
 											<div>
-												<p className="text-sm font-medium text-ink">{capitalize(provider)}</p>
-												<p className={`text-xs ${isConnected ? 'text-success' : 'text-ink-muted'}`}>
+												<p className="text-sm font-medium text-ink-inverted">{capitalize(provider)}</p>
+												<p className={`text-xs ${isConnected ? 'text-success' : 'text-ink-inverted-muted'}`}>
 													{isConnected ? t('providers.connected') : t('providers.not_connected')}
 												</p>
 											</div>
@@ -153,9 +153,9 @@ export default function UsersShowPage(props: PageProps) {
 						<Separator />
 						<div className="grid">
 							<span className="font-bold">{t('roles.current')}</span>
-							<span className="text-ink-muted">{t(user.role?.name as any)}</span>
+							<span className="text-ink-inverted-muted">{t(user.role?.name as any)}</span>
 						</div>
-						<span className="text-ink-muted">
+						<span className="text-ink-inverted-muted">
 							{t('permissions.value', {
 								amount: `${user?.permissions?.length || 0}/${permissions.length}`,
 							})}
@@ -165,10 +165,10 @@ export default function UsersShowPage(props: PageProps) {
 								const ownedCount = categoryPermissions.filter((p) => user.permissions?.includes(p.slug)).length;
 
 								return (
-									<div key={category} className="border border-edge rounded">
+									<div key={category} className="border border-ink-inverted/10 rounded">
 										<span className="flex font-bold p-3">
 											{t(category as any)}{' '}
-											<span className="font-normal text-ink-muted ml-1">
+											<span className="font-normal text-ink-inverted-muted ml-1">
 												({' '}
 												<span className={ownedCount === categoryPermissions.length ? 'text-success' : 'text-warning'}>
 													{ownedCount}
@@ -182,14 +182,16 @@ export default function UsersShowPage(props: PageProps) {
 												return (
 													<span
 														key={permission.slug}
-														className={`flex gap-2 items-center text-ink-muted ${hasPermission ? '' : 'opacity-40'}`}
+														className={`flex gap-2 items-center text-ink-inverted-muted ${hasPermission ? '' : 'opacity-40'}`}
 													>
 														<Icon
 															name={hasPermission ? 'Check' : 'X'}
-															className={hasPermission ? 'text-success' : 'text-ink-subtle'}
+															className={hasPermission ? 'text-success' : 'text-ink-inverted-subtle'}
 															size={16}
 														/>
-														<span className={hasPermission ? '' : 'text-ink-muted'}>{t(permission.name as any)}</span>
+														<span className={hasPermission ? '' : 'text-ink-inverted-muted'}>
+															{t(permission.name as any)}
+														</span>
 													</span>
 												);
 											})}

@@ -117,7 +117,7 @@ export default function UsersIndexPage(props: PageProps) {
 								<Table.Row key={`user-${user.id}`}>
 									<Table.Cell className="flex flex-row" data-label={t('value', { count: 1 })}>
 										<span className="flex">{user.username}</span>
-										<span className="flex text-ink-muted">{user.email}</span>
+										<span className="flex text-ink-inverted-muted">{user.email}</span>
 									</Table.Cell>
 									<Table.Cell data-label={t('roles.value', { count: 1 })}>
 										<span className="px-4 py-1 rounded border border-secondary bg-secondary-light/20 text-secondary">

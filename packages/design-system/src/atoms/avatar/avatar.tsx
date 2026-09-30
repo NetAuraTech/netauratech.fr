@@ -1,7 +1,7 @@
 import { cn, tv } from 'tailwind-variants';
 
 const avatar = tv({
-	base: 'w-12 h-12 rounded-full bg-sunken flex items-center justify-center text-sm font-semibold text-ink-muted group-hover:bg-secondary group-hover:text-ink-inverted transition',
+	base: 'w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-sm font-semibold text-ink-inverted group-hover:bg-primary-soft/20 group-hover:text-primary-soft transition',
 });
 
 interface AvatarProps {
@@ -63,7 +63,7 @@ export function Avatar(props: AvatarProps) {
 	return (
 		<div className="group flex gap-4 items-center">
 			<div className={cn(avatar(), className)}>{getAvatarInitials(username)}</div>
-			{showUsername && <span className="text-ink group-hover:text-secondary transition">{username}</span>}
+			{showUsername && <span className="text-ink-inverted group-hover:text-primary-soft transition">{username}</span>}
 		</div>
 	);
 }

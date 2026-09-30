@@ -45,6 +45,7 @@
 	--color-ink-inverted-subtle: oklch(0.65 0.01 263);
 
 	--color-canvas: oklch(0.15 0.012 292);
+	--color-noir: #050505;
 	--color-surface: oklch(0.9322 0.0226 87.15);
 	--color-sunken: oklch(0.94 0.007 263);
 	--color-overlay: oklch(0.995 0.002 263);
@@ -61,26 +62,98 @@
 	--color-danger-soft: oklch(0.93 0.04 25);
 	--color-info: oklch(0.55 0.12 240);
 	--color-info-soft: oklch(0.93 0.03 240);
+
+	--animate-marquee: marquee 28s linear infinite;
+	--animate-fade-in: fade-in 0.3s ease-out;
+
+	@keyframes marquee {
+		from {
+			transform: translateX(0);
+		}
+
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
 }
 
+/*
+|--------------------------------------------------------------------------
+| Shared primitives
+|--------------------------------------------------------------------------
+|
+| The `input` and `button` utilities are the styling primitives of the
+| design system's form and action atoms — one editorial look for the whole
+| product, on the near-black canvas: transparent field, full hairline
+| border, light text, accent focus.
+|
+*/
+
 @utility input {
-	@apply bg-sunken text-ink p-2 rounded-lg border border-solid border-edge;
+	@apply w-full border border-ink-inverted/30 bg-transparent px-4 py-2.5 font-news text-base text-ink-inverted transition-colors;
 
 	&::placeholder {
-		@apply text-ink-subtle;
+		@apply text-ink-inverted-subtle;
 	}
 
 	&:disabled {
-		@apply text-ink-subtle opacity-60 cursor-not-allowed;
+		@apply cursor-not-allowed opacity-50;
 	}
 
 	&:focus-visible {
 		@apply border-primary outline-none;
-		box-shadow: 0 0 0 3px oklch(0.759 0.029 263 / 0.35);
+		box-shadow: none;
+	}
+}
 
-		@variant dark {
-			box-shadow: 0 0 0 3px oklch(0.345 0.047 264 / 0.3);
+@utility button {
+	@apply inline-flex cursor-pointer items-center justify-center gap-3 border border-ink-inverted/40 px-7 py-3.5 font-news text-xs font-bold uppercase tracking-[0.18em] text-ink-inverted transition-colors;
+}
+
+@utility textarea {
+	@apply input min-h-30;
+	field-sizing: content;
+}
+
+@utility select {
+	@apply input appearance-none pr-10;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23EDEBE2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-position: right 0.75rem center;
+	background-size: 1.125rem;
+	background-repeat: no-repeat;
+
+	& > option {
+		@apply p-2 text-ink-inverted;
+		background-color: #0b0b0d;
+
+		&:checked,
+		&:hover,
+		&:focus {
+			@apply bg-primary-deep text-ink-inverted;
 		}
+
+		&::checkmark {
+			display: none;
+		}
+	}
+}
+
+@utility checkbox {
+	aspect-ratio: 1;
+	@apply h-4 w-4 shrink-0 cursor-pointer accent-primary;
+
+	& + label {
+		@apply cursor-pointer;
 	}
 }
 
@@ -93,6 +166,124 @@
 @utility grid-auto-fit-* {
 	@apply grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(--value([length]), 100%), 1fr));
+}
+
+/*
+|--------------------------------------------------------------------------
+| Public-front header
+|--------------------------------------------------------------------------
+|
+| The fixed top bar shared by the public front (and any dark consumer): the
+| base `.header` handles layout, the mobile nav slide-in and the burger morph;
+| `.header--dark` re-skins it for the near-black canvas. Structural, not
+| editorial — kept here as the single source so the design system's `Header`
+| organism renders identically everywhere.
+|
+*/
+
+@layer components {
+	/* Content container of the back-office and auth screens: a hairline
+	   outlined panel floating on the near-black canvas. */
+	.card {
+		@apply flex flex-col rounded-2xl border border-ink-inverted/10 bg-white/5 overflow-hidden;
+	}
+
+	.header {
+		@apply z-50 fixed top-0 w-full flex justify-between items-center bg-surface p-2 shadow;
+
+		@variant md {
+			@apply px-20 py-3;
+		}
+
+		.header__logo img {
+			@apply mr-4 h-auto w-15;
+		}
+
+		.header__nav {
+			@apply fixed top-16 -right-75 bottom-0 h-max w-3xs overflow-hidden rounded-bl-lg bg-surface p-4 opacity-0 shadow-2xl transition-all duration-500 grid gap-3;
+
+			&[aria-expanded='true'] {
+				@apply right-0 opacity-100;
+			}
+
+			@variant md {
+				@apply relative top-0 right-0 h-auto w-auto bg-transparent opacity-100 flex gap-6;
+				box-shadow: none;
+			}
+		}
+
+		.header__burger {
+			@apply cursor-pointer overflow-hidden bg-transparent;
+
+			&[aria-expanded='true'] svg {
+				translate: 3px 0;
+				rotate: 0.125turn;
+
+				.line {
+					stroke-dasharray: 60 105 60 300;
+					stroke-dashoffset: -90;
+				}
+			}
+
+			svg {
+				transition:
+					translate 1s,
+					rotate 1s;
+
+				.line {
+					transition: 1s;
+					stroke-dasharray: 60 31 60 300;
+				}
+			}
+
+			@variant md {
+				@apply hidden;
+			}
+		}
+	}
+
+	/* Dark variant of the shared header, used by the front layout. */
+	.header--dark {
+		@apply border-b border-ink-inverted/10 bg-canvas/70 text-ink-inverted shadow-none backdrop-blur-sm;
+
+		.header__logo {
+			@apply text-ink-inverted;
+		}
+
+		.header__burger {
+			@apply text-ink-inverted;
+		}
+
+		.header__nav {
+			@apply bg-canvas text-ink-inverted;
+
+			@variant md {
+				@apply bg-transparent;
+			}
+		}
+	}
+}
+
+/*
+|--------------------------------------------------------------------------
+| Button letter roll
+|--------------------------------------------------------------------------
+|
+| SplitText (see `atoms/button/use_button_text`) splits a button label into
+| per-character wrappers carrying this class; each character holds two stacked
+| copies for the roll, and the mask clips the roll to a single line.
+|
+*/
+
+.roll-letter {
+	display: inline-block;
+	position: relative;
+}
+
+.roll-letter > span:last-child {
+	position: absolute;
+	bottom: 100%;
+	left: 0;
 }
 
 @utility table {
@@ -124,14 +315,14 @@
 
 	tbody {
 		tr {
-			@apply block mb-6 border border-edge rounded-lg p-4;
+			@apply block mb-6 border border-ink-inverted/15 bg-white/5 p-4;
 
 			@variant lg {
-				@apply table-row mb-0 border-0 border-b border-edge rounded-none p-0;
+				@apply table-row mb-0 border-0 border-b border-ink-inverted/15 bg-transparent p-0;
 			}
 
 			&:last-child {
-				@apply border border-edge;
+				@apply border border-ink-inverted/15;
 
 				@variant lg {
 					@apply border-0;

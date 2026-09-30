@@ -141,7 +141,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
 				? 'border-primary-soft bg-primary-soft/10'
 				: sizeError
 					? 'border-danger bg-danger-soft/20'
-					: 'border-edge hover:border-primary-soft hover:bg-sunken',
+					: 'border-ink-inverted/20 hover:border-primary-soft hover:bg-white/5',
 		disabled ? 'opacity-50 cursor-not-allowed' : '',
 	]
 		.filter(Boolean)
@@ -179,16 +179,16 @@ export function FileUploadInput(props: FileUploadInputProps) {
 							<img
 								src={preview}
 								alt={file.name}
-								className="max-h-32 max-w-full rounded-lg object-contain border border-edge"
+								className="max-h-32 max-w-full rounded-lg object-contain border border-ink-inverted/20"
 							/>
 						) : (
-							<div className="w-12 h-12 rounded-xl bg-sunken border border-edge flex items-center justify-center">
-								<Icon name="FileText" size={22} className="text-ink-muted" />
+							<div className="w-12 h-12 rounded-xl bg-white/10 border border-ink-inverted/20 flex items-center justify-center">
+								<Icon name="FileText" size={22} className="text-ink-inverted-muted" />
 							</div>
 						)}
 						<div className="text-center">
-							<p className="text-sm font-medium text-ink truncate max-w-xs">{file.name}</p>
-							<p className="text-xs text-ink-muted mt-0.5">{humanSize(file.size)}</p>
+							<p className="text-sm font-medium text-ink-inverted truncate max-w-xs">{file.name}</p>
+							<p className="text-xs text-ink-inverted-muted mt-0.5">{humanSize(file.size)}</p>
 						</div>
 						<Button type="button" variant="icon_danger" fitContent onClick={handleClear} title={t('upload.remove')}>
 							<Icon name="Trash" size={18} />
@@ -198,13 +198,13 @@ export function FileUploadInput(props: FileUploadInputProps) {
 					<>
 						<div
 							className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-colors ${
-								sizeError ? 'bg-danger-soft border-danger/30' : 'bg-sunken border-edge'
+								sizeError ? 'bg-danger/15 border-danger/40' : 'bg-white/10 border-ink-inverted/20'
 							}`}
 						>
 							<Icon
 								name={sizeError ? 'CircleAlert' : isDragging ? 'CloudDownload' : 'Upload'}
 								size={22}
-								className={sizeError ? 'text-danger' : 'text-ink-muted'}
+								className={sizeError ? 'text-danger' : 'text-ink-inverted-muted'}
 							/>
 						</div>
 						<div className="text-center space-y-1">
@@ -235,7 +235,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
 									e.stopPropagation();
 									setSizeError(false);
 								}}
-								className="text-xs text-ink-muted hover:text-ink transition-colors"
+								className="text-xs text-ink-inverted-muted hover:text-ink-inverted transition-colors"
 							>
 								{t('upload.try_again')}
 							</button>

@@ -1,19 +1,18 @@
 import { SharedProps } from '@adonisjs/inertia/types';
+import { Button } from '@foundry/design-system/button';
+import { ContactForm } from '@foundry/design-system/contact-form';
+import { Container } from '@foundry/design-system/container';
+import { Hero } from '@foundry/design-system/hero';
+import { LoupeCursor } from '@foundry/design-system/loupe-cursor';
+import { Marquee } from '@foundry/design-system/marquee';
+import { Paragraph } from '@foundry/design-system/paragraph';
+import { ProjectPlate } from '@foundry/design-system/project-plate';
+import { Section } from '@foundry/design-system/section';
+import { SectionHeader } from '@foundry/design-system/section-header';
+import { ServiceCard } from '@foundry/design-system/service-card';
 import { usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { useRef } from 'react';
-import { Button } from '~/components/atoms/button';
-import { Container } from '~/components/atoms/container';
-import { LoupeCursor } from '~/components/atoms/loupe_cursor';
-import { Marquee } from '~/components/atoms/marquee';
-import { Paragraph } from '~/components/atoms/paragraph';
-import { Section } from '~/components/atoms/section';
-import { ProjectPlate } from '~/components/molecules/project_plate';
-import { SectionHeader } from '~/components/molecules/section_header';
-import { ServiceCard } from '~/components/molecules/service_card';
-import { ContactForm } from '~/components/organisms/contact_form';
-import { Hero } from '~/components/organisms/hero';
-import { useTextSweep } from '~/hooks/animations/use_text_sweep';
+import { urlFor } from '~/client';
 import type { HomeTranslations } from '#transport/core/helpers/i18n_payloads/home';
 import type { SiteProject, SiteService } from '#types/site_content';
 
@@ -27,13 +26,6 @@ export default function HomePage(props: HomePageProps) {
 	const { services, projects } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
 	const { app_name, app_url } = sharedProps;
-	const workFirstTitleRef = useRef<HTMLHeadingElement>(null);
-	const servicesTitleRef = useRef<HTMLHeadingElement>(null);
-	const devTitleRef = useRef<HTMLHeadingElement>(null);
-
-	useTextSweep(workFirstTitleRef);
-	useTextSweep(servicesTitleRef);
-	useTextSweep(devTitleRef);
 
 	return (
 		<>
@@ -73,9 +65,9 @@ export default function HomePage(props: HomePageProps) {
 				}
 			/>
 			<Marquee />
-			<Section id="projets" className="overflow-x-hidden pt-20 md:pt-28">
+			<Section id="projets" variant="front" className="overflow-x-hidden">
 				<Container>
-					<SectionHeader kicker="Projets" index="01" titleRef={workFirstTitleRef}>
+					<SectionHeader kicker="Projets" index="01">
 						Le travail d'abord.
 					</SectionHeader>
 				</Container>
@@ -88,15 +80,14 @@ export default function HomePage(props: HomePageProps) {
 							note={project.note}
 							rubrique={project.rubrique}
 							coverFile={project.coverFile}
-							route="core.projects.show.render"
-							routeParams={{ slug: project.slug }}
+							href={urlFor('core.projects.show.render', { slug: project.slug })}
 						/>
 					))}
 				</div>
 			</Section>
-			<Section id="services" className="overflow-x-clip">
+			<Section id="services" variant="front" className="overflow-x-clip">
 				<Container>
-					<SectionHeader kicker="Services" index="02" titleRef={servicesTitleRef}>
+					<SectionHeader kicker="Services" index="02">
 						Trois façons de <em>travailler</em> ensemble.
 					</SectionHeader>
 					<div className="mt-14 will-change-transform grid gap-px bg-white/10 sm:grid-cols-3">
@@ -104,22 +95,22 @@ export default function HomePage(props: HomePageProps) {
 							<ServiceCard key={service.rubrique} index={i} rubrique={service.rubrique} items={service.items} />
 						))}
 					</div>
-					<div className="section__footer">
+					<div className="mt-12 flex flex-wrap items-start justify-between gap-8 border-t border-ink-inverted/12 pt-6">
 						<Paragraph fs="xs" spacing="xs" className="font-news tracking-[0.3em]" uppercase>
 							Trois offres, une seule exigence.
 						</Paragraph>
-						<Button variant="secondary" route="core.services.render" fitContent>
+						<Button variant="secondary" href={urlFor('core.services.render')} fitContent>
 							Voir tous les services
 						</Button>
 					</div>
 				</Container>
 			</Section>
-			<Section id="studio" className="overflow-x-clip">
+			<Section id="studio" variant="front" className="overflow-x-clip">
 				<Container>
-					<SectionHeader kicker="Le studio" index="03" titleRef={devTitleRef}>
+					<SectionHeader kicker="Le studio" index="03">
 						Un développeur, votre <em>exigence</em>.
 					</SectionHeader>
-					<div className="section__footer">
+					<div className="mt-12 flex flex-wrap items-start justify-between gap-8 border-t border-ink-inverted/12 pt-6">
 						<Paragraph className="max-w-160">
 							Chez NetAuraTech, chaque site est écrit à la main. Pas de template, pas de plateforme à abonnement : un
 							code 100 % sur mesure, pensé pour votre métier, votre audience et votre croissance.
@@ -132,6 +123,7 @@ export default function HomePage(props: HomePageProps) {
 			</Section>
 			<ContactForm
 				index="04"
+				email={sharedProps.email}
 				title={
 					<>
 						Prêt à créer votre site web <em>sur mesure</em> ?

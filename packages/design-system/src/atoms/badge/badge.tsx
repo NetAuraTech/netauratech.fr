@@ -5,12 +5,12 @@ const badge = tv({
 	base: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
 	variants: {
 		variant: {
-			default: 'bg-ink-soft text-ink',
+			default: 'bg-white/10 text-ink-inverted',
 			success: 'bg-success-soft text-success',
 			warning: 'bg-warning-soft text-warning',
 			danger: 'bg-danger-soft text-danger',
 			info: 'bg-info-soft text-info',
-			outline: 'border border-solid border-edge text-ink-muted',
+			outline: 'border border-solid border-ink-inverted/20 text-ink-inverted-muted',
 		},
 	},
 	defaultVariants: {

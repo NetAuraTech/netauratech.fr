@@ -81,7 +81,7 @@ export function SettingsLayout(props: PageProps) {
 							{t('header.sub_title')}
 						</Paragraph>
 					</div>
-					<div className="flex gap-1 justify-between border-b border-edge mb-8">
+					<div className="flex gap-1 justify-between border-b border-ink-inverted/10 mb-8">
 						<div className="flex gap-1">
 							{tabs.map((tab) => (
 								<SettingsTab key={tab.id} label={t(tab.label)} route={tab.route} />

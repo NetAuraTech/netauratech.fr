@@ -2,7 +2,7 @@ import { cn, tv } from 'tailwind-variants';
 import type { ChangeEvent } from 'react';
 
 const checkbox = tv({
-	base: 'checkbox accent-secondary focus:border-secondary',
+	base: 'checkbox',
 });
 
 interface CheckboxProps {

@@ -30,7 +30,7 @@ function FileStatCard({ stats, translations }: DashboardSectionCardProps) {
 				{file.filesByFolder.length > 0 && (
 					<div className="mt-2 flex flex-wrap gap-2 text-sm">
 						{file.filesByFolder.map((folder) => (
-							<span key={folder.id} className="text-ink-muted">
+							<span key={folder.id} className="text-ink-inverted-muted">
 								{`${folder.count} ${folder.name}`}
 							</span>
 						))}
@@ -63,9 +63,9 @@ function FileRecentCard({ stats, translations, formatDate }: DashboardSectionCar
 						{file.recentFiles.map((upload) => (
 							<li key={upload.id} className="flex items-center justify-between gap-2 px-6 py-3">
 								<span className="truncate">
-									{upload.originalName} <span className="text-ink-subtle">({upload.mimeType})</span>
+									{upload.originalName} <span className="text-ink-inverted-subtle">({upload.mimeType})</span>
 								</span>
-								<span className="shrink-0 text-sm text-ink-muted">{formatDate(upload.createdAt)}</span>
+								<span className="shrink-0 text-sm text-ink-inverted-muted">{formatDate(upload.createdAt)}</span>
 							</li>
 						))}
 					</ul>

@@ -1,18 +1,16 @@
 import { SharedProps } from '@adonisjs/inertia/types';
+import { Button } from '@foundry/design-system/button';
+import { ContactForm } from '@foundry/design-system/contact-form';
+import { Container } from '@foundry/design-system/container';
+import { Hero } from '@foundry/design-system/hero';
+import { LoupeCursor } from '@foundry/design-system/loupe-cursor';
+import { Marquee } from '@foundry/design-system/marquee';
+import { Paragraph } from '@foundry/design-system/paragraph';
+import { Section } from '@foundry/design-system/section';
+import { SectionHeader } from '@foundry/design-system/section-header';
+import { ServiceDetail } from '@foundry/design-system/service-detail';
 import { usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { useRef } from 'react';
-import { Button } from '~/components/atoms/button';
-import { Container } from '~/components/atoms/container';
-import { LoupeCursor } from '~/components/atoms/loupe_cursor';
-import { Marquee } from '~/components/atoms/marquee';
-import { Paragraph } from '~/components/atoms/paragraph';
-import { Section } from '~/components/atoms/section';
-import { SectionHeader } from '~/components/molecules/section_header';
-import { ServiceDetail } from '~/components/molecules/service_detail';
-import { ContactForm } from '~/components/organisms/contact_form';
-import { Hero } from '~/components/organisms/hero';
-import { useTextSweep } from '~/hooks/animations/use_text_sweep';
 import type { SiteService } from '#types/site_content';
 
 interface ServicesPageProps {
@@ -24,9 +22,6 @@ export default function ServicesPage(props: ServicesPageProps) {
 	const { services } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
 	const { app_name } = sharedProps;
-	const servicesTitleRef = useRef<HTMLHeadingElement>(null);
-
-	useTextSweep(servicesTitleRef);
 
 	return (
 		<>
@@ -64,9 +59,9 @@ export default function ServicesPage(props: ServicesPageProps) {
 				}
 			/>
 			<Marquee />
-			<Section id="services" className="overflow-x-clip">
+			<Section id="services" variant="front" className="overflow-x-clip">
 				<Container>
-					<SectionHeader kicker="Services" index="01" titleRef={servicesTitleRef}>
+					<SectionHeader kicker="Services" index="01">
 						Le détail, <em>sans</em> surprise.
 					</SectionHeader>
 					<div className="mt-6">
@@ -74,7 +69,7 @@ export default function ServicesPage(props: ServicesPageProps) {
 							<ServiceDetail key={service.rubrique} index={i} service={service} />
 						))}
 					</div>
-					<div className="section__footer">
+					<div className="mt-12 flex flex-wrap items-start justify-between gap-8 border-t border-ink-inverted/12 pt-6">
 						<Paragraph fs="xs" spacing="xs" className="font-news tracking-[0.3em]" uppercase>
 							Chaque devis est établi sur étude de votre projet.
 						</Paragraph>
@@ -85,6 +80,7 @@ export default function ServicesPage(props: ServicesPageProps) {
 				</Container>
 			</Section>
 			<ContactForm
+				email={sharedProps.email}
 				title={
 					<>
 						Prêt à lancer votre projet <em>sur mesure</em> ?

@@ -4,9 +4,9 @@ const userStatus = tv({
 	base: 'px-4 py-1 border rounded',
 	variants: {
 		status: {
-			verified: 'text-success border-success bg-success-soft',
-			unverified: 'text-danger border-danger bg-danger-soft',
-			pending_invite: 'text-secondary border-secondary bg-secondary-light/20',
+			verified: 'text-success border-success/40 bg-success/15',
+			unverified: 'text-danger border-danger/40 bg-danger/15',
+			pending_invite: 'text-primary-soft border-primary-soft/40 bg-primary-soft/15',
 		},
 	},
 	defaultVariants: {

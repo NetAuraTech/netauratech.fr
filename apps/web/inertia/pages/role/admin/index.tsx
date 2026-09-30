@@ -108,7 +108,9 @@ export default function RolesIndexPage(props: PageProps) {
 													</Badge>
 												)}
 											</span>
-											<span className="text-xs text-ink-muted">{t(`roles.${role.slug}.description` as any)}</span>
+											<span className="text-xs text-ink-inverted-muted">
+												{t(`roles.${role.slug}.description` as any)}
+											</span>
 										</div>
 									</Table.Cell>
 									<Table.Cell data-label={t('table.slug')}>{role.slug}</Table.Cell>

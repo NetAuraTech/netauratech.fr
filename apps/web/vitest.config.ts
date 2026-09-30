@@ -23,6 +23,7 @@ export default defineConfig({
 	},
 	test: {
 		environment: 'node',
+		setupFiles: ['./vitest.setup.ts'],
 		include: [
 			'inertia/components/**/*.spec.ts',
 			'inertia/components/**/*.spec.tsx',

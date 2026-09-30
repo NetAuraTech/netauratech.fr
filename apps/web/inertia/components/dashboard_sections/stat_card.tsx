@@ -31,7 +31,7 @@ export function StatCard({ icon, label, value, href, children }: StatCardProps) 
 		<Link href={href} className="block group">
 			<Card padding="p-6" className="h-full transition-colors group-hover:border-primary">
 				<div className="flex items-center gap-4">
-					<Icon name={icon} size={28} className="text-ink-muted shrink-0" />
+					<Icon name={icon} size={28} className="text-ink-inverted-muted shrink-0" />
 					<div className="flex items-baseline gap-2">
 						<p className="text-3xl font-bold leading-none">{value}</p>
 						<Paragraph variant="muted" spacing="xs">

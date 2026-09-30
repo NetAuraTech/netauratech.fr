@@ -48,6 +48,12 @@ interface HeaderProps {
 	 * behaviour (e.g. subscribing to the Inertia `router` `success` event).
 	 */
 	onMenuClose: () => void;
+	/**
+	 * Re-skin the bar for the near-black public-front canvas: transparent blur
+	 * backdrop, inverted text, and the editorial `front` nav-link styling.
+	 * Defaults to `false` (the light back-office look with `nav` links).
+	 */
+	dark?: boolean;
 	/** Additional Tailwind classes merged onto the `<header>`. */
 	className?: string;
 }
@@ -57,10 +63,10 @@ interface HeaderProps {
  * instantiated once per entry rather than inline in the list callback. The
  * active state is injected through the `link.isActive` prop.
  */
-function HeaderNavLink(props: { link: HeaderLink; onClick?: () => void }) {
-	const { link, onClick } = props;
+function HeaderNavLink(props: { link: HeaderLink; variant: 'nav' | 'front'; onClick?: () => void }) {
+	const { link, variant, onClick } = props;
 
-	return <NavLink href={link.href} label={link.label} variant="nav" isActive={link.isActive} onClick={onClick} />;
+	return <NavLink href={link.href} label={link.label} variant={variant} isActive={link.isActive} onClick={onClick} />;
 }
 
 /**
@@ -82,14 +88,19 @@ function HeaderNavLink(props: { link: HeaderLink; onClick?: () => void }) {
  * />
  */
 export function Header(props: HeaderProps) {
-	const { appName, links, className, isMenuOpen, onToggleMenu, onMenuClose } = props;
+	const { appName, links, className, isMenuOpen, onToggleMenu, onMenuClose, dark = false } = props;
 
 	const menuState = isMenuOpen ? 'opened' : 'closed';
 	const isExpanded = isMenuOpen ? 'true' : 'false';
 	const homeHref = links[0]?.href ?? '/';
+	const linkVariant = dark ? 'front' : 'nav';
 
 	return (
-		<header className={cn(header(), className)} data-state={menuState} aria-expanded={isExpanded}>
+		<header
+			className={cn(header(), dark && 'header--dark', className)}
+			data-state={menuState}
+			aria-expanded={isExpanded}
+		>
 			<Link
 				href={homeHref}
 				className="header__logo font-semibold tracking-wide text-xl font-cormorant"
@@ -100,7 +111,7 @@ export function Header(props: HeaderProps) {
 
 			<nav id="primary-navigation" className="header__nav" data-state={menuState} aria-expanded={isExpanded}>
 				{links.map((link) => (
-					<HeaderNavLink key={link.href} link={link} onClick={onMenuClose} />
+					<HeaderNavLink key={link.href} link={link} variant={linkVariant} onClick={onMenuClose} />
 				))}
 			</nav>
 			<button

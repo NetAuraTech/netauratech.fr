@@ -147,7 +147,7 @@ export default function RolesFormPage(props: PageProps) {
 										</fieldset>
 									))}
 								</div>
-								<Paragraph className="text-ink-muted text-sm">{t('permissions.system_hint')}</Paragraph>
+								<Paragraph className="text-ink-inverted-muted text-sm">{t('permissions.system_hint')}</Paragraph>
 							</div>
 							<Button loading={processing} type={'submit'} fitContent>
 								{t('submit')}

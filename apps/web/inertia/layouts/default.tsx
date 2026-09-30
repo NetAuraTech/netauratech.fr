@@ -1,9 +1,11 @@
 import { SharedProps } from '@adonisjs/inertia/types';
-import { Head, usePage } from '@inertiajs/react';
-import { ReactElement, useEffect } from 'react';
+import { Footer } from '@foundry/design-system/footer';
+import { Header } from '@foundry/design-system/header';
+import { Head, router, usePage } from '@inertiajs/react';
+import { ReactElement, useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
-import { Footer } from '~/components/organisms/footer';
-import { Header } from '~/components/organisms/header';
+import { urlFor } from '~/client';
+import { isNavLinkActive } from '~/hooks/use_nav_link_active';
 
 interface LayoutProps {
 	children: ReactElement<SharedProps>;
@@ -16,12 +18,13 @@ export default function Layout(props: LayoutProps) {
 	const { children } = props;
 	const { props: pageProps, url, flash } = usePage<SharedProps>();
 	const { app_name, app_url } = pageProps;
-	const isFront = url === '/';
 	// The projects listing is a sealed frame on desktop: only the list scrolls, so
 	// the footer is kept off the desktop layout (reference behaviour) and is
 	// shown again in the normal document flow on smaller screens. Single project
 	// pages are regular scrolling editorial pages and keep the normal footer.
 	const isProjectsFrame = url === '/projets';
+
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	useEffect(() => {
 		toast.dismiss();
@@ -30,6 +33,26 @@ export default function Layout(props: LayoutProps) {
 		if (flash.success) toast.success(flash.success);
 		if (flash.info) toast.info(flash.info);
 	}, [url, flash]);
+
+	useEffect(() => {
+		const unregister = router.on('success', () => setIsMenuOpen(false));
+		return () => unregister();
+	}, []);
+
+	const links = [
+		{ label: 'Accueil', href: urlFor('core.home.render'), isActive: isNavLinkActive(urlFor('core.home.render')) },
+		{
+			label: 'Projets',
+			href: urlFor('core.projects.render'),
+			isActive: isNavLinkActive(urlFor('core.projects.render')),
+		},
+		{
+			label: 'Services',
+			href: urlFor('core.services.render'),
+			isActive: isNavLinkActive(urlFor('core.services.render')),
+		},
+		{ label: 'Contact', href: `${urlFor('core.home.render')}#contact`, isActive: false },
+	];
 
 	const image_alt = '';
 	const geo = {
@@ -64,23 +87,47 @@ export default function Layout(props: LayoutProps) {
 				<meta name="twitter:image:alt" content={`${app_name} - ${image_alt}`} />
 			</Head>
 			<>
-				{isFront && <style>{`body, #page-wrapper, #site { background: #050505 !important; }`}</style>}
-				<Header />
+				<Header
+					appName={app_name}
+					links={links}
+					isMenuOpen={isMenuOpen}
+					onToggleMenu={() => setIsMenuOpen((open) => !open)}
+					onMenuClose={() => setIsMenuOpen(false)}
+					dark
+				/>
 				<Toaster position="top-right" richColors />
 				{children}
 				{isProjectsFrame ? (
 					<>
 						<div className="lg:hidden">
-							<Footer />
+							<Footer appName={app_name} credit={creditNode()} />
 						</div>
 						<div className="fixed inset-x-0 bottom-0 z-[60] hidden lg:block">
-							<Footer />
+							<Footer appName={app_name} credit={creditNode()} />
 						</div>
 					</>
 				) : (
-					<Footer />
+					<Footer appName={app_name} credit={creditNode()} />
 				)}
 			</>
 		</>
+	);
+}
+
+/** The footer credit line — a "made by" link and region, kept in the layout. */
+function creditNode() {
+	return (
+		<p>
+			Propulsé par{' '}
+			<a
+				href="https://github.com/NetAuraTech/adonisjs-foundry"
+				className="text-ink-inverted hover:text-primary-light"
+				target="_blank"
+				rel="noreferrer"
+			>
+				AdonisJsFoundry
+			</a>{' '}
+			· Hauts-de-France
+		</p>
 	);
 }

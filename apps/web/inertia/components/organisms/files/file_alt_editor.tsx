@@ -124,7 +124,7 @@ export function FileAltEditor(props: FileAltEditorProps) {
 	return (
 		<div className="grid gap-2">
 			<div className="flex items-center justify-between">
-				<p className="text-xs font-semibold text-ink-muted uppercase tracking-wider">{t('alts.title')}</p>
+				<p className="text-xs font-semibold text-ink-inverted-muted uppercase tracking-wider">{t('alts.title')}</p>
 				<Button
 					type="button"
 					variant="icon"
@@ -228,13 +228,13 @@ const AltRow = (props: {
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 
 	return (
-		<div key={k} className="rounded-lg border border-edge bg-canvas px-2 py-1.5 group">
+		<div key={k} className="rounded-lg border border-ink-inverted/20 bg-white/5 px-2 py-1.5 group">
 			<div className="flex items-center justify-between gap-3">
 				<div className="flex items-center gap-2">
-					<span className="shrink-0 text-xs font-semibold text-ink-muted bg-sunken border border-edge px-1.5 py-0.5 rounded uppercase w-8 text-center">
+					<span className="shrink-0 text-xs font-semibold text-ink-inverted-muted bg-white/10 border border-ink-inverted/20 px-1.5 py-0.5 rounded uppercase w-8 text-center">
 						{alt.locale}
 					</span>
-					<span className="text-xs text-ink-muted font-mono shrink-0 w-20 truncate" title={alt.key}>
+					<span className="text-xs text-ink-inverted-muted font-mono shrink-0 w-20 truncate" title={alt.key}>
 						{alt.key}
 					</span>
 				</div>

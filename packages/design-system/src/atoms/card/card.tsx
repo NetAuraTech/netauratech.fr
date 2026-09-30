@@ -8,7 +8,7 @@ const card = tv({
 	variants: {
 		border: {
 			none: '',
-			muted: 'border border-edge',
+			muted: 'border border-ink-inverted/10',
 			danger: 'border border-danger',
 		},
 	},
@@ -32,8 +32,8 @@ interface CardProps {
 	 */
 	header?: ReactNode;
 	/**
-	 * Footer content rendered below the body with a top border and a sunken
-	 * background to visually separate it from the main content.
+	 * Footer content rendered below the body with a top border and a subtle
+	 * raised background to visually separate it from the main content.
 	 */
 	footer?: ReactNode;
 	/**
@@ -82,7 +82,7 @@ export function Card(props: CardProps) {
 	return (
 		<div className={cn(card({ border }), className)}>
 			{(header || title) && (
-				<div className="p-8 border-b border-solid border-edge">
+				<div className="p-8 border-b border-solid border-ink-inverted/10">
 					{header ? (
 						header
 					) : (
@@ -98,7 +98,7 @@ export function Card(props: CardProps) {
 				</div>
 			)}
 			<div className={`flex-1 ${padding}`}>{children}</div>
-			{footer && <div className="p-8 border-t border-solid border-edge bg-sunken">{footer}</div>}
+			{footer && <div className="p-8 border-t border-solid border-ink-inverted/10 bg-white/5">{footer}</div>}
 		</div>
 	);
 }
