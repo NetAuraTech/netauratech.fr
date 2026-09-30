@@ -38,6 +38,22 @@ const driveConfig = defineConfig({
 			supportsACL: false,
 			visibility: 'public',
 		}),
+		/**
+		 * Private R2 disk for the backup system. Points to a dedicated bucket
+		 * that must NOT be exposed through a public custom domain.
+		 */
+		'r2-backup': services.s3({
+			credentials: {
+				accessKeyId: env.get('R2_KEY') || '',
+				secretAccessKey: env.get('R2_SECRET') || '',
+			},
+			region: 'auto',
+			bucket: env.get('BACKUP_R2_BUCKET') || '',
+			endpoint: env.get('R2_ENDPOINT'),
+			forcePathStyle: true,
+			supportsACL: false,
+			visibility: 'private',
+		}),
 	},
 });
 

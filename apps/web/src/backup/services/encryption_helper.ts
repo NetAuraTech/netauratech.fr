@@ -64,10 +64,12 @@ export class EncryptionHelper {
 		// Write header: version || salt || iv
 		output.write(Buffer.concat([Buffer.from([this.version]), salt, iv]));
 
-		await pipeline(input, cipher, output);
+		// end: false — keep the output stream open so the auth tag can be appended
+		await pipeline(input, cipher, output, { end: false });
 
-		// Append auth tag after ciphertext
+		// Append auth tag after ciphertext, then close the stream
 		output.write(cipher.getAuthTag());
+		output.end();
 	}
 
 	/**
