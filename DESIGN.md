@@ -78,7 +78,7 @@ The density is airy and editorial: large clamp-sized titles with tight negative 
 - Editorial grotesque (Space Grotesk), enormous tight titles, accented emphasized words.
 - Work first: full-size project plates, image + overlaid title.
 - Flat depth: hairlines and tonal layers, never drop shadows.
-- Signature magnifying-glass cursor over plates and interactive elements.
+- Signature magnifying-glass cursor over the project plates.
 - Atelier marquee (scrolling craft sections).
 - Refined by construction: no ivory, no serif display, no text gradients.
 
@@ -112,7 +112,7 @@ Atelier palette: a deep black as material, paper white as ink, ONE electric-mauv
 **Display Font:** Space Grotesk (fallback: sans-serif)
 **Body Font:** Space Grotesk (fallback: sans-serif)
 
-**Character:** A single family used from end to end — the modern editorial grotesque that recalls contemporary studio work. Hierarchy is built with size, weight and case, never with a change of family. Emphasized words in titles receive the electric-mauve accent.
+**Character:** Space Grotesk carries the front content end to end — the modern editorial grotesque that recalls contemporary studio work. Hierarchy is built with size, weight and case, never with a change of family. Emphasized words in titles receive the electric-mauve accent. Cormorant Garamond appears only in the header wordmark and the external nav-link variant; the app base font (admin surfaces, form fields) is Jost.
 
 ### Hierarchy
 
@@ -124,9 +124,9 @@ Atelier palette: a deep black as material, paper white as ink, ONE electric-mauv
 
 ### Named Rules
 
-**The One-Face Rule.** A single family (Space Grotesk) carries the whole language. No serif display, no "technical" mono, no platform sans.
+**The One-Face Rule.** A single family (Space Grotesk) carries the front language. No serif display in the front content (Cormorant Garamond is confined to the wordmark and external nav links), no "technical" mono, no platform sans.
 
-**The Accent-Emphasis Rule.** A word in a title that needs emphasis receives the electric-mauve accent; that is the only use of emphasis. Space Grotesk ships no italic face, so emphasis is carried by color and weight, never by italics.
+**The Accent-Emphasis Rule.** A word in a title that needs emphasis receives the electric-mauve accent; that is the only use of emphasis. Space Grotesk ships no true italic face, so where an accent word is set italic it is a synthetic slant paired with the accent color.
 
 ## Layout
 
@@ -173,7 +173,7 @@ The system is square and sharp: the atelier does not work in rounded corners. Cr
 
 - **Layout:** one piece = a full screen `62–86vh`, full width, landscape image (`2000×1200`, served by the backend file module) in `object-cover`, zoom `1.04` on hover.
 - **Overlay:** clamp-sized title `2rem→4.7rem` at bottom-left, `N° — Rubric` above it, project note at bottom right; gradient `from-black/75 via-black/20 to-transparent` for readability.
-- **Cursor:** magnifying-glass "SEE · SEE" (difference blend) resting on the plate.
+- **Cursor:** magnifying-glass "Découvrir" (difference blend) resting on the plate.
 
 ### Navigation (front)
 
@@ -181,7 +181,7 @@ The system is square and sharp: the atelier does not work in rounded corners. Cr
 
 ### Ambient WebGL (signature)
 
-- Field of mauve motes (`#8f7bff`, AdditiveBlending, ~110 points) drifting in the hero. Atmosphere only; `prefers-reduced-motion` → static pattern; no WebGL → plain black hero.
+- Field of mauve motes (`#8f7bff`, AdditiveBlending, ~110 points) drifting behind the hero and the project showcase. Atmosphere only; `prefers-reduced-motion` → a lighter static pattern (40 points); no WebGL → plain black hero. The showcase rows additionally run a WebGL distortion pass over their images (the DOM `<img>` stays as the SSR / reduced-motion / no-WebGL fallback).
 
 ## Do's and Don'ts
 

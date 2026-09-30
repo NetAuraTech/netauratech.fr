@@ -102,7 +102,7 @@ Never merge these two — rendering and editing have different concerns (the ren
 
 ## Naming
 
-Match the block/domain vocabulary from `CONTEXT.md` (Block, Template, Page) rather than generic UI terms. `{type}_block.tsx` / `{type}_editor.tsx` for builder components; otherwise prefer the role over a framework category (`admin_sidebar.tsx` over `sidebar.tsx`).
+Match the domain vocabulary from `CONTEXT.md` rather than generic UI terms — for the front, the terms are Project, Service and Cover (the CMS terms Block, Template and Page belong to the `full` flavor, which this repo does not ship). `{type}_block.tsx` / `{type}_editor.tsx` for builder components; otherwise prefer the role over a framework category (`admin_sidebar.tsx` over `sidebar.tsx`).
 
 ## Component Creation Checklist
 
