@@ -71,6 +71,10 @@ Key env vars (full list in `apps/web/.env.example`): `APP_URL`, `PG_*`,
 `REDIS_*`, `DRIVE_DISK` (`fs` | `s3` | `r2`), `R2_*` + `R2_PUBLIC_URL`,
 `BACKUP_STORAGE_DISK` (incl. the private `r2-backup` disk), `MAIL_*`.
 
+When several sites share a single Redis instance, give each a distinct
+`REDIS_DB` value (Redis exposes 16 logical databases, 0-15) so their
+caches, queues, sessions and locks don't collide.
+
 ## Available scripts (repo root)
 
 | Script               | Description                              |
