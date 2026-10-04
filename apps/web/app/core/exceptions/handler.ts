@@ -1,5 +1,7 @@
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http';
 import app from '@adonisjs/core/services/app';
+import { I18n } from '@adonisjs/i18n';
+import i18nManager from '@adonisjs/i18n/services/main';
 import * as Sentry from '@sentry/node';
 import MaintenanceException from '#core/exceptions/maintenance_exception';
 import { buildMaintenanceIndexPayload } from '#transport/core/helpers/i18n_payloads/maintenance_front';
@@ -72,11 +74,36 @@ export default class HttpExceptionHandler extends ExceptionHandler {
 	 * response to the client
 	 */
 	async handle(error: unknown, ctx: HttpContext) {
+		this.ensureI18n(ctx);
+
 		if (error instanceof MaintenanceException) {
 			return this.handleMaintenance(error, ctx);
 		}
 
 		return super.handle(error, ctx);
+	}
+
+	/**
+	 * Ensures a request-scoped I18n instance is available before any error
+	 * page is rendered.
+	 *
+	 * `ctx.i18n` is normally bound by `DetectUserLocaleMiddleware`, a *router*
+	 * middleware that only runs when a route matches. For unmatched URLs
+	 * (e.g. `/.env`, `/config.json`) AdonisJS raises a 404 with no middleware
+	 * chain having run, so `ctx.i18n` is undefined and rendering the Inertia
+	 * error page crashes in `I18nService` (`undefined.t`). Bind a
+	 * header-derived locale here so every error page renders and the request
+	 * returns a clean 404 instead of a 500.
+	 */
+	private ensureI18n(ctx: HttpContext) {
+		if (ctx.i18n) {
+			return;
+		}
+
+		const language = i18nManager.getSupportedLocaleFor(ctx.request.languages()) ?? i18nManager.defaultLocale;
+
+		ctx.i18n = i18nManager.locale(language);
+		ctx.containerResolver.bindValue(I18n, ctx.i18n);
 	}
 
 	/**

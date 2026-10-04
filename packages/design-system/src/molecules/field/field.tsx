@@ -103,7 +103,12 @@ interface FieldProps {
 	 * `type="image"` falls back to the default `<Input>`.
 	 */
 	renderImage?: (inputProps: ImageFieldProps) => ReactNode;
-	/** `<SelectOption>` elements passed through to a `'select'` type field. */
+	/**
+	 * `<SelectOption>` elements rendered by a `'select'` type field. Ignored
+	 * by every other type — a non-select control must never receive children:
+	 * React SSR throws on a void control such as `<input>`, and a `<textarea>`
+	 * would render them as stray text content.
+	 */
 	children?: ReactNode;
 }
 
@@ -113,7 +118,15 @@ interface FieldProps {
  */
 export type ImageFieldProps = Omit<
 	FieldProps,
-	'label' | 'errorMessage' | 'helpText' | 'helpClassName' | 'validation' | 'errors' | 'sanitizeValue' | 'renderImage'
+	| 'label'
+	| 'errorMessage'
+	| 'helpText'
+	| 'helpClassName'
+	| 'validation'
+	| 'errors'
+	| 'sanitizeValue'
+	| 'renderImage'
+	| 'children'
 >;
 
 const fieldLayout = tv({
@@ -205,6 +218,7 @@ export function Field(props: FieldProps) {
 		onBlur,
 		sanitizeValue,
 		renderImage,
+		children,
 		...inputProps
 	} = props;
 
@@ -280,7 +294,9 @@ export function Field(props: FieldProps) {
 			) : (
 				<div className={cn(fieldLayout({ layout: isInline ? 'inline' : 'grid' }))}>
 					{!isInline && <Label label={label} htmlFor={name} required={props.required} />}
-					<Component {...inputProps} name={name} type={type} onChange={handleChange} onBlur={handleBlur} />
+					<Component {...inputProps} name={name} type={type} onChange={handleChange} onBlur={handleBlur}>
+						{type === 'select' ? children : undefined}
+					</Component>
 					{isInline && <Label label={label} htmlFor={name} required={props.required} />}
 				</div>
 			)}

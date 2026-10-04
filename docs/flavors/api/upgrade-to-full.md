@@ -65,7 +65,7 @@ pruned it by name from the frozen rewrite):
 
 ```jsonc
 // apps/web/package.json → "dependencies": add back
-"@foundry/design-system": "^2.0.0",
+"@foundry/design-system": "^2.2.0",
 ```
 
 then run a bare `npm install` in the repo root so npm re-links the workspace

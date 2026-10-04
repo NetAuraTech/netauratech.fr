@@ -60,7 +60,8 @@ function scrubRecord(record: Record<string, unknown>): Record<string, unknown> {
  * Scrubs an event so the payload is PII-free before it leaves the browser.
  *
  * The user identity attached to the event is dropped outright (the client is
- * initialized with `sendDefaultPii: false` and no user is set), and the
+ * initialized with the restrictive `dataCollection` baseline and no user is
+ * set), and the
  * well-known PII keys inside `extra`, `contexts`, breadcrumb `data` and the
  * request headers are replaced with `REDACTED`.
  *
@@ -94,8 +95,9 @@ export function scrubEvent<T extends Event>(event: T): T {
 /**
  * Builds the browser `@sentry/react` options for the given configuration.
  *
- * PII is kept out by default: `sendDefaultPii` is off, tracing is disabled,
- * and every event passes through {@link scrubEvent}.
+ * PII is kept out by default: `dataCollection` holds the restrictive v10
+ * baseline (v11 collects more by default), tracing is disabled, and every
+ * event passes through {@link scrubEvent}.
  *
  * @param config - The DSN, release and environment for the client.
  * @returns The options to hand to `Sentry.init`.
@@ -105,7 +107,19 @@ export function buildSentryOptions(config: SentryWebConfig): BrowserOptions {
 		dsn: config.dsn,
 		release: config.release,
 		environment: config.environment,
-		sendDefaultPii: false,
+		dataCollection: {
+			userInfo: false,
+			cookies: false,
+			httpHeaders: {
+				request: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+				response: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+			},
+			httpBodies: [],
+			urlQueryParams: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+			genAI: { inputs: false, outputs: false },
+			databaseQueryData: false,
+			graphQL: { document: false, variables: false },
+		},
 		tracesSampleRate: 0,
 		beforeSend: (event) => scrubEvent(event),
 	};

@@ -76,6 +76,8 @@ The engine's `apply` validates, then deletes, rewrites, and prunes dependencies 
 
 A failed prune or gate blocks only **that flavor's** publication; it never blocks `main`. Each flavor branch is force-pushed with the source `main` SHA so provenance is always one commit away.
 
+Prune runs are serialized **per flavor** (`concurrency` group on the flavor name, `cancel-in-progress`): a prune takes minutes (two clean installs plus the full gate suite), so back-to-back pushes to `main` trigger overlapping runs whose final `--force-with-lease` push would race on the same flavor branch — the loser is rejected with `stale info`. Cancelling the in-flight run of a flavor when a newer `main` arrives guarantees the published branch always reflects the newest `main` and the push never races.
+
 ### Upgrading between flavors is a documented manual process
 
 There is deliberately **no tooling** to move a project between flavors. Upgrading is a manual, documented `git` process: the docs at `docs/flavors/{api,inertia}/upgrade-to-full.md` are the hand-written _inverse_ of each manifest — restore the deleted artifacts, re-add the allowed rewrites, reinstall the pruned packages. Because flavor branches are derived from `main`, every removed artifact is recoverable from the full tree; choosing a flavor is not a one-way door.

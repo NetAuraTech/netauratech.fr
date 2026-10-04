@@ -1,6 +1,6 @@
 {
   "name": "@foundry/design-system",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
@@ -91,6 +91,6 @@
     "storybook": "^10.6.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
-    "vite": "^8.3.0"
+    "vite": "^8.3.1"
   }
 }

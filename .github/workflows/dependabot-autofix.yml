@@ -7,8 +7,8 @@ name: Dependabot autofix
 # which freeze a snapshot of every `package.json`. That snapshot goes stale on
 # each bump and the `manifest_drift` unit test (run by the CI `backend-tests`
 # job) fails. This workflow closes the gap: on every dependabot PR it rewrites
-# the frozen ranges/versions to match the live files and converges the
-# lockfile, then commits the result back onto the PR branch. The PR's own CI
+# the frozen ranges/versions to match the live files, converges and dedupes
+# the lockfile, then commits the result back onto the PR branch. The PR's own CI
 # then runs green and the PR is ready to merge.
 #
 # It runs on `pull_request_target` (not `pull_request`) because it must push
@@ -56,7 +56,19 @@ jobs:
         # Resolves the ideal tree from the package manifests without installing
         # or running lifecycle scripts. A no-op when dependabot's lockfile is
         # already consistent; repairs the rarer hoisting / range-mirror cases.
-        run: npm install --package-lock-only
+        # --ignore-scripts: --package-lock-only still runs the root postinstall
+        # (patch-package), whose binary is absent without node_modules.
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Dedupe the lockfile
+        # `npm install` preserves locked placement, so bumping a package whose
+        # sibling declares it as a peer dependency can leave a stale hoisted
+        # copy alongside a fresh nested one. Two copies break type identity
+        # (typecheck) and app booting (codegen). Dedupe rewrites the lockfile
+        # so all resolutions of a package converge to a single hoisted copy
+        # whenever the ranges allow. A no-op when the tree is already flat.
+        # --package-lock-only + --ignore-scripts mirror the converge step.
+        run: npm dedupe --package-lock-only --ignore-scripts
 
       - name: Commit and push if anything changed
         env:
