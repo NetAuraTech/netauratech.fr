@@ -1,6 +1,6 @@
 # NetAuraTech (netauratech.fr)
 
-The NetAuraTech site: a content-driven public front (portfolio, services, contact) and an authenticated admin back-office (users, roles, permissions, files, logs, maintenance, settings), built on the Foundry 2.0 baseline (the `inertia` flavor of `adonisjs-foundry` v2.0.0) on a domain-driven backend. The public site has no CMS and no page persistence — its content is committed markdown.
+The NetAuraTech site: a content-driven public front (portfolio, services, contact) and an authenticated admin back-office (users, roles, permissions, files, logs, maintenance, settings), built on the Foundry 2.2 baseline (the `inertia` flavor of `adonisjs-foundry` v2.2.0) on a domain-driven backend. The public site has no CMS and no page persistence — its content is committed markdown.
 
 ## Language
 

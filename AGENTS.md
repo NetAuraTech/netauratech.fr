@@ -1,4 +1,4 @@
-This is `netauratech.fr` — the NetAuraTech site: a content-driven public front (portfolio, services, contact) and an authenticated admin back-office, built on the Foundry 2.0 baseline (the `inertia` flavor of `adonisjs-foundry` v2.0.0: AdonisJS v7 + Inertia/React), on a domain-driven architecture (controllers → services/repositories → models).
+This is `netauratech.fr` — the NetAuraTech site: a content-driven public front (portfolio, services, contact) and an authenticated admin back-office, built on the Foundry 2.2 baseline (the `inertia` flavor of `adonisjs-foundry` v2.2.0: AdonisJS v7 + Inertia/React), on a domain-driven architecture (controllers → services/repositories → models).
 
 <critical>
 - Prefer `npm` for dependency management and scripts.

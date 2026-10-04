@@ -56,10 +56,6 @@ export type ScannedRoutes = {
     'account.preferences.render': { paramsTuple?: []; params?: {} }
     'account.preferences.execute': { paramsTuple?: []; params?: {} }
     'account.index': { paramsTuple?: []; params?: {} }
-    'api.v1.account.profile.show': { paramsTuple?: []; params?: {} }
-    'api.v1.account.profile.update': { paramsTuple?: []; params?: {} }
-    'api.v1.account.account.update': { paramsTuple?: []; params?: {} }
-    'api.v1.account.account.destroy': { paramsTuple?: []; params?: {} }
     'api.v1.admin.account.preferences.execute': { paramsTuple?: []; params?: {} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.session.execute': { paramsTuple?: []; params?: {} }
@@ -80,14 +76,6 @@ export type ScannedRoutes = {
     'auth.social.redirect': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'auth.social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'auth.social.unlink': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'api.v1.auth.login.execute': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.register.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.forgot_password.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.reset_password.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.email_verification.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'api.v1.auth.accept_invitation.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.logout.destroy': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -151,7 +139,6 @@ export type ScannedRoutes = {
     'account.email_change.render': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'account.preferences.render': { paramsTuple?: []; params?: {} }
     'account.index': { paramsTuple?: []; params?: {} }
-    'api.v1.account.profile.show': { paramsTuple?: []; params?: {} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.two_factor.render': { paramsTuple?: []; params?: {} }
     'auth.register.render': { paramsTuple?: []; params?: {} }
@@ -162,7 +149,6 @@ export type ScannedRoutes = {
     'auth.social.render': { paramsTuple?: []; params?: {} }
     'auth.social.redirect': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'auth.social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.folders.index': { paramsTuple?: []; params?: {} }
@@ -210,7 +196,6 @@ export type ScannedRoutes = {
     'account.email_change.render': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'account.preferences.render': { paramsTuple?: []; params?: {} }
     'account.index': { paramsTuple?: []; params?: {} }
-    'api.v1.account.profile.show': { paramsTuple?: []; params?: {} }
     'auth.session.render': { paramsTuple?: []; params?: {} }
     'auth.two_factor.render': { paramsTuple?: []; params?: {} }
     'auth.register.render': { paramsTuple?: []; params?: {} }
@@ -221,7 +206,6 @@ export type ScannedRoutes = {
     'auth.social.render': { paramsTuple?: []; params?: {} }
     'auth.social.redirect': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'auth.social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'api.v1.auth.me.show': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.folders.index': { paramsTuple?: []; params?: {} }
@@ -267,13 +251,6 @@ export type ScannedRoutes = {
     'auth.session.destroy': { paramsTuple?: []; params?: {} }
     'auth.social.execute': { paramsTuple?: []; params?: {} }
     'auth.social.unlink': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'api.v1.auth.login.execute': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.register.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.forgot_password.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.reset_password.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.email_verification.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'api.v1.auth.accept_invitation.store': { paramsTuple?: []; params?: {} }
-    'api.v1.auth.logout.destroy': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.folders.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.identity.users.store': { paramsTuple?: []; params?: {} }
@@ -287,7 +264,6 @@ export type ScannedRoutes = {
     'admin.identity.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.identity.permissions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'account.account.destroy': { paramsTuple?: []; params?: {} }
-    'api.v1.account.account.destroy': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.files.delete_alt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.folders.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -296,8 +272,6 @@ export type ScannedRoutes = {
   }
   PUT: {
     'admin.file.file_folders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'api.v1.account.profile.update': { paramsTuple?: []; params?: {} }
-    'api.v1.account.account.update': { paramsTuple?: []; params?: {} }
     'api.v1.admin.file.files.move': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.files.upsert_alt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'api.v1.admin.file.folders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

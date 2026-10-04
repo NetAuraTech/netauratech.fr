@@ -28,10 +28,11 @@ const header = tv({
 interface HeaderProps {
 	/** The application name, rendered as the logo link. */
 	appName: string;
+	/** Resolved URL the logo link navigates to (built by the caller). */
+	homeHref: string;
 	/**
 	 * Primary navigation links, rendered in order inside the nav. Hrefs and
-	 * active states are computed by the caller. The first entry also drives the
-	 * logo's href — put the home link first.
+	 * active states are computed by the caller.
 	 */
 	links: HeaderLink[];
 	/**
@@ -81,6 +82,7 @@ function HeaderNavLink(props: { link: HeaderLink; variant: 'nav' | 'front'; onCl
  * @example
  * <Header
  *   appName="Foundry"
+ *   homeHref={urlFor('core.home.render')}
  *   links={[{ label: 'Home', href: urlFor('core.home.render') }]}
  *   isMenuOpen={isMenuOpen}
  *   onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
@@ -88,11 +90,10 @@ function HeaderNavLink(props: { link: HeaderLink; variant: 'nav' | 'front'; onCl
  * />
  */
 export function Header(props: HeaderProps) {
-	const { appName, links, className, isMenuOpen, onToggleMenu, onMenuClose, dark = false } = props;
+	const { appName, homeHref, links, className, isMenuOpen, onToggleMenu, onMenuClose, dark = false } = props;
 
 	const menuState = isMenuOpen ? 'opened' : 'closed';
 	const isExpanded = isMenuOpen ? 'true' : 'false';
-	const homeHref = links[0]?.href ?? '/';
 	const linkVariant = dark ? 'front' : 'nav';
 
 	return (

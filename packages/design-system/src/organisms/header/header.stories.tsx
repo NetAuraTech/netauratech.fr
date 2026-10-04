@@ -13,12 +13,13 @@ export default meta;
  * Story-level wrapper that owns the menu open/close state the way an app
  * layout would — the `Header` itself is a controlled presentational component.
  */
-function HeaderWithMenu(props: { links: HeaderLink[] }) {
+function HeaderWithMenu(props: { homeHref: string; links: HeaderLink[] }) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	return (
 		<Header
 			appName="Foundry"
+			homeHref={props.homeHref}
 			links={props.links}
 			isMenuOpen={isMenuOpen}
 			onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
@@ -27,14 +28,25 @@ function HeaderWithMenu(props: { links: HeaderLink[] }) {
 	);
 }
 
-export const Default = () => <HeaderWithMenu links={[{ label: 'Home', href: '/', isActive: true }]} />;
+export const Default = () => <HeaderWithMenu homeHref="/" links={[{ label: 'Home', href: '/', isActive: true }]} />;
 
 export const MultipleLinks = () => (
 	<HeaderWithMenu
+		homeHref="/"
 		links={[
 			{ label: 'Home', href: '/', isActive: true },
 			{ label: 'About', href: '/about' },
 			{ label: 'Contact', href: '/contact' },
+		]}
+	/>
+);
+
+export const SectionAnchors = () => (
+	<HeaderWithMenu
+		homeHref="/"
+		links={[
+			{ label: 'Services', href: '/#services' },
+			{ label: 'About', href: '/#about' },
 		]}
 	/>
 );

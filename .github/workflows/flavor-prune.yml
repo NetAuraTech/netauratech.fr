@@ -118,6 +118,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: discover-flavors
     if: needs.discover-flavors.outputs.empty == 'false'
+    # Serialize per-flavor runs: back-to-back pushes to main trigger overlapping
+    # runs whose force-pushes race on the same flavor branch — the loser fails
+    # with "stale info" (force-with-lease) on output already superseded. A new
+    # push cancels the in-flight prune of the same flavor, so only the run for
+    # the newest main survives.
+    concurrency:
+      group: flavor-prune-${{ matrix.flavor }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       matrix:
@@ -178,17 +186,37 @@ jobs:
       - name: Reinstall dependencies (post-prune package.json)
         run: npm ci
 
-      - name: Normalize formatting (post-prune oxfmt)
-        # The prune engine rewrites the flavor package.json with a 2-space
-        # indent (JSON.stringify), which fails the oxfmt tab check. Normalizing
-        # the whole pruned tree here keeps the flavor source oxfmt-clean before
-        # the gates below and before the tree is force-pushed.
-        run: npm run format
+      - name: Converge the lockfile (post-prune package.json)
+        # npm ci never rewrites the lockfile, so without this step the
+        # flavor would ship main's lockfile, still containing subtrees for
+        # dependencies the manifest pruned (e.g. @adonisjs/transmit on
+        # inertia). Same technique as the dependabot-autofix workflow.
+        run: npm install --package-lock-only
 
       - name: Regenerate AdonisJS indexes (post-prune codegen)
         uses: ./.github/actions/regenerate-codegen
         with:
           working-directory: apps/web
+
+      - name: Regenerate Lucid schema types (post-prune migrations)
+        # "node ace codegen" does not touch database/schema.ts: that file is
+        # rewritten by Lucid's schema codegen, triggered from "node ace
+        # migration:run". Without this step the flavor ships main's full
+        # schema, with table classes for migrations the manifest deleted.
+        shell: bash
+        working-directory: apps/web
+        run: |
+          cp .env.test .env
+          node ace migration:run
+
+      - name: Normalize formatting (post-prune oxfmt)
+        # Must run after every codegen step: the prune engine rewrites the
+        # flavor package.json with a 2-space indent (JSON.stringify), and the
+        # Lucid schema codegen rewrites database/schema.ts with its own
+        # template — neither output is oxfmt-clean. Normalizing the whole
+        # pruned tree here keeps the flavor source oxfmt-clean before the
+        # gates below and before the tree is force-pushed.
+        run: npm run format
 
       - name: Run typecheck
         # The flavor package.json's typecheck script fans out to the surviving

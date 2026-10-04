@@ -161,92 +161,6 @@ export class LogEntrySchema extends BaseModel {
 	declare userAgent: string | null;
 }
 
-export class PageRevisionSchema extends BaseModel {
-	static $columns = ['content', 'createdAt', 'createdBy', 'id', 'keep', 'pageTranslationId'] as const;
-	$columns = PageRevisionSchema.$columns;
-	@column()
-	declare content: any;
-	@column.dateTime({ autoCreate: true })
-	declare createdAt: DateTime;
-	@column()
-	declare createdBy: number | null;
-	@column({ isPrimary: true })
-	declare id: number;
-	@column()
-	declare keep: boolean;
-	@column()
-	declare pageTranslationId: number;
-}
-
-export class PageTranslationSchema extends BaseModel {
-	static $columns = [
-		'content',
-		'createdAt',
-		'id',
-		'locale',
-		'metaDescription',
-		'metaTitle',
-		'pageId',
-		'publishedAt',
-		'slug',
-		'status',
-		'title',
-		'updatedAt',
-	] as const;
-	$columns = PageTranslationSchema.$columns;
-	@column()
-	declare content: any;
-	@column.dateTime({ autoCreate: true })
-	declare createdAt: DateTime;
-	@column({ isPrimary: true })
-	declare id: number;
-	@column()
-	declare locale: string;
-	@column()
-	declare metaDescription: string | null;
-	@column()
-	declare metaTitle: string | null;
-	@column()
-	declare pageId: number;
-	@column.dateTime()
-	declare publishedAt: DateTime | null;
-	@column()
-	declare slug: string;
-	@column()
-	declare status: string;
-	@column()
-	declare title: string;
-	@column.dateTime({ autoCreate: true, autoUpdate: true })
-	declare updatedAt: DateTime | null;
-}
-
-export class PageSchema extends BaseModel {
-	static $columns = [
-		'createdAt',
-		'createdBy',
-		'defaultLocale',
-		'id',
-		'isHomepage',
-		'metaImageId',
-		'updatedAt',
-	] as const;
-	$columns = PageSchema.$columns;
-	@column.dateTime({ autoCreate: true })
-	declare createdAt: DateTime;
-	@column()
-	declare createdBy: number | null;
-	@column()
-	declare defaultLocale: string;
-	@column({ isPrimary: true })
-	declare id: number;
-	@column()
-	declare isHomepage: boolean;
-	@column()
-	declare metaImageId: number | null;
-	@column.dateTime({ autoCreate: true, autoUpdate: true })
-	declare updatedAt: DateTime | null;
-}
-
 export class PermissionSchema extends BaseModel {
 	static $columns = ['category', 'createdAt', 'description', 'id', 'isSystem', 'name', 'slug', 'updatedAt'] as const;
 	$columns = PermissionSchema.$columns;
@@ -313,42 +227,6 @@ export class RoleSchema extends BaseModel {
 	declare name: string;
 	@column()
 	declare slug: string;
-	@column.dateTime({ autoCreate: true, autoUpdate: true })
-	declare updatedAt: DateTime | null;
-}
-
-export class TemplateSchema extends BaseModel {
-	static $columns = [
-		'blockType',
-		'content',
-		'createdAt',
-		'createdBy',
-		'description',
-		'id',
-		'name',
-		'thumbnailId',
-		'type',
-		'updatedAt',
-	] as const;
-	$columns = TemplateSchema.$columns;
-	@column()
-	declare blockType: string | null;
-	@column()
-	declare content: any;
-	@column.dateTime({ autoCreate: true })
-	declare createdAt: DateTime;
-	@column()
-	declare createdBy: number | null;
-	@column()
-	declare description: string | null;
-	@column({ isPrimary: true })
-	declare id: number;
-	@column()
-	declare name: string;
-	@column()
-	declare thumbnailId: number | null;
-	@column()
-	declare type: string;
 	@column.dateTime({ autoCreate: true, autoUpdate: true })
 	declare updatedAt: DateTime | null;
 }
@@ -455,43 +333,4 @@ export class UserSchema extends BaseModel {
 	declare updatedAt: DateTime | null;
 	@column()
 	declare username: string;
-}
-
-export class WebhookDeliverySchema extends BaseModel {
-	static $columns = [
-		'contentType',
-		'createdAt',
-		'deliveryId',
-		'error',
-		'id',
-		'ip',
-		'payloadDigest',
-		'processedAt',
-		'receiver',
-		'status',
-		'userAgent',
-	] as const;
-	$columns = WebhookDeliverySchema.$columns;
-	@column()
-	declare contentType: string | null;
-	@column.dateTime({ autoCreate: true })
-	declare createdAt: DateTime;
-	@column()
-	declare deliveryId: string;
-	@column()
-	declare error: string | null;
-	@column({ isPrimary: true })
-	declare id: number;
-	@column()
-	declare ip: string | null;
-	@column()
-	declare payloadDigest: string;
-	@column.dateTime()
-	declare processedAt: DateTime | null;
-	@column()
-	declare receiver: string;
-	@column()
-	declare status: string;
-	@column()
-	declare userAgent: string | null;
 }
