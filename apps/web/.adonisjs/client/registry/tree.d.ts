@@ -132,6 +132,16 @@ export interface ApiDefinition {
   }
   api: {
     v1: {
+      account: {
+        profile: {
+          show: typeof routes['api.v1.account.profile.show']
+          update: typeof routes['api.v1.account.profile.update']
+        }
+        account: {
+          update: typeof routes['api.v1.account.account.update']
+          destroy: typeof routes['api.v1.account.account.destroy']
+        }
+      }
       admin: {
         account: {
           preferences: {
@@ -190,6 +200,32 @@ export interface ApiDefinition {
             update: typeof routes['api.v1.admin.core.maintenance.update']
             toggle: typeof routes['api.v1.admin.core.maintenance.toggle']
           }
+        }
+      }
+      auth: {
+        login: {
+          execute: typeof routes['api.v1.auth.login.execute']
+        }
+        register: {
+          store: typeof routes['api.v1.auth.register.store']
+        }
+        forgotPassword: {
+          store: typeof routes['api.v1.auth.forgot_password.store']
+        }
+        resetPassword: {
+          store: typeof routes['api.v1.auth.reset_password.store']
+        }
+        emailVerification: {
+          store: typeof routes['api.v1.auth.email_verification.store']
+        }
+        acceptInvitation: {
+          store: typeof routes['api.v1.auth.accept_invitation.store']
+        }
+        logout: {
+          destroy: typeof routes['api.v1.auth.logout.destroy']
+        }
+        me: {
+          show: typeof routes['api.v1.auth.me.show']
         }
       }
     }
