@@ -79,7 +79,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
-    "@storybook/react": "^10.6.0",
+    "@storybook/react": "^10.6.1",
     "@storybook/react-vite": "^10.6.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
