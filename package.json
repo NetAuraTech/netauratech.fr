@@ -26,6 +26,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@adonisjs/redis": "^11.0.0",
     "ioredis": "^5.11.1"
   },
   "devDependencies": {
@@ -36,6 +37,15 @@
   "overrides": {
     "@adonisjs/ally": {
       "@adonisjs/inertia": "^5.0.0"
+    },
+    "@adonisjs/limiter": {
+      "@adonisjs/redis": "^11.0.0"
+    },
+    "@adonisjs/queue": {
+      "@adonisjs/redis": "^11.0.0"
+    },
+    "@adonisjs/session": {
+      "@adonisjs/redis": "^11.0.0"
     },
     "nodemailer": "^10.0.13"
   },

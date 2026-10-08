@@ -44,7 +44,6 @@
     "@adonisjs/lucid": "^22.0.0",
     "@adonisjs/mail": "^10.0.0",
     "@adonisjs/queue": "0.6.2",
-    "@adonisjs/redis": "^11.0.0",
     "@adonisjs/session": "^8.0.0",
     "@adonisjs/shield": "^9.0.0",
     "@adonisjs/static": "^2.0.0",
