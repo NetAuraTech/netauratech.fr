@@ -25,6 +25,10 @@
     "typecheck": "tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p apps/web/inertia/tsconfig.json && npm run typecheck --workspace @foundry/design-system",
     "postinstall": "patch-package"
   },
+  "dependencies": {
+    "@adonisjs/redis": "^11.0.0",
+    "ioredis": "^5.11.1"
+  },
   "devDependencies": {
     "oxfmt": "^0.71.0",
     "oxlint": "^1.85.0",
@@ -33,6 +37,15 @@
   "overrides": {
     "@adonisjs/ally": {
       "@adonisjs/inertia": "^5.0.0"
+    },
+    "@adonisjs/limiter": {
+      "@adonisjs/redis": "^11.0.0"
+    },
+    "@adonisjs/queue": {
+      "@adonisjs/redis": "^11.0.0"
+    },
+    "@adonisjs/session": {
+      "@adonisjs/redis": "^11.0.0"
     },
     "nodemailer": "^10.0.13"
   },
