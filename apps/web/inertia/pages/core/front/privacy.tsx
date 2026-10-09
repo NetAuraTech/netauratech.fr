@@ -7,8 +7,8 @@ import { Paragraph } from '@foundry/design-system/paragraph';
 import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
 import { urlFor } from '~/client';
+import { SeoHead } from '~/components/atoms/seo_head';
 import { LegalDetails } from '~/components/molecules/legal_details';
 import { LegalSection } from '~/components/molecules/legal_section';
 import type { PrivacyTranslations } from '#transport/core/helpers/i18n_payloads/privacy';
@@ -41,13 +41,10 @@ export default function PrivacyPage(props: PrivacyPageProps) {
 
 	return (
 		<>
-			<Head>
-				<title>{`Politique de confidentialité — ${app_name}`}</title>
-				<meta
-					name="description"
-					content="Données collectées, finalités, durées de conservation, sous-traitants et droits des utilisateurs : la politique de confidentialité du site."
-				/>
-			</Head>
+			<SeoHead
+				title={`Politique de confidentialité — ${app_name}`}
+				description="Données collectées, finalités, durées de conservation, sous-traitants et droits des utilisateurs : la politique de confidentialité du site."
+			/>
 			<Hero
 				kicker={`${app_name} — Confidentialité`}
 				title={translations.title}

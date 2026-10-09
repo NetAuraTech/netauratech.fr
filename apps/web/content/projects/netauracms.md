@@ -4,6 +4,8 @@ cover: 16
 rubrique: Application web
 title: NetAuraCMS
 note: CMS ultra-performant, alternative à WordPress
+metaTitle: NetAuraCMS — CMS ultra-performant, alternative à WordPress
+metaDescription: Un CMS ultra-rapide pensé comme alternative à WordPress : éditeur de contenu intuitif, blocs réutilisables et rendu performant, sans la lourdeur des plateformes classiques.
 ---
 
 Un CMS ultra-performant, pensé comme une alternative à WordPress : éditeur de

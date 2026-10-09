@@ -2,6 +2,7 @@ import { inject } from '@adonisjs/core';
 import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware';
 import { GetPreferencesAction } from '#account/actions/preferences/get_preferences_action';
 import { DEFAULT_PREFERENCES } from '#account/types/preferences';
+import legalConfig from '#config/legal';
 import { NavRegistry } from '#core/services/nav_registry';
 import env from '#start/env';
 import { buildCommonPayload } from '#transport/core/helpers/i18n_payloads/common';
@@ -58,6 +59,7 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
 			app_name: env.get('APP_NAME'),
 			app_url: env.get('APP_URL'),
 			email: env.get('MAIL_FROM_ADDRESS'),
+			legal_identity: legalConfig.identity,
 			common_translations: buildCommonPayload(new I18nService(ctx.i18n)),
 			admin_menu: isAdmin ? this.buildAdminMenu(ctx) : undefined,
 		};

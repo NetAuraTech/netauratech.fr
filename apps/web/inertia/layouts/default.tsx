@@ -16,7 +16,7 @@ interface LayoutProps {
  */
 export default function Layout(props: LayoutProps) {
 	const { children } = props;
-	const { props: pageProps, url, flash } = usePage<SharedProps>();
+	const { props: pageProps, url, flash, component } = usePage<SharedProps>();
 	const { app_name, app_url } = pageProps;
 	// The projects listing is a sealed frame on desktop: only the list scrolls, so
 	// the footer is kept off the desktop layout (reference behaviour) and is
@@ -54,11 +54,16 @@ export default function Layout(props: LayoutProps) {
 		{ label: 'Contact', href: `${urlFor('core.home.render')}#contact`, isActive: false },
 	];
 
-	const image_alt = '';
+	const image_alt = 'Développement web sur mesure — sites vitrines, e-commerce et applications web';
 	const geo = {
-		region: '',
-		placename: '',
+		region: 'FR-62',
+		placename: 'Samer',
 	};
+	// Error surfaces must not be indexed; every other page is open to crawlers.
+	const isNoindexPage = (component ?? '').startsWith('errors/');
+	const robots = isNoindexPage
+		? 'noindex, nofollow'
+		: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
 	return (
 		<>
@@ -66,7 +71,7 @@ export default function Layout(props: LayoutProps) {
 				<link rel="canonical" href={`${app_url}${url}`} />
 				<link rel="preconnect" href="https://api.iconify.design" />
 				<link rel="dns-prefetch" href="https://api.iconify.design" />
-				<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+				<meta name="robots" content={robots} />
 				<meta name="language" content="fr" />
 				<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 				<link rel="icon" type="image/svg+xml" href="/favicon.svg" />

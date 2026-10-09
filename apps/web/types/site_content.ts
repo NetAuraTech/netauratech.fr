@@ -37,6 +37,16 @@ export type SiteProject = {
 	title: string;
 	/** One-line project description. */
 	note: string;
+	/**
+	 * Optional SEO title override for the project single page head; falls back
+	 * to `title` when unset.
+	 */
+	metaTitle?: string;
+	/**
+	 * Optional SEO description override for the project single page head; falls
+	 * back to `note` when unset.
+	 */
+	metaDescription?: string;
 	/** Ordered story blocks parsed from the source body. See `ProjectBlock`. */
 	blocks: ProjectBlock[];
 };

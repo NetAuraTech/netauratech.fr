@@ -4,6 +4,8 @@ cover: 7
 rubrique: Site vitrine
 title: Lille Karting
 note: Plateforme du plus grand complexe de karting de France
+metaTitle: Lille Karting — Plateforme du plus grand karting de France
+metaDescription: Plateforme sur mesure du plus grand complexe de karting de France : réservation en ligne, espace membre et leaderboard en temps réel pour une expérience immersive.
 ---
 
 La plateforme digitale sur mesure du plus grand complexe de karting

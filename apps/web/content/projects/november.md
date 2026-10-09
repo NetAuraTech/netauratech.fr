@@ -4,6 +4,8 @@ cover: 10
 rubrique: Site vitrine
 title: November
 note: Site vitrine d'un groupe de metalcore français
+metaTitle: November — Site vitrine d'un groupe de metalcore
+metaDescription: Site vitrine sur mesure du groupe de metalcore November : discographie, dates de concerts et merchandising gérés en autonomie, dans un design à la hauteur de l'univers du groupe.
 ---
 
 Le site vitrine sur mesure du groupe de metalcore November : une plateforme

@@ -4,6 +4,8 @@ cover: 13
 rubrique: Site vitrine
 title: Le Relais de Saint-Jacques
 note: Site vitrine et réservation d'une maison d'hôtes de charme
+metaTitle: Le Relais de Saint-Jacques — Site vitrine et réservation en ligne
+metaDescription: Site vitrine et réservation en ligne d'une maison d'hôtes de charme à Boulogne-sur-Mer, avec synchronisation automatique des calendriers Airbnb et Booking.
 ---
 
 Le site vitrine et le système de réservation en ligne d'une maison d'hôtes de

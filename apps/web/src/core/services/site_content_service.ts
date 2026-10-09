@@ -136,6 +136,8 @@ export class SiteContentService {
 			rubrique: requiredString(attributes, 'rubrique'),
 			title: requiredString(attributes, 'title'),
 			note: requiredString(attributes, 'note'),
+			metaTitle: optionalString(attributes, 'metaTitle'),
+			metaDescription: optionalString(attributes, 'metaDescription'),
 			blocks: parseProjectBlocks(body),
 		};
 	}
@@ -231,6 +233,24 @@ function requiredString(attributes: Record<string, unknown>, key: string): strin
 	const value = attributes[key];
 	if (typeof value !== 'string' || value.trim() === '') {
 		throw contentError(`Missing or invalid "${key}" field`);
+	}
+	return value;
+}
+
+/**
+ * Read an optional string frontmatter field.
+ *
+ * Unlike the required readers, an absent, blank, or non-string value yields
+ * `undefined` instead of an error — the page head falls back to its base
+ * title/note for such sources.
+ *
+ * @param attributes - Parsed frontmatter attributes.
+ * @param key - The field to read.
+ */
+function optionalString(attributes: Record<string, unknown>, key: string): string | undefined {
+	const value = attributes[key];
+	if (typeof value !== 'string' || value.trim() === '') {
+		return undefined;
 	}
 	return value;
 }

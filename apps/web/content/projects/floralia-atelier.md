@@ -4,6 +4,8 @@ cover: 19
 rubrique: Site vitrine
 title: Floralia Atelier
 note: Site vitrine d'un atelier floral à Samer
+metaTitle: Floralia Atelier — Site vitrine d'un atelier floral à Samer
+metaDescription: Site vitrine de l'atelier floral Floralia Atelier à Samer : créations florales sur mesure et entretien de sépultures, une présence digitale à la hauteur du métier.
 ---
 
 Le site vitrine de Floralia Atelier, l'atelier floral de Magali à Samer : une

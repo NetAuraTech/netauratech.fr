@@ -4,6 +4,8 @@ cover: 6
 rubrique: Application web
 title: AdonisJS Foundry
 note: Boilerplate production-ready AdonisJS v7
+metaTitle: AdonisJS Foundry — Boilerplate AdonisJS v7
+metaDescription: Boilerplate de production pour AdonisJS v7 : authentification, back-office, CMS, stockage de fichiers et déploiement. Une base production-ready et extensible.
 ---
 
 Un boilerplate de référence pour lancer rapidement des applications
