@@ -240,6 +240,18 @@ const routes = {
     tokens: [{"old":"/services","type":0,"val":"services","end":""}],
     types: placeholder as Registry['core.services.render']['types'],
   },
+  'core.mentions.render': {
+    methods: ["GET","HEAD"],
+    pattern: '/mentions-legales',
+    tokens: [{"old":"/mentions-legales","type":0,"val":"mentions-legales","end":""}],
+    types: placeholder as Registry['core.mentions.render']['types'],
+  },
+  'core.privacy.render': {
+    methods: ["GET","HEAD"],
+    pattern: '/politique-de-confidentialite',
+    tokens: [{"old":"/politique-de-confidentialite","type":0,"val":"politique-de-confidentialite","end":""}],
+    types: placeholder as Registry['core.privacy.render']['types'],
+  },
   'core.sitemap.show': {
     methods: ["GET","HEAD"],
     pattern: '/sitemap.xml',

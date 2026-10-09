@@ -25,10 +25,10 @@ export function ServiceDetail({ index, service }: ServiceDetailProps) {
 	return (
 		<article className="border-t border-white/10 py-16 md:py-24">
 			<div className="flex items-baseline justify-between gap-6">
+				<Heading level={3}>{service.rubrique}</Heading>
 				<span className="font-news text-[11px] tracking-[0.2em] text-primary-soft" aria-hidden="true">
 					{String(index + 1).padStart(2, '0')}
 				</span>
-				<Heading level={3}>{service.rubrique}</Heading>
 			</div>
 
 			<ul className="mt-8 flex flex-wrap gap-2.5">

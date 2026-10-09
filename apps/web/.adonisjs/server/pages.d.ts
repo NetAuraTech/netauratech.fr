@@ -26,6 +26,8 @@ declare module '@adonisjs/inertia/types' {
     'core/admin/dashboard.spec': ExtractProps<(typeof import('../../inertia/pages/core/admin/dashboard.spec.tsx'))['default']>
     'core/admin/dashboard': ExtractProps<(typeof import('../../inertia/pages/core/admin/dashboard.tsx'))['default']>
     'core/front/home': ExtractProps<(typeof import('../../inertia/pages/core/front/home.tsx'))['default']>
+    'core/front/mentions': ExtractProps<(typeof import('../../inertia/pages/core/front/mentions.tsx'))['default']>
+    'core/front/privacy': ExtractProps<(typeof import('../../inertia/pages/core/front/privacy.tsx'))['default']>
     'core/front/project': ExtractProps<(typeof import('../../inertia/pages/core/front/project.tsx'))['default']>
     'core/front/projects': ExtractProps<(typeof import('../../inertia/pages/core/front/projects.tsx'))['default']>
     'core/front/services': ExtractProps<(typeof import('../../inertia/pages/core/front/services.tsx'))['default']>

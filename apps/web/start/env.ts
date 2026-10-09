@@ -32,6 +32,23 @@ export default await Env.create(new URL('../', import.meta.url), {
 	APP_NAME: Env.schema.string(),
 
 	/*
+   |----------------------------------------------------------
+   | Variables for the public legal pages
+   |----------------------------------------------------------
+   |
+   | Identity of the site publisher, displayed on the legal notices and
+   | privacy pages. Unset values render as the literal `<CHANGEME>`
+   | placeholder; keep the real values out of the repository.
+   |
+   */
+	LEGAL_PUBLISHER_NAME: Env.schema.string.optional(),
+	LEGAL_PUBLISHER_STATUS: Env.schema.string.optional(),
+	LEGAL_PUBLISHER_ADDRESS: Env.schema.string.optional(),
+	LEGAL_PUBLISHER_SIRET: Env.schema.string.optional(),
+	LEGAL_PUBLICATION_DIRECTOR: Env.schema.string.optional(),
+	LEGAL_PRIVACY_UPDATED_AT: Env.schema.string.optional(),
+
+	/*
   |----------------------------------------------------------
   | Variables for configuring session
   |----------------------------------------------------------
