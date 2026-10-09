@@ -475,6 +475,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
     }
   }
+  'core.mentions.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/mentions-legales'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
+    }
+  }
+  'core.privacy.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/politique-de-confidentialite'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
+    }
+  }
   'core.sitemap.show': {
     methods: ["GET","HEAD"]
     pattern: '/sitemap.xml'

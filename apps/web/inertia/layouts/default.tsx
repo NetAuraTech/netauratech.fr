@@ -1,7 +1,7 @@
 import { SharedProps } from '@adonisjs/inertia/types';
 import { Footer } from '@foundry/design-system/footer';
 import { Header } from '@foundry/design-system/header';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import { urlFor } from '~/client';
@@ -128,7 +128,14 @@ function creditNode() {
 			>
 				AdonisJsFoundry
 			</a>{' '}
-			· Hauts-de-France
+			· Hauts-de-France ·{' '}
+			<Link href={urlFor('core.mentions.render')} className="text-ink-inverted hover:text-primary-light">
+				Mentions légales
+			</Link>{' '}
+			·{' '}
+			<Link href={urlFor('core.privacy.render')} className="text-ink-inverted hover:text-primary-light">
+				Confidentialité
+			</Link>
 		</p>
 	);
 }

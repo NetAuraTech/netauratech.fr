@@ -53,6 +53,8 @@ export const controllers = {
     front: {
       Docs: () => import('#transport/core/controllers/front/docs_controller'),
       Home: () => import('#transport/core/controllers/front/home_controller'),
+      Mentions: () => import('#transport/core/controllers/front/mentions_controller'),
+      Privacy: () => import('#transport/core/controllers/front/privacy_controller'),
       Project: () => import('#transport/core/controllers/front/project_controller'),
       Projects: () => import('#transport/core/controllers/front/projects_controller'),
       Robots: () => import('#transport/core/controllers/front/robots_controller'),

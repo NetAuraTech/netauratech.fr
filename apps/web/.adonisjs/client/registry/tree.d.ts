@@ -94,6 +94,12 @@ export interface ApiDefinition {
     services: {
       render: typeof routes['core.services.render']
     }
+    mentions: {
+      render: typeof routes['core.mentions.render']
+    }
+    privacy: {
+      render: typeof routes['core.privacy.render']
+    }
     sitemap: {
       show: typeof routes['core.sitemap.show']
     }
