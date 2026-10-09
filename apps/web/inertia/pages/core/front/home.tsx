@@ -11,8 +11,9 @@ import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { ServiceCard } from '@foundry/design-system/service-card';
 import { usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
 import { urlFor } from '~/client';
+import { SeoHead } from '~/components/atoms/seo_head';
+import { businessJsonLd } from '~/helpers/structured_data';
 import type { HomeTranslations } from '#transport/core/helpers/i18n_payloads/home';
 import type { SiteProject, SiteService } from '#types/site_content';
 
@@ -25,19 +26,24 @@ interface HomePageProps {
 export default function HomePage(props: HomePageProps) {
 	const { services, projects } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
-	const { app_name, app_url } = sharedProps;
+	const { app_name, app_url, email, legal_identity } = sharedProps;
 
 	return (
 		<>
 			<LoupeCursor />
-			<Head>
-				<title>{`Créez un site web unique qui propulse votre activité — ${app_name}`}</title>
-				<meta
-					name="description"
-					content="Développement web sur mesure : sites vitrines, boutiques en ligne et applications web entièrement personnalisés. Code 100 % sur mesure, performances exceptionnelles."
-				/>
-				<link rel="canonical" href={app_url} />
-			</Head>
+			<SeoHead
+				title={`Créez un site web unique qui propulse votre activité — ${app_name}`}
+				description="Développement web sur mesure : sites vitrines, boutiques en ligne et applications web entièrement personnalisés. Code 100 % sur mesure, performances exceptionnelles."
+				jsonLd={[
+					businessJsonLd({
+						appUrl: app_url,
+						appName: app_name,
+						email,
+						identity: legal_identity,
+						services,
+					}),
+				]}
+			/>
 			<Hero
 				kicker={`${app_name} — Développement web sur mesure`}
 				title={

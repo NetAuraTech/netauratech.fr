@@ -18,9 +18,21 @@ export class GetRobotsTxtAction {
 
 	/**
 	 * Constructs the robots.txt content.
+	 *
+	 * The authenticated back-office (`/admin`, `/settings`) and the versioned
+	 * REST API (`/api/*`) are kept out of the crawl space: they are session- or
+	 * token-gated and carry no public SEO value.
 	 */
 	buildRobotsTxt(appUrl: string): string {
-		const lines = ['User-agent: *', 'Allow: /', `Sitemap: ${appUrl}/sitemap.xml`];
+		const lines = [
+			'User-agent: *',
+			'Allow: /',
+			'Disallow: /admin/*',
+			'Disallow: /settings/*',
+			'Disallow: /api/*',
+			'',
+			`Sitemap: ${appUrl}/sitemap.xml`,
+		];
 		return lines.join('\n') + '\n';
 	}
 }

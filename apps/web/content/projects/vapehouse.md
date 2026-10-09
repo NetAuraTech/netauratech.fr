@@ -4,6 +4,8 @@ cover: 4
 rubrique: E-commerce
 title: VapeHouse
 note: Boutique en ligne sur mesure à Desvres
+metaTitle: VapeHouse — Boutique en ligne sur mesure à Desvres
+metaDescription: Boutique en ligne sur mesure de VapeHouse à Desvres : catalogue complet, paiement sécurisé et gestion des stocks, avec un design pensé pour l'enseigne et son expérience client.
 ---
 
 La boutique en ligne sur mesure de VapeHouse à Desvres : catalogue complet,

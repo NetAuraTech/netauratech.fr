@@ -10,7 +10,8 @@ import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { ServiceDetail } from '@foundry/design-system/service-detail';
 import { usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
+import { SeoHead } from '~/components/atoms/seo_head';
+import { businessJsonLd } from '~/helpers/structured_data';
 import type { SiteService } from '#types/site_content';
 
 interface ServicesPageProps {
@@ -21,18 +22,23 @@ interface ServicesPageProps {
 export default function ServicesPage(props: ServicesPageProps) {
 	const { services } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
-	const { app_name } = sharedProps;
+	const { app_name, app_url, legal_identity } = sharedProps;
 
 	return (
 		<>
 			<LoupeCursor />
-			<Head>
-				<title>{`Services — Sites vitrines, e-commerce et applications web — ${app_name}`}</title>
-				<meta
-					name="description"
-					content="Sites vitrines, boutiques en ligne et applications web entièrement sur mesure. Inclus, tarifs et accompagnement : découvrez chaque offre NetAuraTech."
-				/>
-			</Head>
+			<SeoHead
+				title={`Services — Sites vitrines, e-commerce et applications web — ${app_name}`}
+				description="Sites vitrines, boutiques en ligne et applications web entièrement sur mesure. Inclus, tarifs et accompagnement : découvrez chaque offre NetAuraTech."
+				jsonLd={[
+					businessJsonLd({
+						appUrl: app_url,
+						appName: app_name,
+						identity: legal_identity,
+						services,
+					}),
+				]}
+			/>
 			<Hero
 				kicker={`${app_name} — Services`}
 				title={

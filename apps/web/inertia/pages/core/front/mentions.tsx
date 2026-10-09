@@ -7,8 +7,8 @@ import { Paragraph } from '@foundry/design-system/paragraph';
 import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { Link, usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
 import { urlFor } from '~/client';
+import { SeoHead } from '~/components/atoms/seo_head';
 import { LegalDetails } from '~/components/molecules/legal_details';
 import { LegalSection } from '~/components/molecules/legal_section';
 import type { MentionsTranslations } from '#transport/core/helpers/i18n_payloads/mentions';
@@ -37,13 +37,10 @@ export default function MentionsPage(props: MentionsPageProps) {
 
 	return (
 		<>
-			<Head>
-				<title>{`Mentions légales — ${app_name}`}</title>
-				<meta
-					name="description"
-					content="Éditeur, hébergement, propriété intellectuelle, cookies et responsabilité : les mentions légales du site."
-				/>
-			</Head>
+			<SeoHead
+				title={`Mentions légales — ${app_name}`}
+				description="Éditeur, hébergement, propriété intellectuelle, cookies et responsabilité : les mentions légales du site."
+			/>
 			<Hero
 				kicker={`${app_name} — Informations légales`}
 				title={translations.title}

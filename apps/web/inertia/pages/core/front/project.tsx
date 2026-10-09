@@ -12,8 +12,9 @@ import { ProjectCover } from '@foundry/design-system/project-cover';
 import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { Link, usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
 import { urlFor } from '~/client';
+import { SeoHead } from '~/components/atoms/seo_head';
+import { breadcrumbJsonLd, businessJsonLd } from '~/helpers/structured_data';
 import type { SiteProject } from '#types/site_content';
 
 interface ProjectPageProps {
@@ -36,7 +37,7 @@ interface ProjectPageProps {
 export default function ProjectPage(props: ProjectPageProps) {
 	const { project, projects } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
-	const { app_name } = sharedProps;
+	const { app_name, app_url, legal_identity } = sharedProps;
 
 	const index = projects.findIndex((entry) => entry.slug === project.slug);
 	const next = projects.length > 0 ? projects[(index + 1) % projects.length] : null;
@@ -44,13 +45,29 @@ export default function ProjectPage(props: ProjectPageProps) {
 	const storyBlocks = project.blocks.filter((block) => block.type !== 'gallery');
 	const nextHref = next ? urlFor('core.projects.show.render', { slug: next.slug }) : undefined;
 
+	const seoTitle = project.metaTitle
+		? `${project.metaTitle} — ${app_name}`
+		: `${project.title} — ${project.rubrique} — ${app_name}`;
+	const seoDescription = project.metaDescription ?? project.note;
+
 	return (
 		<>
 			<LoupeCursor />
-			<Head>
-				<title>{`${project.title} — ${project.rubrique} — ${app_name}`}</title>
-				<meta name="description" content={project.note} />
-			</Head>
+			<SeoHead
+				title={seoTitle}
+				description={seoDescription}
+				image={project.coverFile?.url}
+				imageWidth={project.coverFile?.width}
+				imageHeight={project.coverFile?.height}
+				jsonLd={[
+					businessJsonLd({ appUrl: app_url, appName: app_name, identity: legal_identity }),
+					breadcrumbJsonLd([
+						{ name: 'Accueil', url: `${app_url}/` },
+						{ name: 'Projets', url: `${app_url}/projets` },
+						{ name: project.title },
+					]),
+				]}
+			/>
 			<ProjectCover
 				index={index}
 				rubrique={project.rubrique}

@@ -2,8 +2,9 @@ import { SharedProps } from '@adonisjs/inertia/types';
 import { LoupeCursor } from '@foundry/design-system/loupe-cursor';
 import { ProjectsShowcase, type ShowcaseEntry } from '@foundry/design-system/projects-showcase';
 import { usePage } from '@inertiajs/react';
-import { Head } from '@inertiajs/react';
 import { urlFor } from '~/client';
+import { SeoHead } from '~/components/atoms/seo_head';
+import { businessJsonLd, projectItemListJsonLd } from '~/helpers/structured_data';
 import type { SiteProject } from '#types/site_content';
 
 interface ProjectsPageProps {
@@ -22,7 +23,7 @@ interface ProjectsPageProps {
 export default function ProjectsPage(props: ProjectsPageProps) {
 	const { projects } = props;
 	const { props: sharedProps } = usePage<SharedProps>();
-	const { app_name } = sharedProps;
+	const { app_name, app_url, legal_identity } = sharedProps;
 
 	const entries: ShowcaseEntry[] = projects.map((project, i) => ({
 		index: i,
@@ -35,13 +36,14 @@ export default function ProjectsPage(props: ProjectsPageProps) {
 	return (
 		<>
 			<LoupeCursor />
-			<Head>
-				<title>{`Projets — Sites vitrines, e-commerce et applications web — ${app_name}`}</title>
-				<meta
-					name="description"
-					content="Le portfolio NetAuraTech : sites vitrines, boutiques en ligne et applications web entièrement sur mesure, conçus pour votre métier et votre croissance."
-				/>
-			</Head>
+			<SeoHead
+				title={`Projets — Sites vitrines, e-commerce et applications web — ${app_name}`}
+				description="Le portfolio NetAuraTech : sites vitrines, boutiques en ligne et applications web entièrement sur mesure, conçus pour votre métier et votre croissance."
+				jsonLd={[
+					businessJsonLd({ appUrl: app_url, appName: app_name, identity: legal_identity }),
+					projectItemListJsonLd(app_url, app_name, projects),
+				]}
+			/>
 			<ProjectsShowcase
 				kicker={`${app_name} — Projets`}
 				title={
