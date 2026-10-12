@@ -30,7 +30,7 @@
     "ioredis": "^5.11.1"
   },
   "devDependencies": {
-    "oxfmt": "^0.71.0",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.85.0",
     "typescript": "~5.9.3"
   },
