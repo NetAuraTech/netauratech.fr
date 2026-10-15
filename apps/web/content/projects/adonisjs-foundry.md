@@ -1,6 +1,6 @@
 ---
 order: 6
-cover: 6
+cover: 22
 rubrique: Application web
 title: AdonisJS Foundry
 note: Boilerplate production-ready AdonisJS v7
@@ -46,9 +46,9 @@ laisse toute liberté sur le projet final.
 :::
 
 :::gallery
-id:7
-id:8
-id:9
+id:22
+id:23
+id:24
 :::
 
 ## Un écosystème complet
