@@ -1,4 +1,10 @@
 /**
+ * The tier currently serving operations on a composite (failover) driver.
+ * Single-tier drivers have no tier state.
+ */
+export type CacheTier = 'primary' | 'fallback';
+
+/**
  * Contract that any cache driver must implement.
  *
  * Switching the underlying store (Redis, Memcached, in-memory, …) only
@@ -6,6 +12,12 @@
  * it to `CacheService`. No other application code needs to change.
  */
 export interface CacheDriver {
+	/**
+	 * The tier that served the last successful operation — present only on
+	 * composite (failover) drivers; single-tier drivers have no tier state
+	 * and leave this unset.
+	 */
+	readonly currentTier?: CacheTier;
 	/**
 	 * Returns the cached value for `key`, or `null` if missing / expired.
 	 * The value is JSON-decoded automatically.

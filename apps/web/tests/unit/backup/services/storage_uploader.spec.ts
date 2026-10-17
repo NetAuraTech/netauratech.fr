@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { test } from '@japa/runner';
 import sinon from 'sinon';
 
@@ -11,6 +12,9 @@ test.group('StorageUploader', (group) => {
 		put: ReturnType<typeof sinon.stub>;
 		listAll: ReturnType<typeof sinon.stub>;
 		getMetaData: ReturnType<typeof sinon.stub>;
+		exists: ReturnType<typeof sinon.stub>;
+		getStream: ReturnType<typeof sinon.stub>;
+		delete: ReturnType<typeof sinon.stub>;
 	};
 
 	group.each.setup(() => {
@@ -18,6 +22,9 @@ test.group('StorageUploader', (group) => {
 			put: sinon.stub().resolves(),
 			listAll: sinon.stub().resolves({ objects: [] }),
 			getMetaData: sinon.stub().resolves({ contentLength: 1024, lastModified: new Date() }),
+			exists: sinon.stub().resolves(true),
+			getStream: sinon.stub().resolves({}),
+			delete: sinon.stub().resolves(),
 		};
 	});
 
@@ -109,5 +116,70 @@ test.group('StorageUploader', (group) => {
 		const result = await uploader.getMetaData('backup/dump.sql.gz.enc');
 		assert.isTrue(driveStub.getMetaData.calledWith('backup/dump.sql.gz.enc'));
 		assert.equal(result.contentLength, 2048);
+	});
+
+	// ─── exists() ─────────────────────────────────────────────────────────────
+
+	test('exists() checks the prefixed remote path', async ({ assert }) => {
+		driveStub.exists.resolves(true);
+
+		const readFileStub = sinon.stub().resolves(Buffer.from('data'));
+		const { StorageUploader } = await import('#backup/services/storage_uploader');
+		const uploader = new StorageUploader(driveStub as any, readFileStub);
+
+		const result = await uploader.exists('dump.sql.gz.enc');
+		assert.isTrue(driveStub.exists.calledWith('backup/dump.sql.gz.enc'));
+		assert.isTrue(result);
+	});
+
+	test('exists() returns false when the object is missing', async ({ assert }) => {
+		driveStub.exists.resolves(false);
+
+		const readFileStub = sinon.stub().resolves(Buffer.from('data'));
+		const { StorageUploader } = await import('#backup/services/storage_uploader');
+		const uploader = new StorageUploader(driveStub as any, readFileStub);
+
+		const result = await uploader.exists('missing.sql.gz.enc');
+		assert.isTrue(driveStub.exists.calledWith('backup/missing.sql.gz.enc'));
+		assert.isFalse(result);
+	});
+
+	// ─── delete() ─────────────────────────────────────────────────────────────
+
+	test('delete() removes the prefixed remote path', async ({ assert }) => {
+		driveStub.delete.resolves();
+
+		const readFileStub = sinon.stub().resolves(Buffer.from('data'));
+		const { StorageUploader } = await import('#backup/services/storage_uploader');
+		const uploader = new StorageUploader(driveStub as any, readFileStub);
+
+		await uploader.delete('dump.sql.gz.enc');
+		assert.isTrue(driveStub.delete.calledWith('backup/dump.sql.gz.enc'));
+	});
+
+	// ─── download() ───────────────────────────────────────────────────────────
+
+	test('download() pipes the remote stream into the local file', async ({ assert }) => {
+		const fakeStream = { pipe: () => undefined };
+		driveStub.getStream.resolves(fakeStream);
+
+		const mkdirStub = sinon.stub().resolves();
+		const createWriteStreamStub = sinon.stub().returns(fakeStream);
+		const pipelineStub = sinon.stub().resolves();
+
+		const readFileStub = sinon.stub().resolves(Buffer.from('data'));
+		const { StorageUploader } = await import('#backup/services/storage_uploader');
+		const uploader = new StorageUploader(driveStub as any, readFileStub, {
+			_mkdir: mkdirStub,
+			_createWriteStream: createWriteStreamStub,
+			_pipeline: pipelineStub,
+		});
+
+		await uploader.download('dump.sql.gz.enc', '/tmp/backups/dump.sql.gz.enc');
+
+		assert.isTrue(driveStub.getStream.calledWith('backup/dump.sql.gz.enc'));
+		assert.isTrue(mkdirStub.calledWith(join('/tmp/backups/dump.sql.gz.enc', '..'), { recursive: true }));
+		assert.isTrue(createWriteStreamStub.calledWith('/tmp/backups/dump.sql.gz.enc'));
+		assert.isTrue(pipelineStub.calledWith(fakeStream, fakeStream));
 	});
 });

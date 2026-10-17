@@ -1,6 +1,6 @@
 {
   "name": "adonisjs-foundry",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
@@ -31,7 +31,8 @@
   },
   "devDependencies": {
     "oxfmt": "^0.71.0",
-    "oxlint": "^1.85.0",
+    "oxlint": "^1.87.0",
+    "pino-pretty": "^13.2.0",
     "typescript": "~5.9.3"
   },
   "overrides": {

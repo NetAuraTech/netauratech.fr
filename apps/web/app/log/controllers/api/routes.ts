@@ -6,7 +6,9 @@
 | Versioned REST API (access-token guard) for the application log viewer.
 | Self-registers on import (see `app/log/routes.ts`), gated by the
 | `adminApi` feature flag. Public URL lives under `/api/v1/admin/logs`;
-| route names carry the `api.v1.admin.log` prefix.
+| route names carry the `api.v1.admin.log` prefix. Each route registers its
+| OpenAPI docs at its declaration (`registerApiDoc`), keyed by the route
+| itself: the route name is derived from the route, never hand-assembled.
 |
 */
 
@@ -18,7 +20,8 @@ import { middleware } from '#start/kernel';
 import { apiClientThrottle } from '#start/limiter';
 import { permissions } from '#start/permissions';
 import { maintenanceMiddleware } from '#transport/core/maintenance';
-import { registerLogApiDocs } from '#transport/log/api_docs';
+import { registerApiDoc } from '#transport/core/openapi/api_docs_registry';
+import { logsEndpointsDocs } from '#transport/log/rest/logs_resource';
 
 /**
  * The admin JSON surface is shared: the in-repo admin UI (session guard) and
@@ -29,10 +32,6 @@ import { registerLogApiDocs } from '#transport/log/api_docs';
 const apiGuards = enabledAuthGuards.api ? (['web', 'api'] as const) : (['web'] as const);
 
 if (features.adminApi) {
-	// Document the log surface alongside the routes, so the OpenAPI spec
-	// and the registry above stay in lockstep.
-	registerLogApiDocs();
-
 	router
 		.group(() => {
 			router
@@ -40,8 +39,7 @@ if (features.adminApi) {
 					// Logs
 					router
 						.group(() => {
-							router
-								.get('/', [controllers.log.api.LogsApi, 'index'])
+							registerApiDoc(router.get('/', [controllers.log.api.LogsApi, 'index']), logsEndpointsDocs.index)
 								.as('log.logs.index')
 								.use([middleware.permission({ permissions: [permissions.logs.view] })]);
 						})

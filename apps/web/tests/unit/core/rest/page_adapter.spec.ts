@@ -5,7 +5,7 @@ import { type HttpContext } from '@adonisjs/core/http';
 import { test } from '@japa/runner';
 import { handle } from '#transport/core/rest/page_adapter';
 import { type AnyRestEndpoint } from '#transport/core/rest/rest_adapter';
-import { RestEndpointManifest } from '#transport/core/rest/rest_endpoint_manifest';
+import { restRoutesRegistryHook } from '#transport/core/rest/rest_routes_registry_hook';
 import type { ScannedController } from '@adonisjs/assembler/types';
 
 const APP_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
@@ -68,6 +68,37 @@ function makePageController(appRoot: string): ScannedController {
 			value: 'Controller',
 		},
 	};
+}
+
+/** The `extractValidators` callback the hook installs on the routes scanner. */
+type ValidatorExtractor = (route: unknown, controller: ScannedController) => Promise<unknown>;
+
+/** The endpoint resolver the seam exposes per scanned controller. */
+type EndpointResolver = (controller: ScannedController) => Promise<unknown>;
+
+/**
+ * Drive the module through its public seam: register the init hook, fire the
+ * `routesScanning` event, and return the `extractValidators` callback the
+ * hook installed on the routes scanner.
+ */
+function createEndpointResolver(appRoot: string): EndpointResolver {
+	const hook = restRoutesRegistryHook();
+	let extractor: ValidatorExtractor = async () => undefined;
+	const bus = {
+		add(
+			_event: 'routesScanning',
+			cb: (devServer: unknown, routesScanner: { extractValidators(cb: ValidatorExtractor): unknown }) => void,
+		): void {
+			cb(undefined, {
+				extractValidators(installed) {
+					extractor = installed;
+					return undefined;
+				},
+			});
+		},
+	};
+	hook.run({ cwdPath: appRoot }, bus);
+	return (controller) => extractor(undefined, controller);
 }
 
 interface RecordedCall {
@@ -295,13 +326,13 @@ test.group('handle', () => {
 	});
 });
 
-test.group('RestEndpointManifest', () => {
+test.group('rest routes registry hook', () => {
 	let appRoot: string;
 
 	test('resolves page-adapter delegations through the same trace', async ({ assert }) => {
 		appRoot = await createPageFixtureAppRoot();
 		try {
-			assert.deepEqual(await new RestEndpointManifest(appRoot).resolve(makePageController(appRoot)), [
+			assert.deepEqual(await createEndpointResolver(appRoot)(makePageController(appRoot)), [
 				{
 					name: 'restIdValidator',
 					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'restIdValidator' },

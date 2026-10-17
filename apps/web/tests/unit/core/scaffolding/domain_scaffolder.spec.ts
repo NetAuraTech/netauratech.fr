@@ -1,5 +1,12 @@
+import { readFileSync } from 'node:fs';
 import { test } from '@japa/runner';
+import ScaffolderRegistrationException from '#core/exceptions/scaffolder_registration_exception';
 import {
+	NAV_IMPORTS_MARKER,
+	NAV_REGISTRATION_MARKER,
+	PERMISSIONS_CATALOG_MARKER,
+	PERMISSIONS_IMPORTS_MARKER,
+	ROUTES_IMPORTS_MARKER,
 	applyNavRegistration,
 	applyPackageImportsRegistration,
 	applyPermissionsRegistration,
@@ -140,11 +147,20 @@ test.group('domain scaffolder file set', () => {
 	});
 });
 
-const routesSeed = `import '#transport/log/routes';\n`;
+// Seeds mirroring the committed `start/` composition files: every pinned marker
+// in its documented position (right after the logging registration, the last
+// pinned anchor line).
+const routesSeed = `import '#transport/log/routes';\n${ROUTES_IMPORTS_MARKER}\nimport '#transport/webhook/routes';\n`;
 
-const permissionsSeed = `import { loggingPermissionCatalog } from '#log/permissions';\n\nconst permissionCatalog = {\n\t...loggingPermissionCatalog,\n};\n`;
+const routesOnce = `import '#transport/log/routes';\n${ROUTES_IMPORTS_MARKER}\nimport '#transport/widget/routes';\nimport '#transport/webhook/routes';\n`;
 
-const navSeed = `import { loggingNavEntries } from '#transport/log/nav';\n\nregistry.register('logging', loggingNavEntries);\n`;
+const permissionsSeed = `import { loggingPermissionCatalog } from '#log/permissions';\n${PERMISSIONS_IMPORTS_MARKER}\n\nexport const permissionCatalog = {\n\t...loggingPermissionCatalog,\n${PERMISSIONS_CATALOG_MARKER}\n\t...webhookPermissionCatalog,\n};\n`;
+
+const permissionsOnce = `import { loggingPermissionCatalog } from '#log/permissions';\n${PERMISSIONS_IMPORTS_MARKER}\nimport { WidgetPermissionCatalog } from '#widget/permissions';\n\nexport const permissionCatalog = {\n\t...loggingPermissionCatalog,\n${PERMISSIONS_CATALOG_MARKER}\n\t...WidgetPermissionCatalog,\n\t...webhookPermissionCatalog,\n};\n`;
+
+const navSeed = `import { loggingNavEntries } from '#transport/log/nav';\n${NAV_IMPORTS_MARKER}\nimport { webhookNavEntries } from '#transport/webhook/nav';\n\nregistry.register('logging', loggingNavEntries);\n${NAV_REGISTRATION_MARKER}\nregistry.register('webhook', webhookNavEntries);\n`;
+
+const navOnce = `import { loggingNavEntries } from '#transport/log/nav';\n${NAV_IMPORTS_MARKER}\nimport { widgetNavEntries } from '#transport/widget/nav';\nimport { webhookNavEntries } from '#transport/webhook/nav';\n\nregistry.register('logging', loggingNavEntries);\n${NAV_REGISTRATION_MARKER}\nregistry.register('widget', widgetNavEntries);\nregistry.register('webhook', webhookNavEntries);\n`;
 
 const packageSeed = JSON.stringify(
 	{
@@ -158,31 +174,28 @@ const packageSeed = JSON.stringify(
 );
 
 test.group('domain scaffolder registrations', () => {
-	test('applyRoutesRegistration() adds the domain route import after the log import', ({ assert }) => {
+	test('applyRoutesRegistration() splices the route import at the routes-imports marker', ({ assert }) => {
 		const once = applyRoutesRegistration(routesSeed, widgetNames);
 		const twice = applyRoutesRegistration(once, widgetNames);
 
-		assert.include(once, "import '#transport/widget/routes';");
-		assert.equal(once.match(/import '#transport\/[a-z]+\/routes';/g)?.length ?? 0, 2);
-		assert.equal(once, twice);
+		assert.equal(once, routesOnce);
+		assert.equal(twice, once);
 	});
 
-	test('applyPermissionsRegistration() adds the catalog import and spread', ({ assert }) => {
+	test('applyPermissionsRegistration() splices the catalog import and spread at their markers', ({ assert }) => {
 		const once = applyPermissionsRegistration(permissionsSeed, widgetNames);
 		const twice = applyPermissionsRegistration(once, widgetNames);
 
-		assert.include(once, "import { WidgetPermissionCatalog } from '#widget/permissions';");
-		assert.include(once, '\t...WidgetPermissionCatalog,');
-		assert.equal(once, twice);
+		assert.equal(once, permissionsOnce);
+		assert.equal(twice, once);
 	});
 
-	test('applyNavRegistration() adds the nav import and registration', ({ assert }) => {
+	test('applyNavRegistration() splices the nav import and registration at their markers', ({ assert }) => {
 		const once = applyNavRegistration(navSeed, widgetNames);
 		const twice = applyNavRegistration(once, widgetNames);
 
-		assert.include(once, "import { widgetNavEntries } from '#transport/widget/nav';");
-		assert.include(once, "registry.register('widget', widgetNavEntries);");
-		assert.equal(once, twice);
+		assert.equal(once, navOnce);
+		assert.equal(twice, once);
 	});
 
 	test('applyPackageImportsRegistration() inserts the domain alias after #backup/*', ({ assert }) => {
@@ -199,17 +212,120 @@ test.group('domain scaffolder registrations', () => {
 		assert.equal(once, twice);
 	});
 
-	test('registration edits are no-ops when the domain is already registered', ({ assert }) => {
-		const routesAlready = "import '#transport/log/routes';\nimport '#transport/widget/routes';\n";
+	test('registration edits are no-ops when the domain is fully registered', ({ assert }) => {
+		assert.equal(applyRoutesRegistration(routesOnce, widgetNames), routesOnce);
+		assert.equal(applyPermissionsRegistration(permissionsOnce, widgetNames), permissionsOnce);
+		assert.equal(applyNavRegistration(navOnce, widgetNames), navOnce);
+	});
 
-		assert.equal(applyRoutesRegistration(routesAlready, widgetNames), routesAlready);
+	test('applyPermissionsRegistration() completes a half-applied registration at the missing marker', ({ assert }) => {
+		// Import present, spread missing: the old sentinel guard short-circuited
+		// and left the catalog unregistered. The marker contract completes it.
+		const halfApplied = `import { loggingPermissionCatalog } from '#log/permissions';\n${PERMISSIONS_IMPORTS_MARKER}\nimport { WidgetPermissionCatalog } from '#widget/permissions';\n\nexport const permissionCatalog = {\n\t...loggingPermissionCatalog,\n${PERMISSIONS_CATALOG_MARKER}\n\t...webhookPermissionCatalog,\n};\n`;
 
-		const permissionsAlready = `import { loggingPermissionCatalog } from '#log/permissions';\nimport { WidgetPermissionCatalog } from '#widget/permissions';\n\nconst permissionCatalog = {\n\t...loggingPermissionCatalog,\n\t...WidgetPermissionCatalog,\n};\n`;
+		assert.equal(applyPermissionsRegistration(halfApplied, widgetNames), permissionsOnce);
+	});
 
-		assert.equal(applyPermissionsRegistration(permissionsAlready, widgetNames), permissionsAlready);
+	test('applyNavRegistration() completes a half-applied registration at the missing marker', ({ assert }) => {
+		// Import present, register() call missing: the old sentinel guard
+		// short-circuited and left the entries unregistered. It is completed.
+		const halfApplied = `import { loggingNavEntries } from '#transport/log/nav';\n${NAV_IMPORTS_MARKER}\nimport { widgetNavEntries } from '#transport/widget/nav';\nimport { webhookNavEntries } from '#transport/webhook/nav';\n\nregistry.register('logging', loggingNavEntries);\n${NAV_REGISTRATION_MARKER}\nregistry.register('webhook', webhookNavEntries);\n`;
 
-		const navAlready = `import { loggingNavEntries } from '#transport/log/nav';\nimport { widgetNavEntries } from '#transport/widget/nav';\n\nregistry.register('logging', loggingNavEntries);\nregistry.register('widget', widgetNavEntries);\n`;
+		assert.equal(applyNavRegistration(halfApplied, widgetNames), navOnce);
+	});
 
-		assert.equal(applyNavRegistration(navAlready, widgetNames), navAlready);
+	test('a missing marker throws an actionable ScaffolderRegistrationException', ({ assert }) => {
+		assert.throws(
+			() => applyRoutesRegistration(`import '#transport/log/routes';\n`, widgetNames),
+			ScaffolderRegistrationException,
+			ROUTES_IMPORTS_MARKER,
+		);
+
+		const noImportMarker = `import { loggingPermissionCatalog } from '#log/permissions';\n\nexport const permissionCatalog = {\n\t...loggingPermissionCatalog,\n${PERMISSIONS_CATALOG_MARKER}\n\t...webhookPermissionCatalog,\n};\n`;
+		assert.throws(
+			() => applyPermissionsRegistration(noImportMarker, widgetNames),
+			ScaffolderRegistrationException,
+			PERMISSIONS_IMPORTS_MARKER,
+		);
+
+		const noCatalogMarker = `import { loggingPermissionCatalog } from '#log/permissions';\n${PERMISSIONS_IMPORTS_MARKER}\n\nexport const permissionCatalog = {\n\t...loggingPermissionCatalog,\n\t...webhookPermissionCatalog,\n};\n`;
+		assert.throws(
+			() => applyPermissionsRegistration(noCatalogMarker, widgetNames),
+			ScaffolderRegistrationException,
+			PERMISSIONS_CATALOG_MARKER,
+		);
+
+		const noNavImportMarker = `import { loggingNavEntries } from '#transport/log/nav';\nimport { webhookNavEntries } from '#transport/webhook/nav';\n\nregistry.register('logging', loggingNavEntries);\n${NAV_REGISTRATION_MARKER}\nregistry.register('webhook', webhookNavEntries);\n`;
+		assert.throws(
+			() => applyNavRegistration(noNavImportMarker, widgetNames),
+			ScaffolderRegistrationException,
+			NAV_IMPORTS_MARKER,
+		);
+
+		const noNavRegistrationMarker = `import { loggingNavEntries } from '#transport/log/nav';\n${NAV_IMPORTS_MARKER}\nimport { webhookNavEntries } from '#transport/webhook/nav';\n\nregistry.register('logging', loggingNavEntries);\nregistry.register('webhook', webhookNavEntries);\n`;
+		assert.throws(
+			() => applyNavRegistration(noNavRegistrationMarker, widgetNames),
+			ScaffolderRegistrationException,
+			NAV_REGISTRATION_MARKER,
+		);
+	});
+
+	test('the error names the composition file it is missing from', ({ assert }) => {
+		try {
+			applyRoutesRegistration(`import '#transport/log/routes';\n`, widgetNames);
+			assert.fail('expected applyRoutesRegistration() to throw');
+		} catch (error) {
+			assert.instanceOf(error, ScaffolderRegistrationException);
+			assert.include((error as Error).message, 'start/routes.ts');
+		}
+	});
+});
+
+/** Read a tracked composition file relative to the app root (four levels up from this spec). */
+const readComposition = (file: string): string => readFileSync(new URL(`../../../../${file}`, import.meta.url), 'utf8');
+
+test.group('domain scaffolder marker contract', () => {
+	test('every composition file carries each pinned marker exactly once', ({ assert }) => {
+		const routes = readComposition('start/routes.ts');
+		assert.equal(
+			routes.split(ROUTES_IMPORTS_MARKER).length,
+			2,
+			'start/routes.ts must carry the routes-imports marker exactly once',
+		);
+
+		const permissions = readComposition('start/permissions.ts');
+		assert.equal(
+			permissions.split(PERMISSIONS_IMPORTS_MARKER).length,
+			2,
+			'start/permissions.ts must carry the permissions-imports marker exactly once',
+		);
+		assert.equal(
+			permissions.split(PERMISSIONS_CATALOG_MARKER).length,
+			2,
+			'start/permissions.ts must carry the permissions-catalog marker exactly once',
+		);
+
+		const nav = readComposition('start/nav.ts');
+		assert.equal(
+			nav.split(NAV_IMPORTS_MARKER).length,
+			2,
+			'start/nav.ts must carry the nav-imports marker exactly once',
+		);
+		assert.equal(
+			nav.split(NAV_REGISTRATION_MARKER).length,
+			2,
+			'start/nav.ts must carry the nav-registration marker exactly once',
+		);
+	});
+
+	test('a scaffolded registration applies to the committed composition files without error', ({ assert }) => {
+		const routes = readComposition('start/routes.ts');
+		assert.include(applyRoutesRegistration(routes, widgetNames), "import '#transport/widget/routes';");
+
+		const permissions = readComposition('start/permissions.ts');
+		assert.include(applyPermissionsRegistration(permissions, widgetNames), '\t...WidgetPermissionCatalog,');
+
+		const nav = readComposition('start/nav.ts');
+		assert.include(applyNavRegistration(nav, widgetNames), "registry.register('widget', widgetNavEntries);");
 	});
 });

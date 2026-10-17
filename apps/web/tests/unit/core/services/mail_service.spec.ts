@@ -1,11 +1,11 @@
 import app from '@adonisjs/core/services/app';
 import router from '@adonisjs/core/services/router';
 import { test } from '@japa/runner';
+import { MAIL_SPECS } from '#core/mail_specs';
 import { MailService } from '#core/services/mail_service';
-import { TOKEN_MAIL_SPECS } from '#core/token_mail_specs';
 import env from '#start/env';
 import { restoreMailClient, swapMailClient } from '#tests/helpers/mail';
-import type { TokenMailSpec } from '#core/types/token_mail';
+import type { MailSpec } from '#core/types/mail';
 
 const PROBE_DOMAIN = 'root';
 const PROBE_PATTERN = '/probe/mail_link/:token';
@@ -96,12 +96,12 @@ test.group('MailService', () => {
 	});
 });
 
-test.group('MailService buildTokenMail', () => {
-	test('assembles a new token mail flow from a synthetic spec row', async ({ assert }) => {
+test.group('MailService buildMail', () => {
+	test('assembles a new mail flow from a synthetic spec row', async ({ assert }) => {
 		registerProbeRoute();
 		const service = await app.container.make(MailService);
 
-		const spec: TokenMailSpec = {
+		const spec: MailSpec = {
 			keys: {
 				subject: 'identity.admin.users.mail.subject',
 				greeting: 'identity.admin.users.mail.greeting',
@@ -117,7 +117,7 @@ test.group('MailService buildTokenMail', () => {
 			template: 'emails/synthetic_flow',
 		};
 
-		const payload = service.buildTokenMail(spec, {
+		const payload = service.buildMail(spec, {
 			to: 'synthetic@test.com',
 			locale: 'en',
 			token: 'selector.validator',
@@ -146,7 +146,7 @@ test.group('MailService buildTokenMail', () => {
 	test('assembles a linkless spec row with per-send i18n params and extra data slots', async ({ assert }) => {
 		const service = await app.container.make(MailService);
 
-		const payload = service.buildTokenMail(TOKEN_MAIL_SPECS.emailChangeNotification, {
+		const payload = service.buildMail(MAIL_SPECS.emailChangeNotification, {
 			to: 'current@test.com',
 			locale: 'en',
 			i18nParams: { old: 'current@test.com', new: 'updated@test.com' },
@@ -170,42 +170,62 @@ test.group('MailService buildTokenMail', () => {
 		assert.isUndefined(payload.data.verification_link);
 	});
 
-	test('registers a spec row per token mail flow with its TTL, template and candidate routes', async ({ assert }) => {
+	test('registers a spec row per mail flow with its token type, TTL, template and candidate routes', async ({
+		assert,
+	}) => {
 		assert.deepEqual(
 			Object.fromEntries(
-				Object.entries(TOKEN_MAIL_SPECS).map(([flow, spec]) => [
+				Object.entries(MAIL_SPECS).map(([flow, spec]) => [
 					flow,
-					{ ttlHours: spec.ttlHours, template: spec.template, linkRoutes: spec.linkRoutes, linkSlot: spec.linkSlot },
+					{
+						tokenType: spec.tokenType,
+						ttlHours: spec.ttlHours,
+						template: spec.template,
+						linkRoutes: spec.linkRoutes,
+						linkSlot: spec.linkSlot,
+					},
 				]),
 			),
 			{
 				emailVerification: {
+					tokenType: 'EMAIL_VERIFICATION',
 					ttlHours: 24,
 					template: 'emails/auth_email',
 					linkRoutes: ['auth.email_verification.execute', 'api.v1.auth.email_verification.store'],
 					linkSlot: 'verification_link',
 				},
 				passwordReset: {
+					tokenType: 'PASSWORD_RESET',
 					ttlHours: 1,
 					template: 'emails/auth_email',
 					linkRoutes: ['auth.reset_password.render', 'api.v1.auth.reset_password.store'],
 					linkSlot: 'reset_link',
 				},
 				invitation: {
+					tokenType: 'PENDING_INVITE',
 					ttlHours: 168,
 					template: 'emails/admin_invite_email',
 					linkRoutes: ['auth.accept_invitation.render', 'api.v1.auth.accept_invitation.store'],
 					linkSlot: 'accept_link',
 				},
 				emailChangeConfirmation: {
+					tokenType: 'EMAIL_CHANGE',
 					ttlHours: 24,
 					template: 'emails/account_email',
 					linkRoutes: ['account.email_change.render'],
 					linkSlot: 'confirmation_link',
 				},
 				emailChangeNotification: {
+					tokenType: undefined,
 					ttlHours: undefined,
 					template: 'emails/account_email',
+					linkRoutes: [],
+					linkSlot: undefined,
+				},
+				contactForm: {
+					tokenType: undefined,
+					ttlHours: undefined,
+					template: 'emails/contact_form_email',
 					linkRoutes: [],
 					linkSlot: undefined,
 				},
@@ -218,7 +238,7 @@ test.group('MailService buildTokenMail', () => {
 
 		let thrown: unknown;
 		try {
-			service.buildTokenMail(TOKEN_MAIL_SPECS.passwordReset, { to: 'notoken@test.com', locale: 'en' });
+			service.buildMail(MAIL_SPECS.passwordReset, { to: 'notoken@test.com', locale: 'en' });
 		} catch (error) {
 			thrown = error;
 		}
