@@ -132,10 +132,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Shared by ci.yml and flavor-prune.yml: runs "node ace codegen" in the
-      # app workspace and waits for its completion marker (see the action's
-      # description for why the warmup entry point is the only one that
-      # regenerates every committed codegen file).
+      # Runs "node ace codegen" in the app workspace and waits for its
+      # completion marker (see the action's description for why the warmup
+      # entry point is the only one that regenerates every committed codegen
+      # file).
       - name: Regenerate codegen output
         uses: ./.github/actions/regenerate-codegen
         with:
