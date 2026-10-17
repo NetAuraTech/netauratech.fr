@@ -1,21 +1,27 @@
 import { test } from '@japa/runner';
+import { InMemoryCacheDriver } from '#shared/services/cache/drivers/in_memory_cache_driver';
+import { CacheService } from '#shared/services/cache_service';
 import { LockService } from '#shared/services/lock_service';
 
 /**
- * Unit seam for {@link LockService} — the no-double-process guarantee behind the
- * scheduled maintenance jobs. Exercised against the in-memory backend
- * (`new LockService(false)`) so the suite stays hermetic (no Redis required);
- * the Redis path is the same contract behind an atomic `SET NX EX`.
+ * Unit seam for {@link LockService} — the no-double-process guarantee behind
+ * the scheduled maintenance jobs. Exercised against the in-memory driver so
+ * the suite stays hermetic (no Redis required); the primary tier speaks the
+ * same atomic contract (`setIfAbsent` / `compareAndDelete`) behind the seam.
  */
-test.group('LockService', () => {
+test.group('LockService', (group) => {
+	let locks: LockService;
+
+	group.each.setup(() => {
+		locks = new LockService(new CacheService(new InMemoryCacheDriver()));
+	});
+
 	test('acquire() returns a token for a free lock', async ({ assert }) => {
-		const locks = new LockService(false);
 		const token = await locks.acquire('foo', 30);
 		assert.isString(token as string);
 	});
 
 	test('a second acquire() on a held lock returns null', async ({ assert }) => {
-		const locks = new LockService(false);
 		const first = await locks.acquire('foo', 30);
 		const second = await locks.acquire('foo', 30);
 		assert.exists(first);
@@ -23,20 +29,17 @@ test.group('LockService', () => {
 	});
 
 	test('independent locks do not interfere with each other', async ({ assert }) => {
-		const locks = new LockService(false);
 		assert.exists(await locks.acquire('a', 30));
 		assert.exists(await locks.acquire('b', 30));
 	});
 
 	test('release() frees the lock so it can be re-acquired', async ({ assert }) => {
-		const locks = new LockService(false);
 		const token = (await locks.acquire('foo', 30)) as string;
 		await locks.release('foo', token);
 		assert.exists(await locks.acquire('foo', 30));
 	});
 
 	test('release() by a non-holder leaves the lock held', async ({ assert }) => {
-		const locks = new LockService(false);
 		const token = (await locks.acquire('foo', 30)) as string;
 		await locks.release('foo', 'not-the-token');
 		assert.isNull(await locks.acquire('foo', 30));
@@ -44,15 +47,19 @@ test.group('LockService', () => {
 	});
 
 	test('a lock expires after its TTL and can be re-acquired', async ({ assert }) => {
-		const locks = new LockService(false);
+		await locks.acquire('foo', 1);
+		await new Promise((resolve) => setTimeout(resolve, 1100));
+		assert.exists(await locks.acquire('foo', 30));
+	}).timeout(3000);
+
+	test('acquire() with a TTL of 0 holds the lock until released', async ({ assert }) => {
 		const token = await locks.acquire('foo', 0);
 		assert.exists(token);
 		await new Promise((resolve) => setTimeout(resolve, 5));
-		assert.exists(await locks.acquire('foo', 30));
+		assert.isNull(await locks.acquire('foo', 30));
 	});
 
 	test('withLock() runs fn, returns true, and releases when the lock is free', async ({ assert }) => {
-		const locks = new LockService(false);
 		let ran = false;
 		const acquired = await locks.withLock('foo', 30, async () => {
 			ran = true;
@@ -63,7 +70,6 @@ test.group('LockService', () => {
 	});
 
 	test('withLock() skips fn and returns false when the lock is held', async ({ assert }) => {
-		const locks = new LockService(false);
 		await locks.acquire('foo', 30);
 		let ran = false;
 		const acquired = await locks.withLock('foo', 30, async () => {
@@ -74,7 +80,6 @@ test.group('LockService', () => {
 	});
 
 	test('withLock() releases the lock even when fn throws', async ({ assert }) => {
-		const locks = new LockService(false);
 		await assert.rejects(
 			() =>
 				locks.withLock('foo', 30, async () => {

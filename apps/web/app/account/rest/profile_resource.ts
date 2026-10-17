@@ -1,6 +1,8 @@
 import { inject } from '@adonisjs/core';
 import { UpdateUserProfileAction } from '#account/actions/profile/update_user_profile_action';
 import { profileValidator } from '#transport/account/validators/profile';
+import { type ApiOperationDoc, type JsonSchema } from '#transport/core/openapi/api_docs_registry';
+import { dateTime, dataEnvelope, errorSchema, validationErrorSchema } from '#transport/core/openapi/schemas';
 import { type RestEndpoint } from '#transport/core/rest/rest_adapter';
 import { preloadUserRoleWithPermissions } from '#transport/identity/helpers/load_user_role';
 import UserTransformer from '#transport/identity/transformers/user_transformer';
@@ -8,6 +10,53 @@ import type User from '#identity/models/user';
 import type { Infer } from '@vinejs/vine/types';
 
 type ProfileUpdatePayload = Infer<ReturnType<typeof profileValidator>>;
+
+export const userSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' },
+		username: { type: 'string' },
+		email: { type: 'string', format: 'email' },
+		apiRateLimit: { type: 'number', nullable: true },
+		status: { type: 'string' },
+		emailVerifiedAt: dateTime,
+		createdAt: dateTime,
+		updatedAt: dateTime,
+		connectedProviders: {
+			type: 'object',
+			properties: {
+				github: { type: 'boolean' },
+				google: { type: 'boolean' },
+				facebook: { type: 'boolean' },
+			},
+		},
+		role: { type: 'object', nullable: true },
+		permissions: { type: 'array', items: { type: 'string' } },
+	},
+};
+
+export const profileEndpointsDocs: Record<keyof ProfileEndpoints, ApiOperationDoc> = {
+	show: {
+		summary: "Show the current user's profile",
+		tags: ['Account'],
+		security: [['apiToken']],
+		responses: {
+			'200': { description: 'The current user.', schema: dataEnvelope(userSchema) },
+			'401': { description: 'No valid access token was presented.', schema: errorSchema },
+		},
+	},
+	update: {
+		summary: "Update the current user's username",
+		tags: ['Account'],
+		security: [['apiToken']],
+		request: [{ validator: profileValidator(0), in: 'body' }],
+		responses: {
+			'200': { description: 'The updated user.', schema: dataEnvelope(userSchema) },
+			'401': { description: 'No valid access token was presented.', schema: errorSchema },
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+};
 
 /**
  * Endpoint declarations for the profile REST resource.
@@ -42,6 +91,7 @@ export default class ProfileResource {
 
 	readonly endpoints: ProfileEndpoints = {
 		show: {
+			docs: profileEndpointsDocs.show,
 			prepare: async (context) => {
 				const user = context.auth.getUserOrFail();
 
@@ -53,6 +103,7 @@ export default class ProfileResource {
 			transform: (entity) => UserTransformer.transform(entity.toDomain()),
 		},
 		update: {
+			docs: profileEndpointsDocs.update,
 			prepare: async (context) => ({ user: context.auth.getUserOrFail() }),
 			validator: (prepared) => profileValidator(prepared.user.id),
 			execute: (_context, prepared, payload) =>

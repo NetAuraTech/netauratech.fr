@@ -1,8 +1,8 @@
 import { inject } from '@adonisjs/core';
-import drive from '@adonisjs/drive/services/main';
 import { DateTime } from 'luxon';
 import { BackupMetadata } from '#backup/domain/backup';
-import { ListBackupsQuery } from '#backup/queries/list_backups_query';
+import { BackupPipeline } from '#backup/services/backup_pipeline';
+import { StorageUploader } from '#backup/services/storage_uploader';
 import backupConfig from '#config/backup';
 import { LogService } from '#log/services/log_service';
 import { LogCategory } from '#log/types/logging';
@@ -31,18 +31,7 @@ interface EnforceRetentionPayload {
  */
 @inject()
 export class EnforceRetentionPolicyAction {
-	constructor(
-		protected logService: LogService,
-		protected listBackupsQuery: ListBackupsQuery,
-	) {}
-
-	private getDisk() {
-		return drive.use(backupConfig.storage.disk as Parameters<typeof drive.use>[0]);
-	}
-
-	private buildPath(filename: string): string {
-		return `${backupConfig.storage.prefix}/${filename}`;
-	}
+	constructor(protected logService: LogService) {}
 
 	/**
 	 * Execute retention policy enforcement.
@@ -72,13 +61,14 @@ export class EnforceRetentionPolicyAction {
 		let errors = 0;
 
 		try {
-			const disk = this.getDisk();
-			const backups = await this.listBackupsQuery.execute();
+			const pipeline = new BackupPipeline(this.logService);
+			const uploader = new StorageUploader();
+			const backups = await pipeline.list();
 			const toDelete = this.getBackupsToDelete(backups, retention);
 
 			for (const backup of toDelete) {
 				try {
-					await disk.delete(this.buildPath(backup.filename));
+					await uploader.delete(backup.filename);
 					deleted.push(backup.filename);
 					this.logService.debug({
 						message: 'Backup deleted',
@@ -117,7 +107,6 @@ export class EnforceRetentionPolicyAction {
 	/**
 	 * Applies the retention windows and returns backups that should be deleted.
 	 *
-	 * Matches BackupService.getBackupsToDelete exactly:
 	 * - Daily: time-window check (newer than N days), not a count.
 	 * - Weekly: Sunday (weekday === 7 in Luxon ISO), within N weeks, capped at N.
 	 * - Monthly: 1st of month, within N months, capped at N.

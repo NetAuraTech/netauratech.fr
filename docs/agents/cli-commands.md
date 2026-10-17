@@ -57,6 +57,12 @@ The command also applies four idempotent registration edits:
 `imports` map. Nothing is ever overwritten — retry after removing conflicting
 files.
 
+The `start/` edits anchor on a pinned `@scaffold-marker` comment line in each
+file — the documented insertion contract shared with
+`src/core/scaffolding/domain_scaffolder.ts`. Never move, rename or delete a
+marker line: a missing marker aborts the run with an explicit error before any
+file is written, instead of silently leaving the new domain unregistered.
+
 After generating, run `node ace codegen` and `node ace migration:run` (regenerates
 `database/schema.ts`), then the quality gates below.
 

@@ -1,26 +1,8 @@
 import { randomUUID } from 'node:crypto';
-import logger from '@adonisjs/core/services/logger';
-import redis from '@adonisjs/redis/services/main';
+import { CacheService } from '#shared/services/cache_service';
 
-/** Key prefix so lock keys never collide with other Redis consumers. */
+/** Key prefix so lock keys never collide with other cache consumers. */
 const KEY_PREFIX = 'lock';
-
-/**
- * Compare-and-delete so only the lock holder can release it. Prevents a slow
- * holder from releasing a lock that has since expired and been re-acquired.
- */
-const RELEASE_SCRIPT = `
-if redis.call('GET', KEYS[1]) == ARGV[1] then
-  return redis.call('DEL', KEYS[1])
-else
-  return 0
-end
-`;
-
-interface MemoryLock {
-	token: string;
-	expiresAt: number;
-}
 
 /**
  * Distributed lock service.
@@ -28,22 +10,27 @@ interface MemoryLock {
  * Guarantees a named task runs at most once across all worker processes and
  * app instances. The scheduled maintenance jobs use it so an overlapping run
  * (e.g. a manual `logs:prune` firing while the scheduled job is mid-prune) is
- * skipped rather than double-processing.
+ * skipped rather than double-processing. This is the canonical lock for named
+ * jobs and maintenance tasks; the CMS builder's per-field editor locks live in
+ * `BuilderSessionService` (a different granularity, deliberately separate).
  *
- * Redis is the primary backend — `SET ... NX EX` is atomic. An in-memory map
- * covers single-process environments (tests, the `sync` queue driver) and is
- * used automatically when Redis is unreachable.
+ * Built on the cache seam: acquire is an atomic `setIfAbsent` and release an
+ * atomic `compareAndDelete` on a `lock` namespace, so no lock algorithm — and
+ * no Lua — lives outside the drivers. Failover from the primary tier to the
+ * process-local tier is handled by the injected driver; in production the
+ * root {@link CacheService} binding wraps the composite failover driver
+ * (see `start/container.ts` and ADR-012).
  */
 export class LockService {
-	private readonly memoryLocks = new Map<string, MemoryLock>();
-	private redisAvailable: boolean;
+	private readonly locks: CacheService;
 
 	/**
-	 * @param allowRedis - When `false`, always use the in-memory backend. Used
-	 *   by tests to exercise the fallback hermetically, without Redis.
+	 * @param cache - The cache seam the locks are stored in. Production passes
+	 *   the root `CacheService` (composite failover driver); tests can inject
+	 *   a hermetic instance backed by another driver.
 	 */
-	constructor(allowRedis: boolean = true) {
-		this.redisAvailable = allowRedis;
+	constructor(cache: CacheService) {
+		this.locks = cache.namespace(KEY_PREFIX);
 	}
 
 	/**
@@ -51,6 +38,7 @@ export class LockService {
 	 *
 	 * @param name - A stable, human-readable lock name (e.g. `maintenance:log_prune`).
 	 * @param ttlSeconds - How long the lock is held if not explicitly released.
+	 *   A value of `0` (or one below) holds the lock until it is released.
 	 * @returns A unique token on success, or `null` when the lock is already held.
 	 *
 	 * @example
@@ -58,18 +46,8 @@ export class LockService {
 	 */
 	async acquire(name: string, ttlSeconds: number): Promise<string | null> {
 		const token = randomUUID();
-
-		if (this.redisAvailable) {
-			try {
-				const result = await redis.connection().set(this.key(name), token, 'EX', ttlSeconds, 'NX');
-				return result === 'OK' ? token : null;
-			} catch (error) {
-				this.redisAvailable = false;
-				logger.warn({ error }, '[LockService] Redis unavailable, falling back to in-memory locks.');
-			}
-		}
-
-		return this.memoryAcquire(name, token, ttlSeconds);
+		const acquired = await this.locks.setIfAbsent(name, token, ttlSeconds);
+		return acquired ? token : null;
 	}
 
 	/**
@@ -80,16 +58,7 @@ export class LockService {
 	 * @param token - The token returned by {@link acquire}.
 	 */
 	async release(name: string, token: string): Promise<void> {
-		if (this.redisAvailable) {
-			try {
-				await redis.connection().eval(RELEASE_SCRIPT, 1, this.key(name), token);
-				return;
-			} catch {
-				this.redisAvailable = false;
-			}
-		}
-
-		this.memoryRelease(name, token);
+		await this.locks.compareAndDelete(name, token);
 	}
 
 	/**
@@ -116,28 +85,6 @@ export class LockService {
 			return true;
 		} finally {
 			await this.release(name, token);
-		}
-	}
-
-	private key(name: string): string {
-		return `${KEY_PREFIX}:${name}`;
-	}
-
-	private memoryAcquire(name: string, token: string, ttlSeconds: number): string | null {
-		const now = Date.now();
-		const existing = this.memoryLocks.get(name);
-		if (existing && existing.expiresAt > now) {
-			return null;
-		}
-
-		this.memoryLocks.set(name, { token, expiresAt: now + ttlSeconds * 1000 });
-		return token;
-	}
-
-	private memoryRelease(name: string, token: string): void {
-		const existing = this.memoryLocks.get(name);
-		if (existing && existing.token === token) {
-			this.memoryLocks.delete(name);
 		}
 	}
 }

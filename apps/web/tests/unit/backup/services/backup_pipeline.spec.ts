@@ -1,12 +1,17 @@
 import { join } from 'node:path';
 import { test } from '@japa/runner';
+import { DateTime } from 'luxon';
 import sinon from 'sinon';
+import backupConfig from '#config/backup';
 
 /**
- * Unit tests for `BackupPipeline`.
+ * Unit tests for `BackupPipeline` — the single public face of the backup
+ * domain.
  *
- * All external dependencies are injected via the overrides bag so we never
- * need to stub ESM imports.
+ * `run(strategy)`, `restore(filename)` and `list()` are the public entry
+ * points; everything else is exercised end to end through them. All external
+ * dependencies are injected via the overrides bag so we never need to stub
+ * ESM imports.
  */
 test.group('BackupPipeline', (group) => {
 	group.each.teardown(() => {
@@ -14,12 +19,9 @@ test.group('BackupPipeline', (group) => {
 	});
 
 	const manifestName = 'backup-full-2024-01-01-020000.manifest.json';
-
-	const context = {
-		tempDir: '/tmp/backups',
-		filename: 'backup-full-2024-01-01-020000.gz.enc',
-		strategyType: 'full' as const,
-	};
+	const fullFilename = 'backup-full-2024-01-01-020000.sql.gz.enc';
+	const differentialFilename = 'backup-differential-2024-01-08.sql.gz.enc';
+	const tempDir = backupConfig.tempDir;
 
 	const buildLogService = () =>
 		({
@@ -32,215 +34,97 @@ test.group('BackupPipeline', (group) => {
 		_snapshotHelper: {
 			compress: sinon.stub().resolves('/tmp/backups/x.sql.gz'),
 			encrypt: sinon.stub().resolves('/tmp/backups/x.sql.gz.enc'),
+			decrypt: sinon.stub(),
+			decompress: sinon.stub(),
 		} as any,
-		_uploader: { upload: sinon.stub().resolves() } as any,
+		_uploader: {
+			upload: sinon.stub().resolves(),
+			exists: sinon.stub().resolves(true),
+			download: sinon.stub().resolves(),
+			listBackups: sinon.stub().resolves([]),
+			getMetaData: sinon.stub().resolves({
+				contentLength: 5000,
+				lastModified: new Date('2024-01-01T02:00:00Z'),
+			}),
+		} as any,
 		_mkdir: sinon.stub().resolves(),
 		_stat: sinon.stub().resolves({ size: 2048 }),
 		_unlink: sinon.stub().resolves(),
 		_writeFile: sinon.stub().resolves(),
 		_createDatabaseDump: sinon.stub().resolves(),
+		_restoreDatabase: sinon.stub().resolves(),
 	});
+
+	const baseFullBackupObject = {
+		key: 'backup/backup-full-2024-01-01-020000.sql.gz.enc',
+		isDirectory: false,
+	};
+
+	// ─── dumpPath() ──────────────────────────────────────────────────────────
 
 	test('dumpPath() derives the .sql dump path from the backup filename', async ({ assert }) => {
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(context, buildLogService(), buildOverrides());
+		const pipeline = new BackupPipeline(buildLogService(), buildOverrides());
 
-		assert.equal(pipeline.dumpPath(), join('/tmp/backups', 'backup-full-2024-01-01-020000.sql'));
+		assert.equal(pipeline.dumpPath(fullFilename), join(tempDir, 'backup-full-2024-01-01-020000.sql'));
 	});
 
-	test('dump() tracks the output file and forwards dump options', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+	// ─── run() — strategy resolution ─────────────────────────────────────────
+
+	test('run() resolves "auto" to a full backup on the configured full backup day', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
-		const pipeline = new BackupPipeline(context, logService, overrides);
 
-		await pipeline.dump('/tmp/backups/out.sql', ['users']);
+		// Sunday: Luxon weekday 7 maps to JS getDay 0, which matches config fullBackupDay=0
+		const mockSunday = DateTime.fromISO('2024-01-07T02:00:00.000Z') as any;
+		sinon.stub(DateTime, 'now').returns(mockSunday);
 
-		assert.isTrue(overrides._createDatabaseDump.calledOnce);
-		const options = overrides._createDatabaseDump.firstCall.args[0];
-		assert.equal(options.outputPath, '/tmp/backups/out.sql');
-		assert.deepEqual(options.tables, ['users']);
-		// The dump file is tracked — cleanup() removes it after the run
-		const result = await pipeline.run(async () => pipeline.noArtifactResult(0));
-		assert.isTrue(result.success);
-		assert.equal(overrides._unlink.firstCall.args[0], '/tmp/backups/out.sql');
-	});
+		const dbModule = await import('@adonisjs/lucid/services/db');
+		sinon.stub(dbModule.default, 'connection').returns({
+			rawQuery: sinon.stub().resolves({ rows: [{ tablename: 'users' }] }),
+		} as any);
+		const domainModule = await import('#backup/domain/backup');
+		const generateStub = sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(fullFilename);
+		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns(manifestName);
 
-	test('compressAndEncrypt() runs compress, unlink dump, encrypt and stat in order', async ({ assert }) => {
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const overrides = buildOverrides();
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const { encryptedPath, size } = await pipeline.compressAndEncrypt('/tmp/backups/out.sql');
-
-		assert.equal(encryptedPath, '/tmp/backups/x.sql.gz.enc');
-		assert.equal(size, 2048);
-		assert.isTrue(overrides._snapshotHelper.compress.calledWith('/tmp/backups/out.sql'));
-		assert.isTrue(overrides._snapshotHelper.encrypt.calledWith('/tmp/backups/x.sql.gz'));
-		assert.isTrue(overrides._snapshotHelper.compress.calledBefore(overrides._snapshotHelper.encrypt));
-		// Explicit unlink of the raw dump happens after compression, before encryption
-		assert.equal(overrides._unlink.firstCall.args[0], '/tmp/backups/out.sql');
-		assert.isTrue(overrides._snapshotHelper.compress.calledBefore(overrides._unlink));
-		assert.isTrue(overrides._unlink.calledBefore(overrides._snapshotHelper.encrypt));
-		assert.isTrue(overrides._stat.calledWith('/tmp/backups/x.sql.gz.enc'));
-	});
-
-	test('uploadBackup() uploads the artifact under the context filename', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const overrides = buildOverrides();
-		const pipeline = new BackupPipeline(context, buildLogService(), overrides as any);
-
-		await pipeline.uploadBackup('/tmp/backups/x.sql.gz.enc');
-
-		const uploadStub = overrides._uploader.upload;
-		assert.isTrue(uploadStub.calledOnce);
-		assert.equal(uploadStub.firstCall.args[0], '/tmp/backups/x.sql.gz.enc');
-		assert.equal(uploadStub.firstCall.args[1], context.filename);
-	});
-
-	test('writeManifest() serializes, writes, uploads and tracks the manifest', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const overrides = buildOverrides();
-		const pipeline = new BackupPipeline(context, logService, overrides);
-
-		const manifestPath = await pipeline.writeManifest({ tables: ['users'] });
-
-		assert.equal(manifestPath, join('/tmp/backups', manifestName));
-		assert.isTrue(overrides._writeFile.calledOnce);
-		assert.deepEqual(JSON.parse(overrides._writeFile.firstCall.args[1]), { tables: ['users'] });
-		assert.isTrue(overrides._uploader.upload.calledOnce);
-		assert.equal(overrides._uploader.upload.firstCall.args[0], manifestPath);
-		assert.equal(overrides._uploader.upload.firstCall.args[1], manifestName);
-	});
-
-	test('run() returns the body result and cleans up every tracked temp file', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const overrides = buildOverrides();
-		const pipeline = new BackupPipeline(context, logService, overrides);
-
-		const result = await pipeline.run(async (elapsed) => {
-			await pipeline.dump('/tmp/backups/out.sql');
-			await pipeline.compressAndEncrypt('/tmp/backups/out.sql');
-			await pipeline.writeManifest({ tables: [] });
-			await pipeline.uploadBackup('/tmp/backups/x.sql.gz.enc');
-			return pipeline.successResult(42, elapsed());
-		});
+		const result = await pipeline.run();
 
 		assert.isTrue(result.success);
-		assert.equal(result.size, 42);
-		assert.equal(result.filename, context.filename);
-		// 1 explicit unlink (dump after compress) + cleanup of dump/compressed/encrypted/manifest
-		assert.equal(overrides._unlink.callCount, 5);
-		assert.deepEqual(
-			overrides._unlink.getCalls().map((call) => call.args[0]),
-			[
-				'/tmp/backups/out.sql',
-				'/tmp/backups/out.sql',
-				'/tmp/backups/x.sql.gz',
-				'/tmp/backups/x.sql.gz.enc',
-				join('/tmp/backups', manifestName),
-			],
-		);
-	});
-
-	test('run() logs the start of the run', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const pipeline = new BackupPipeline(context, logService, buildOverrides());
-
-		await pipeline.run(async () => pipeline.noArtifactResult(0));
-
-		assert.isTrue(logService.info.calledOnce);
-		assert.equal(logService.info.firstCall.args[0].message, 'Starting full backup');
-		assert.equal(logService.info.firstCall.args[0].metadata.filename, context.filename);
-	});
-
-	test('run() converts a body failure into a logged failure result', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const pipeline = new BackupPipeline(context, logService, buildOverrides());
-
-		const result = await pipeline.run(async () => {
-			throw new Error('boom');
-		});
-
-		assert.isFalse(result.success);
 		assert.equal(result.type, 'full');
-		assert.equal(result.size, 0);
-		assert.include(result.error, 'boom');
-		assert.isTrue(logService.error.calledOnce);
-		assert.equal(logService.error.firstCall.args[0].message, 'Full backup failed');
-		assert.equal(logService.error.firstCall.args[0].context.filename, context.filename);
+		assert.isTrue(generateStub.calledWith('full'));
 	});
 
-	test('run() keeps failing cleanup silent when a temp file is already gone', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+	test('run() resolves "auto" to a differential backup on any other day', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
-		overrides._unlink = sinon.stub().rejects(new Error('ENOENT'));
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		overrides._uploader.listBackups.resolves([baseFullBackupObject] as any);
 
-		const result = await pipeline.run(async () => {
-			await pipeline.dump('/tmp/backups/out.sql');
-			return pipeline.noArtifactResult(0);
-		});
+		const mockMonday = DateTime.fromISO('2024-01-08T02:00:00.000Z') as any;
+		sinon.stub(DateTime, 'now').returns(mockMonday);
+
+		const dbModule = await import('@adonisjs/lucid/services/db');
+		sinon.stub(dbModule.default, 'connection').returns({
+			rawQuery: sinon.stub().resolves({ rows: [] }),
+		} as any);
+		const domainModule = await import('#backup/domain/backup');
+		const generateStub = sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(differentialFilename);
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.run('auto');
 
 		assert.isTrue(result.success);
-		assert.equal(overrides._unlink.callCount, 1);
-	});
-
-	test('successResult() logs completion metadata and builds the result', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const pipeline = new BackupPipeline(context, logService, buildOverrides());
-		const { default: backupConfig } = await import('#config/backup');
-
-		const result = pipeline.successResult(1234, 567);
-
-		assert.deepEqual(result, {
-			success: true,
-			filename: context.filename,
-			type: 'full',
-			size: 1234,
-			duration: 567,
-			storage: backupConfig.storage.disk,
-		});
-		assert.equal(logService.info.firstCall.args[0].message, 'Backup completed successfully');
-		assert.deepEqual(logService.info.firstCall.args[0].metadata, {
-			filename: context.filename,
-			size: 1234,
-			duration: 567,
-		});
-	});
-
-	test('noArtifactResult() builds a success result without a filename or size', async ({ assert }) => {
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const logService = buildLogService();
-		const pipeline = new BackupPipeline(
-			{ ...context, strategyType: 'differential' as const },
-			logService,
-			buildOverrides(),
-		);
-
-		const result = pipeline.noArtifactResult(42);
-
-		assert.isTrue(result.success);
-		assert.equal(result.filename, '');
 		assert.equal(result.type, 'differential');
-		assert.equal(result.size, 0);
-		assert.equal(result.duration, 42);
-		assert.isFalse('error' in result);
+		assert.isTrue(generateStub.calledWith('differential'));
 	});
 
-	// ─── executeFullBackup() ─────────────────────────────────────────────────
-	//
-	// Coverage migrated from the retired FullBackupStrategy spec: full backups
-	// run end to end through the pipeline without a dedicated strategy module.
+	// ─── run("full") ─────────────────────────────────────────────────────────
 
-	test('executeFullBackup() runs dump, compress, encrypt, upload and manifest', async ({ assert }) => {
+	test('run("full") runs dump, compress, encrypt, upload and manifest', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
 
@@ -251,24 +135,27 @@ test.group('BackupPipeline', (group) => {
 			}),
 		} as any);
 		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(fullFilename);
 		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns(manifestName);
 
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const result = await pipeline.executeFullBackup();
+		const result = await pipeline.run('full');
 
 		assert.isTrue(result.success);
-		assert.equal(result.filename, context.filename);
+		assert.equal(result.filename, fullFilename);
 		assert.equal(result.type, 'full');
 		assert.equal(result.size, 2048);
 		assert.isNumber(result.duration);
+		// The envelope logs the start of the run
+		assert.equal(logService.info.firstCall.args[0].message, 'Starting full backup');
+		assert.equal(logService.info.firstCall.args[0].metadata.filename, fullFilename);
 		// Whole-database dump (no tables restriction) of the pipeline's dump path
 		const dumpOptions = overrides._createDatabaseDump.firstCall.args[0];
-		assert.equal(dumpOptions.outputPath, join('/tmp/backups', 'backup-full-2024-01-01-020000.sql'));
+		assert.equal(dumpOptions.outputPath, join(tempDir, 'backup-full-2024-01-01-020000.sql'));
 		assert.isUndefined(dumpOptions.tables);
 		assert.isTrue(overrides._snapshotHelper.compress.calledBefore(overrides._snapshotHelper.encrypt));
-		// The artifact is uploaded before the manifest lists the dumped tables
 		assert.deepEqual(JSON.parse(overrides._writeFile.firstCall.args[1]), {
 			tables: ['users', 'posts'],
 		});
@@ -279,7 +166,7 @@ test.group('BackupPipeline', (group) => {
 		assert.equal(overrides._unlink.callCount, 5);
 	});
 
-	test('executeFullBackup() uploads the encrypted artifact before the manifest', async ({ assert }) => {
+	test('run("full") uploads the encrypted artifact before the manifest', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
 
@@ -288,140 +175,119 @@ test.group('BackupPipeline', (group) => {
 			rawQuery: sinon.stub().resolves({ rows: [{ tablename: 'users' }] }),
 		} as any);
 		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(fullFilename);
 		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns(manifestName);
 
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		await pipeline.executeFullBackup();
+		await pipeline.run('full');
 
 		const uploadStub = overrides._uploader.upload;
 		assert.equal(uploadStub.callCount, 2);
 		assert.equal(uploadStub.firstCall.args[0], '/tmp/backups/x.sql.gz.enc');
-		assert.equal(uploadStub.firstCall.args[1], context.filename);
-		assert.equal(uploadStub.secondCall.args[0], join('/tmp/backups', manifestName));
+		assert.equal(uploadStub.firstCall.args[1], fullFilename);
+		assert.equal(uploadStub.secondCall.args[0], join(tempDir, manifestName));
 		assert.equal(uploadStub.secondCall.args[1], manifestName);
 		assert.isTrue(uploadStub.firstCall.calledBefore(uploadStub.secondCall));
 	});
 
-	test('executeFullBackup() converts a step failure into a logged failure result', async ({ assert }) => {
+	test('run("full") converts a step failure into a logged failure result', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
 		// Make mkdir throw to trigger the error path before any file is created
 		overrides._mkdir = sinon.stub().rejects(new Error('Permission denied'));
 
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(fullFilename);
 
-		const result = await pipeline.executeFullBackup();
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.run('full');
 
 		assert.isFalse(result.success);
 		assert.equal(result.type, 'full');
 		assert.equal(result.size, 0);
 		assert.include(result.error, 'Permission denied');
 		assert.isTrue(logService.error.calledOnce);
+		assert.equal(logService.error.firstCall.args[0].message, 'Full backup failed');
+		assert.equal(logService.error.firstCall.args[0].context.filename, fullFilename);
 	});
 
-	test('executeFullBackup() cleans up partial temp files on failure', async ({ assert }) => {
+	test('run("full") cleans up partial temp files on failure', async ({ assert }) => {
 		const logService = buildLogService();
 		const overrides = buildOverrides();
 		// Encryption fails after the dump was compressed
 		overrides._snapshotHelper.encrypt = sinon.stub().rejects(new Error('Encryption failed'));
 
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(context, logService, overrides);
+		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(fullFilename);
 
-		const result = await pipeline.executeFullBackup();
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.run('full');
 
 		assert.isFalse(result.success);
 		// 1 explicit unlink (dump after compress) + cleanup removes tracked dump/compressed
 		assert.equal(overrides._unlink.callCount, 3);
 	});
 
-	// ─── executeDifferentialBackup() ─────────────────────────────────────────
-	//
-	// Coverage migrated from the retired DifferentialBackupStrategy spec:
-	// differential backups run end to end through the pipeline, with table
-	// selection (dumped tables, base full backup reference, fallback, skip)
-	// as their only variation point.
+	// ─── run("differential") ─────────────────────────────────────────────────
 
-	const differentialContext = {
-		tempDir: '/tmp/backups',
-		filename: 'backup-differential-2024.sql.gz.enc',
-		strategyType: 'differential' as const,
-	};
-
-	const baseFullBackupObject = {
-		key: 'backup/backup-full-2024-01-01-020000.sql.gz.enc',
-		isDirectory: false,
-	};
-
-	const buildDifferentialOverrides = (fullBackups: any[] = []) => {
-		const overrides = buildOverrides();
-		overrides._uploader = {
-			upload: sinon.stub().resolves(),
-			listBackups: sinon.stub().resolves(fullBackups as any),
-			getMetaData: sinon.stub().resolves({
-				contentLength: 5000,
-				lastModified: new Date('2024-01-01T02:00:00Z'),
-			}),
-		} as any;
-		return overrides;
-	};
-
-	test('executeDifferentialBackup() falls back to a full backup inside the pipeline when no full backup exists', async ({
+	test('run("differential") falls back to a full backup inside the pipeline when no full backup exists', async ({
 		assert,
 	}) => {
 		const logService = buildLogService();
-		const overrides = buildDifferentialOverrides();
+		const overrides = buildOverrides();
 
+		const dbModule = await import('@adonisjs/lucid/services/db');
+		sinon.stub(dbModule.default, 'connection').returns({
+			rawQuery: sinon.stub().resolves({ rows: [{ tablename: 'users' }] }),
+		} as any);
 		const domainModule = await import('#backup/domain/backup');
 		const generateStub = sinon
 			.stub(domainModule.BackupMetadata, 'generateFilename')
-			.returns('backup-full-2024.sql.gz.enc');
-		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns('m.manifest.json');
+			.onCall(0)
+			.returns(differentialFilename)
+			.onCall(1)
+			.returns(fullFilename);
+		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns(manifestName);
 
-		// The fallback delegates to the full entry point on a fresh full-typed pipeline
-		const pipelineModule = await import('#backup/services/backup_pipeline');
-		const executeStub = sinon.stub().resolves({
-			success: true,
-			filename: 'backup-full-2024.sql.gz.enc',
-			type: 'full' as const,
-			size: 1024,
-			duration: 500,
-			storage: 'fs',
-		});
-		sinon.stub(pipelineModule.BackupPipeline.prototype, 'executeFullBackup').callsFake(executeStub);
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const { BackupPipeline } = pipelineModule;
-		const pipeline = new BackupPipeline(differentialContext, logService, overrides);
-
-		const result = await pipeline.executeDifferentialBackup();
+		const result = await pipeline.run('differential');
 
 		assert.isTrue(result.success);
 		assert.equal(result.type, 'full');
-		assert.equal(result.filename, 'backup-full-2024.sql.gz.enc');
-		assert.isTrue(executeStub.calledOnce);
+		assert.equal(result.filename, fullFilename);
 		assert.isTrue(logService.warn.calledOnce);
 		assert.include(logService.warn.firstCall.args[0].message, 'No full backup found');
 		// Verify the filename was regenerated with 'full' type before delegating
 		assert.isTrue(generateStub.calledWith('full'), 'generateFilename should be called with full type on fallback');
+		// The shared temp-file tracking survives the fallback: a single cleanup pass
+		assert.equal(overrides._unlink.callCount, 5);
 	});
 
-	test('executeDifferentialBackup() skips when no tables have been modified', async ({ assert }) => {
+	test('run("differential") skips when no tables have been modified', async ({ assert }) => {
 		const logService = buildLogService();
-		const overrides = buildDifferentialOverrides([baseFullBackupObject]);
+		const overrides = buildOverrides();
+		overrides._uploader.listBackups.resolves([baseFullBackupObject] as any);
 
 		// Mock DB — no modified tables
 		const dbModule = await import('@adonisjs/lucid/services/db');
 		sinon.stub(dbModule.default, 'connection').returns({
 			rawQuery: sinon.stub().resolves({ rows: [] }),
 		} as any);
+		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(differentialFilename);
 
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(differentialContext, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const result = await pipeline.executeDifferentialBackup();
+		const result = await pipeline.run('differential');
 
 		assert.isTrue(result.success);
 		assert.equal(result.type, 'differential');
@@ -433,11 +299,10 @@ test.group('BackupPipeline', (group) => {
 		);
 	});
 
-	test('executeDifferentialBackup() dumps the modified tables and writes the differential manifest', async ({
-		assert,
-	}) => {
+	test('run("differential") dumps the modified tables and writes the differential manifest', async ({ assert }) => {
 		const logService = buildLogService();
-		const overrides = buildDifferentialOverrides([baseFullBackupObject]);
+		const overrides = buildOverrides();
+		overrides._uploader.listBackups.resolves([baseFullBackupObject] as any);
 		const uploadStub = overrides._uploader.upload;
 
 		// Mock DB — return modified tables
@@ -454,20 +319,21 @@ test.group('BackupPipeline', (group) => {
 		sinon.stub(dbModule.default, 'connection').returns(connStub as any);
 
 		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(differentialFilename);
 		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns('m.manifest.json');
 
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(differentialContext, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const result = await pipeline.executeDifferentialBackup();
+		const result = await pipeline.run('differential');
 
 		assert.isTrue(result.success);
 		assert.equal(result.type, 'differential');
 		assert.equal(result.size, 2048);
-		assert.equal(result.filename, differentialContext.filename);
+		assert.equal(result.filename, differentialFilename);
 		// Table selection: the dump is restricted to the modified tables
 		const dumpOptions = overrides._createDatabaseDump.firstCall.args[0];
-		assert.equal(dumpOptions.outputPath, join('/tmp/backups', 'backup-differential-2024.sql'));
+		assert.equal(dumpOptions.outputPath, join(tempDir, 'backup-differential-2024-01-08.sql'));
 		assert.deepEqual(dumpOptions.tables, ['users']);
 		// The manifest lists the dumped tables and references the base full backup
 		assert.deepEqual(JSON.parse(overrides._writeFile.firstCall.args[1]), {
@@ -478,29 +344,33 @@ test.group('BackupPipeline', (group) => {
 		// The artifact (2nd upload, after the manifest) goes out under the differential filename
 		assert.equal(uploadStub.callCount, 2);
 		assert.equal(uploadStub.secondCall.args[0], '/tmp/backups/x.sql.gz.enc');
-		assert.equal(uploadStub.secondCall.args[1], differentialContext.filename);
+		assert.equal(uploadStub.secondCall.args[1], differentialFilename);
 		// 1 explicit unlink (dump after compress) + cleanup of dump/compressed/encrypted/manifest
 		assert.equal(overrides._unlink.callCount, 5);
 	});
 
-	test('executeDifferentialBackup() returns a failure result on step failure', async ({ assert }) => {
+	test('run("differential") returns a failure result on step failure', async ({ assert }) => {
 		const logService = buildLogService();
-		const overrides = buildDifferentialOverrides();
+		const overrides = buildOverrides();
 		overrides._mkdir = sinon.stub().rejects(new Error('Disk full'));
 
-		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(differentialContext, logService, overrides);
+		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(differentialFilename);
 
-		const result = await pipeline.executeDifferentialBackup();
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.run('differential');
 
 		assert.isFalse(result.success);
 		assert.equal(result.type, 'differential');
 		assert.include(result.error, 'Disk full');
 	});
 
-	test('executeDifferentialBackup() cleans up temp files on failure', async ({ assert }) => {
+	test('run("differential") cleans up temp files on failure', async ({ assert }) => {
 		const logService = buildLogService();
-		const overrides = buildDifferentialOverrides([baseFullBackupObject]);
+		const overrides = buildOverrides();
+		overrides._uploader.listBackups.resolves([baseFullBackupObject] as any);
 		// Encryption fails after the dump was compressed
 		overrides._snapshotHelper.encrypt = sinon.stub().rejects(new Error('Encryption failed'));
 
@@ -518,15 +388,157 @@ test.group('BackupPipeline', (group) => {
 		sinon.stub(dbModule.default, 'connection').returns(connStub as any);
 
 		const domainModule = await import('#backup/domain/backup');
+		sinon.stub(domainModule.BackupMetadata, 'generateFilename').returns(differentialFilename);
 		sinon.stub(domainModule.BackupMetadata, 'manifestFilename').returns('m.manifest.json');
 
 		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
-		const pipeline = new BackupPipeline(differentialContext, logService, overrides);
+		const pipeline = new BackupPipeline(logService, overrides);
 
-		const result = await pipeline.executeDifferentialBackup();
+		const result = await pipeline.run('differential');
 
 		assert.isFalse(result.success);
 		// 1 explicit unlink (dump after compress) + cleanup removes tracked dump/compressed
 		assert.equal(overrides._unlink.callCount, 3);
+	});
+
+	// ─── restore() ───────────────────────────────────────────────────────────
+
+	const restoreFilename = 'backup-full-2024-01-01-020000.sql.gz.enc';
+	const restoreLocalPath = join(tempDir, restoreFilename);
+	const restoreDecryptedPath = restoreLocalPath.slice(0, -'.enc'.length);
+	const restoreSqlPath = restoreDecryptedPath.slice(0, -'.gz'.length);
+
+	test('restore() downloads, decrypts, decompresses and restores the database', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._snapshotHelper.decrypt.resolves(restoreDecryptedPath);
+		overrides._snapshotHelper.decompress.resolves(restoreSqlPath);
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.restore(restoreFilename);
+
+		assert.deepEqual(result, { success: true });
+		assert.isTrue(overrides._uploader.exists.calledWith(restoreFilename));
+		assert.isTrue(overrides._mkdir.calledWith(tempDir, { recursive: true }));
+		assert.isTrue(overrides._uploader.download.calledWith(restoreFilename, restoreLocalPath));
+		assert.isTrue(overrides._snapshotHelper.decrypt.calledWith(restoreLocalPath));
+		assert.isTrue(overrides._snapshotHelper.decompress.calledWith(restoreDecryptedPath));
+		assert.isTrue(overrides._restoreDatabase.calledOnce);
+		assert.equal(overrides._restoreDatabase.firstCall.args[0].sqlPath, restoreSqlPath);
+	});
+
+	test('restore() returns a failure result when the backup file is not found', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._uploader.exists.resolves(false);
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.restore('backup-missing.sql.gz.enc');
+
+		assert.deepEqual(result, { success: false, error: 'Backup file not found: backup-missing.sql.gz.enc' });
+		assert.isFalse(overrides._uploader.download.called);
+		assert.isFalse(overrides._restoreDatabase.called);
+		assert.isTrue(logService.error.calledOnce);
+	});
+
+	test('restore() cleans up the downloaded artifacts after the restore', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._snapshotHelper.decrypt.resolves(restoreDecryptedPath);
+		overrides._snapshotHelper.decompress.resolves(restoreSqlPath);
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.restore(restoreFilename);
+
+		assert.isTrue(result.success);
+		assert.deepEqual(
+			overrides._unlink.getCalls().map((call) => call.args[0]),
+			[restoreLocalPath, restoreDecryptedPath, restoreSqlPath],
+		);
+	});
+
+	test('restore() cleans up partial artifacts when the database restore fails', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._snapshotHelper.decrypt.resolves(restoreDecryptedPath);
+		overrides._snapshotHelper.decompress.resolves(restoreSqlPath);
+		overrides._restoreDatabase.rejects(new Error('psql exploded'));
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const result = await pipeline.restore(restoreFilename);
+
+		assert.deepEqual(result, { success: false, error: 'psql exploded' });
+		assert.deepEqual(
+			overrides._unlink.getCalls().map((call) => call.args[0]),
+			[restoreLocalPath, restoreDecryptedPath, restoreSqlPath],
+		);
+	});
+
+	test('restore() logs the start and completion of the restore', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._snapshotHelper.decrypt.resolves(restoreDecryptedPath);
+		overrides._snapshotHelper.decompress.resolves(restoreSqlPath);
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		await pipeline.restore(restoreFilename);
+
+		assert.equal(logService.info.firstCall.args[0].message, 'Starting backup restoration');
+		assert.equal(logService.info.secondCall.args[0].message, 'Backup restoration completed');
+	});
+
+	// ─── list() ──────────────────────────────────────────────────────────────
+
+	test('list() parses stored objects into metadata sorted newest first', async ({ assert }) => {
+		const overrides = buildOverrides();
+		overrides._uploader.listBackups.resolves([
+			{ key: 'backup/backup-full-2024-01-01-020000.sql.gz.enc', isDirectory: false },
+			{ key: 'backup/backup-differential-2024-01-02-030000.sql.gz.enc', isDirectory: false },
+			{ key: 'backup/some/dir', isDirectory: true },
+			{ key: 'backup/notes.txt', isDirectory: false },
+		] as any);
+		overrides._uploader.getMetaData.callsFake(async (key: string) => {
+			if (key.includes('differential')) {
+				return { contentLength: 111, lastModified: new Date('2024-01-02T03:00:00') };
+			}
+			return { contentLength: 222, lastModified: new Date('2024-01-01T02:00:00') };
+		});
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(buildLogService(), overrides);
+
+		const backups = await pipeline.list();
+
+		assert.lengthOf(backups, 2);
+		assert.equal(backups[0].filename, 'backup-differential-2024-01-02-030000.sql.gz.enc');
+		assert.equal(backups[0].type, 'differential');
+		assert.equal(backups[0].size, 111);
+		assert.equal(backups[1].filename, 'backup-full-2024-01-01-020000.sql.gz.enc');
+		assert.equal(backups[1].type, 'full');
+	});
+
+	test('list() returns an empty list and logs when the disk is unavailable', async ({ assert }) => {
+		const logService = buildLogService();
+		const overrides = buildOverrides();
+		overrides._uploader.listBackups.rejects(new Error('disk down'));
+
+		const { BackupPipeline } = await import('#backup/services/backup_pipeline');
+		const pipeline = new BackupPipeline(logService, overrides);
+
+		const backups = await pipeline.list();
+
+		assert.deepEqual(backups, []);
+		assert.isTrue(logService.error.calledOnce);
+		assert.include(logService.error.firstCall.args[0].message, 'Failed to list backups from Drive');
 	});
 });
