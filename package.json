@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@adonisjs/redis": "^11.0.0",
-    "ioredis": "^5.11.1"
+    "ioredis": "^6.0.0"
   },
   "devDependencies": {
     "oxfmt": "^0.73.0",
