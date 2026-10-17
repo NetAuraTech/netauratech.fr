@@ -95,7 +95,7 @@ The `withTransaction()` utility starts a Lucid database transaction and binds it
 - **Actions may depend on infrastructure services** when needed (StorageService, CacheService, ImageOptimizerService).
 - **Actions may depend on domain services** — when a use case's logic is owned by a service (or shared by several entry points), the action stays a leaf and delegates its single `execute()` to the owning service.
 - **Actions never call other actions** — shared logic is inlined or extracted to repository/helper/service methods. Actions are leaf nodes.
-- **Services call actions in exactly one documented case** — resolving the recipient's locale for mail dispatch: a per-domain mail service may call the account domain's preferences leaf action (`TokenMailService` and `EmailChangeMailService` → `GetPreferencesAction`), because the recipient's preferences live in the account domain and the resolved locale must stay domain-side of the kernel mail service. No other service→action edge is allowed — any other shared logic belongs in a service or a repository.
+- **Services call actions in exactly one documented case** — resolving the recipient's locale for mail dispatch: a per-domain mail service may call the account domain's preferences leaf action (`TokenMailService`, `EmailChangeMailService` and `ContactMailService` → `GetPreferencesAction`; the contact flow calls it only when the `MAIL_FROM_ADDRESS` recipient is a known user), because the recipient's preferences live in the account domain and the resolved locale must stay domain-side of the kernel mail service. No other service→action edge is allowed — any other shared logic belongs in a service or a repository.
 - **Actions import LogService** for audit logging of business events.
 
 ## Directory Structure

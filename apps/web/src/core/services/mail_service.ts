@@ -3,14 +3,14 @@ import i18nManager from '@adonisjs/i18n/services/main';
 import { MailClientContract, type MailClientMessage } from '#core/contracts/mail_client';
 import { routePath } from '#core/services/route_path';
 import env from '#start/env';
-import type { TokenMailBuildInput, TokenMailData, TokenMailMessage, TokenMailSpec } from '#core/types/token_mail';
+import type { MailBuildInput, MailData, MailMessage, MailSpec } from '#core/types/mail';
 
 /**
- * The i18n data slots of a token mail, in template order — the slots filled
- * from the spec's i18n key block. The envelope slots (`app_name`, `subject`)
- * and the link slot are assembled separately by {@link MailService.buildTokenMail}.
+ * The i18n data slots of a mail, in template order — the slots filled from
+ * the spec's i18n key block. The envelope slots (`app_name`, `subject`) and
+ * the link slot are assembled separately by {@link MailService.buildMail}.
  */
-const TOKEN_MAIL_I18N_SLOTS = ['greeting', 'intro', 'action', 'outro', 'expiry', 'footer', 'warning'] as const;
+const MAIL_I18N_SLOTS = ['greeting', 'intro', 'action', 'outro', 'expiry', 'footer', 'warning'] as const;
 
 /**
  * Options of a shared mail dispatch.
@@ -30,11 +30,14 @@ export interface MailDispatchOptions {
  * around the framework mail driver.
  *
  * The service owns the shared dispatch — locale handling, link building,
- * token-mail payload assembly and sending. Per-domain mail services keep
- * building their domain-specific payload (i18n strings, token, template data)
- * and go through this service; the kernel never imports a domain, so the
- * domain side resolves what the dispatch needs (the recipient's locale) and
- * hands it over.
+ * spec-driven mail payload assembly and sending. Mails described by a row of
+ * the kernel spec catalog (`MAIL_SPECS`) are assembled by
+ * {@link MailService.buildMail}; every other mail hands a typed payload to
+ * {@link MailService.send}. Per-domain mail services keep building what the
+ * spec pattern does not cover (per-dispatch data such as the contact mail's
+ * localized fields) and go through this service; the kernel's dispatch logic
+ * never imports a domain, so the domain side resolves what the dispatch needs
+ * (the recipient's locale) and hands it over.
  *
  * @example
  * const mailService = await app.container.make(MailService)
@@ -110,14 +113,16 @@ export class MailService<TPayload extends MailClientMessage = MailClientMessage>
 	}
 
 	/**
-	 * Assembles the mail payload of a token mail from its {@link TokenMailSpec}.
+	 * Assembles the mail payload of a spec-driven mail flow from its
+	 * {@link MailSpec}.
 	 *
-	 * The shared assembly step of every token mail flow: translates the spec's
-	 * i18n key block in the recipient's locale, interpolating the app name and
-	 * the TTL-derived `hours`/`days` values (plus any per-dispatch params from
-	 * {@link TokenMailBuildInput.i18nParams}), builds the flavor-aware link
-	 * from the spec's candidate routes when it has any, and stamps the extra
-	 * data slots. The result is handed to {@link MailService.send} for
+	 * The shared assembly step of every spec-driven mail flow: translates the
+	 * spec's i18n key block in the recipient's locale — computing the subject
+	 * once for both the envelope and the template data — interpolating the app
+	 * name and the TTL-derived `hours`/`days` values (plus any per-dispatch
+	 * params from {@link MailBuildInput.i18nParams}), builds the flavor-aware
+	 * link from the spec's candidate routes when it has any, and stamps the
+	 * extra data slots. The result is handed to {@link MailService.send} for
 	 * dispatch.
 	 *
 	 * @param spec - The spec row of the mail flow.
@@ -127,14 +132,14 @@ export class MailService<TPayload extends MailClientMessage = MailClientMessage>
 	 *   carries no token (coded `E_TOKEN_MAIL_MISSING_TOKEN`).
 	 *
 	 * @example
-	 * const payload = mailService.buildTokenMail(TOKEN_MAIL_SPECS.passwordReset, {
+	 * const payload = mailService.buildMail(MAIL_SPECS.passwordReset, {
 	 *   to: user.email,
 	 *   locale,
 	 *   token,
 	 * })
 	 * await mailService.send(payload, { locale })
 	 */
-	buildTokenMail(spec: TokenMailSpec, input: TokenMailBuildInput): TokenMailMessage {
+	buildMail(spec: MailSpec, input: MailBuildInput): MailMessage {
 		const i18n = i18nManager.locale(input.locale);
 		const app = env.get('APP_NAME') ?? 'AdonisJS';
 		const params: Record<string, unknown> = {
@@ -143,11 +148,11 @@ export class MailService<TPayload extends MailClientMessage = MailClientMessage>
 			...input.i18nParams,
 		};
 
-		const data: TokenMailData = {
+		const data: MailData = {
 			app_name: app,
 			subject: i18n.t(spec.keys.subject, params),
 		};
-		for (const slot of TOKEN_MAIL_I18N_SLOTS) {
+		for (const slot of MAIL_I18N_SLOTS) {
 			const key = spec.keys[slot];
 			if (key !== undefined) {
 				data[slot] = i18n.t(key, params);
@@ -155,10 +160,9 @@ export class MailService<TPayload extends MailClientMessage = MailClientMessage>
 		}
 		if (spec.linkSlot && spec.linkRoutes.length > 0) {
 			if (input.token === undefined) {
-				throw Object.assign(
-					new Error('buildTokenMail: the spec row defines candidate routes, so the token is required'),
-					{ code: 'E_TOKEN_MAIL_MISSING_TOKEN' },
-				);
+				throw Object.assign(new Error('buildMail: the spec row defines candidate routes, so the token is required'), {
+					code: 'E_TOKEN_MAIL_MISSING_TOKEN',
+				});
 			}
 			data[spec.linkSlot] = this.buildLink(spec.linkRoutes, input.token);
 		}

@@ -1,11 +1,28 @@
 import app from '@adonisjs/core/services/app';
-import { BackupEngine } from '#backup/services/backup_engine';
+import mail from '@adonisjs/mail/services/main';
+import { MailClientContract, type MailClientMessage } from '#core/contracts/mail_client';
 import { MaintenanceService } from '#core/services/maintenance_service';
-import { LogService } from '#log/services/log_service';
+import { FailoverCacheDriver } from '#shared/services/cache/drivers/failover_cache_driver';
 import { InMemoryCacheDriver } from '#shared/services/cache/drivers/in_memory_cache_driver';
 import { RedisCacheDriver } from '#shared/services/cache/drivers/redis_cache_driver';
 import { CacheService } from '#shared/services/cache_service';
 import { LockService } from '#shared/services/lock_service';
+
+/**
+ * Application-side mail client: a thin wrapper around the AdonisJS mail driver
+ * so the kernel {@link MailClientContract} is satisfied without the kernel
+ * importing the mail package.
+ */
+class AdonisMailClient extends MailClientContract {
+	async send({ to, subject, template, data }: MailClientMessage): Promise<void> {
+		await mail.send((message) => {
+			message
+				.to(to)
+				.subject(subject)
+				.htmlView(template, data ?? {});
+		});
+	}
+}
 
 /**
  * IoC container bindings.
@@ -25,28 +42,13 @@ import { LockService } from '#shared/services/lock_service';
  * ]
  */
 
-// ─── BackupEngine (factory) ────────────────────────────────────────────
-
-/**
- * Factory binding for {@link BackupEngine} so that callers can resolve it
- * through the container instead of using `new`. Runtime arguments
- * (`strategyType`, `tempDir`) are supplied at resolution time which keeps
- * the strategy dynamic while still being mockable in tests via
- * {@link app.container.swap}.
- *
- * @example
- * const engine = await app.container.make(BackupEngine, ['full', 'storage/temp/backups'])
- */
-app.container.bind(BackupEngine, async (resolver, runtimeValues) => {
-	const [strategyType, tempDir] = runtimeValues ?? [];
-	const logService = await resolver.make(LogService);
-	return new BackupEngine(strategyType, tempDir, logService);
-});
-
 // ─── CacheService (singleton) ──────────────────────────────────────────
 
 /**
- * The root `CacheService` backed by Redis.
+ * The root `CacheService` backed by the composite failover driver: Redis is
+ * the primary tier and a process-local in-memory tier is the fallback. Each
+ * operation retries Redis, so an outage degrades to process-local caching
+ * instead of erroring, and recovery is self-healing (see ADR-012).
  * Inject or resolve via the container anywhere in the app:
  *
  * @example
@@ -54,7 +56,7 @@ app.container.bind(BackupEngine, async (resolver, runtimeValues) => {
  * const cache = await app.container.make(CacheService)
  */
 app.container.singleton(CacheService, () => {
-	const driver = new RedisCacheDriver();
+	const driver = new FailoverCacheDriver(new RedisCacheDriver());
 	return new CacheService(driver);
 });
 
@@ -63,8 +65,9 @@ app.container.singleton(CacheService, () => {
 /**
  * In-memory {@link CacheDriver} implementation singleton, for tests and
  * single-process environments. The production {@link CacheService} binding
- * above stays on Redis; resolve or swap this driver through the container
- * wherever the contract is needed.
+ * above uses a composite failover driver whose fallback tier is this same
+ * class; resolve or swap this driver through the container wherever the
+ * contract is needed.
  *
  * @example
  * const driver = await app.container.make(InMemoryCacheDriver)
@@ -77,23 +80,39 @@ app.container.singleton(InMemoryCacheDriver, () => new InMemoryCacheDriver());
 /**
  * Distributed lock service singleton.
  * Shared across every request and job execution so a maintenance task never
- * runs twice at once. Uses Redis with an in-memory fallback.
+ * runs twice at once. Locks are stored through the root {@link CacheService}
+ * (composite failover driver: Redis primary, process-local fallback).
  *
  * @example
  * const locks = await app.container.make(LockService)
  * await locks.withLock('maintenance:log_prune', 1800, () => runPrune())
  */
-app.container.singleton(LockService, () => new LockService());
+app.container.singleton(LockService, async () => {
+	const cache = await app.container.make(CacheService);
+	return new LockService(cache);
+});
 
 // ─── MaintenanceService (singleton) ────────────────────────────────────
 
 /**
  * Maintenance service singleton.
- * Handles Redis + memory fallback for maintenance mode configuration.
- * Initializes memory fallback on first resolution.
+ * Stores maintenance mode configuration through the root
+ * {@link CacheService} (composite failover driver: Redis primary,
+ * process-local fallback) and initializes its memory fallback on first
+ * resolution.
  */
 app.container.singleton(MaintenanceService, async () => {
-	const service = MaintenanceService.getInstance();
+	const cache = await app.container.make(CacheService);
+	const service = new MaintenanceService(cache);
 	await service.initializeMemoryFallback();
 	return service;
 });
+
+// ─── MailClientContract (singleton) ───────────────────────────────────
+
+/**
+ * Binds the kernel {@link MailClientContract} to the AdonisJS mail driver.
+ * Every mail service resolves this through the container, keeping it
+ * decoupled from the mail package.
+ */
+app.container.bind(MailClientContract, () => new AdonisMailClient());

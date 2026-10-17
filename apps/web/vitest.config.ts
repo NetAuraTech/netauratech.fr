@@ -18,7 +18,7 @@ export default defineConfig({
 		alias: {
 			'~': path.resolve(__dirname, 'inertia'),
 			'@generated': path.resolve(__dirname, '.adonisjs/client'),
-			'#types': path.resolve(__dirname, 'app/types'),
+			'#types': path.resolve(__dirname, 'types'),
 		},
 	},
 	test: {

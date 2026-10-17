@@ -14,8 +14,9 @@ interface Entry {
  * dialect (`*`, `?`, `[...]`) as Redis `SCAN MATCH`.
  *
  * Intended for tests and single-process environments — every process sees
- * its own store. The production {@link CacheService} binding stays on Redis
- * (see `start/container.ts`); this driver is exposed as a container
+ * its own store. The production {@link CacheService} binding uses the
+ * composite failover driver, of which this class is the fallback tier (see
+ * `start/container.ts`); this driver is also exposed as a container
  * singleton so it can be injected or swapped in wherever the contract is
  * needed.
  *

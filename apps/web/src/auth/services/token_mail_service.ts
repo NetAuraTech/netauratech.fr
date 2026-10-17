@@ -1,10 +1,10 @@
 import { inject } from '@adonisjs/core';
 import { GetPreferencesAction } from '#account/actions/preferences/get_preferences_action';
-import { TOKEN_TYPES, type FullToken } from '#auth/enums/token_type';
+import { type FullToken } from '#auth/enums/token_type';
 import { TokenService } from '#auth/services/token_service';
+import { MAIL_SPECS } from '#core/mail_specs';
 import { MailService } from '#core/services/mail_service';
-import { TOKEN_MAIL_SPECS } from '#core/token_mail_specs';
-import type { TokenMailMessage } from '#core/types/token_mail';
+import type { MailMessage } from '#core/types/mail';
 import type User from '#identity/models/user';
 
 /**
@@ -12,20 +12,20 @@ import type User from '#identity/models/user';
  *
  * Replaces the previous events → listeners → Mailables chain with one direct,
  * traceable call per flow. Every flow is described by a row of
- * {@link TOKEN_MAIL_SPECS} and shares the same orchestration:
+ * {@link MAIL_SPECS} and shares the same orchestration:
  *   1. Resolve the user's locale from their preferences
  *   2. Issue the token through the auth-domain {@link TokenService} with the
- *      row's TTL — the single issuance choreography (expire outstanding
- *      tokens of the type, generate the split token, hash the validator,
- *      persist the record)
+ *      row's token type and TTL — the single issuance choreography (expire
+ *      outstanding tokens of the type, generate the split token, hash the
+ *      validator, persist the record)
  *   3. Build the mail payload from the row through the shared
- *      {@link MailService.buildTokenMail} assembly
+ *      {@link MailService.buildMail} assembly
  *   4. Dispatch it through the kernel {@link MailService}
  */
 @inject()
 export class TokenMailService {
 	constructor(
-		protected mailService: MailService<TokenMailMessage>,
+		protected mailService: MailService<MailMessage>,
 		protected getPreferencesAction: GetPreferencesAction,
 		protected tokenService: TokenService,
 	) {}
@@ -36,11 +36,11 @@ export class TokenMailService {
 	 * @param user - The user whose email should be verified.
 	 */
 	async sendVerificationEmail(user: User): Promise<void> {
-		const spec = TOKEN_MAIL_SPECS.emailVerification;
+		const spec = MAIL_SPECS.emailVerification;
 		const locale = await this.resolveLocale(user);
-		const token = await this.tokenService.issue(user, TOKEN_TYPES.EMAIL_VERIFICATION, spec.ttlHours!);
+		const token = await this.tokenService.issue(user, spec.tokenType!, spec.ttlHours!);
 
-		await this.mailService.send(this.mailService.buildTokenMail(spec, { to: user.email, locale, token }), { locale });
+		await this.mailService.send(this.mailService.buildMail(spec, { to: user.email, locale, token }), { locale });
 	}
 
 	/**
@@ -54,7 +54,8 @@ export class TokenMailService {
 	 * @returns The raw `selector.validator` token to hand to the mail flow.
 	 */
 	async issuePasswordResetToken(user: User): Promise<FullToken> {
-		return this.tokenService.issue(user, TOKEN_TYPES.PASSWORD_RESET, TOKEN_MAIL_SPECS.passwordReset.ttlHours!);
+		const spec = MAIL_SPECS.passwordReset;
+		return this.tokenService.issue(user, spec.tokenType!, spec.ttlHours!);
 	}
 
 	/**
@@ -68,10 +69,10 @@ export class TokenMailService {
 	 * @param token - The `selector.validator` token issued for this request.
 	 */
 	async sendPasswordResetMail(user: User, token: FullToken): Promise<void> {
-		const spec = TOKEN_MAIL_SPECS.passwordReset;
+		const spec = MAIL_SPECS.passwordReset;
 		const locale = await this.resolveLocale(user);
 
-		await this.mailService.send(this.mailService.buildTokenMail(spec, { to: user.email, locale, token }), { locale });
+		await this.mailService.send(this.mailService.buildMail(spec, { to: user.email, locale, token }), { locale });
 	}
 
 	/**
@@ -80,11 +81,11 @@ export class TokenMailService {
 	 * @param user - The pending user that was invited.
 	 */
 	async sendInvitationEmail(user: User): Promise<void> {
-		const spec = TOKEN_MAIL_SPECS.invitation;
+		const spec = MAIL_SPECS.invitation;
 		const locale = await this.resolveLocale(user);
-		const token = await this.tokenService.issue(user, TOKEN_TYPES.PENDING_INVITE, spec.ttlHours!);
+		const token = await this.tokenService.issue(user, spec.tokenType!, spec.ttlHours!);
 
-		await this.mailService.send(this.mailService.buildTokenMail(spec, { to: user.email, locale, token }), { locale });
+		await this.mailService.send(this.mailService.buildMail(spec, { to: user.email, locale, token }), { locale });
 	}
 
 	/**
