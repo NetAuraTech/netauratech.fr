@@ -6,10 +6,10 @@ One action = one business operation. Lives in `src/{domain}/actions/{area}/{verb
 
 ```typescript
 import { inject } from '@adonisjs/core';
-import type File from '#file/models/file';
+import { withTransaction } from '#core/services/with_transaction';
 import { FileRepository } from '#file/repositories/file_repository';
 import { LogService } from '#log/services/log_service';
-import { withTransaction } from '#core/services/with_transaction';
+import type File from '#file/models/file';
 
 interface CreateSomethingPayload {
 	name: string;

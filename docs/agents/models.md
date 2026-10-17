@@ -7,8 +7,8 @@ Lucid models live in `src/{domain}/models/{name}.ts` (area subdirectories for la
 ## Structure
 
 ```typescript
-import { FooSchema } from '#database/schema';
 import { belongsTo, hasMany, scope } from '@adonisjs/lucid/orm';
+import { FooSchema } from '#database/schema';
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations';
 
 export default class Foo extends FooSchema {
