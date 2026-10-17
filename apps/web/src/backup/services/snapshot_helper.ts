@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { unlink as defaultUnlink } from 'node:fs/promises';
 import { pipeline } from 'node:stream/promises';
-import { createGzip } from 'node:zlib';
+import { createGzip, createGunzip } from 'node:zlib';
 import { createEncryptionHelper, type EncryptionHelper } from '#backup/services/encryption_helper';
 import backupConfig from '#config/backup';
 
@@ -25,6 +25,7 @@ import backupConfig from '#config/backup';
  */
 export class SnapshotHelper {
 	private readonly compressionLevel: number;
+	private readonly compressionEnabled: boolean;
 	private readonly encryptionEnabled: boolean;
 	private readonly encryptionHelper: EncryptionHelper | undefined;
 	private readonly unlinkFn: typeof defaultUnlink;
@@ -32,16 +33,18 @@ export class SnapshotHelper {
 	/**
 	 * @param _encryptionHelper - Optional EncryptionHelper override for testing.
 	 * @param _unlink - Optional fs.unlink override for testing.
-	 * @param opts - Optional config overrides. `_encryptionEnabled` forces the
-	 * encryption flag regardless of backup config (useful in tests).
+	 * @param opts - Optional config overrides. `_encryptionEnabled` and
+	 * `_compressionEnabled` force the respective flags regardless of backup
+	 * config (useful in tests).
 	 */
 	constructor(
 		_encryptionHelper?: EncryptionHelper,
 		_unlink?: typeof defaultUnlink,
-		opts?: { _encryptionEnabled?: boolean },
+		opts?: { _encryptionEnabled?: boolean; _compressionEnabled?: boolean },
 	) {
 		this.unlinkFn = _unlink ?? defaultUnlink;
 		this.compressionLevel = backupConfig.compression.level;
+		this.compressionEnabled = opts?._compressionEnabled ?? backupConfig.compression.enabled;
 		this.encryptionEnabled = opts?._encryptionEnabled ?? backupConfig.encryption.enabled;
 		if (this.encryptionEnabled) {
 			this.encryptionHelper = _encryptionHelper ?? createEncryptionHelper(backupConfig.encryption.key.release());
@@ -61,6 +64,22 @@ export class SnapshotHelper {
 	}
 
 	/**
+	 * Decompress a gzip file if compression is enabled.
+	 * Deletes the compressed input after successful decompression.
+	 * Returns the path to the decompressed file (or original if disabled).
+	 */
+	decompress(inputPath: string): Promise<string> {
+		if (!this.compressionEnabled) return Promise.resolve(inputPath);
+		const outputPath = inputPath.slice(0, -'.gz'.length);
+		const input = createReadStream(inputPath);
+		const output = createWriteStream(outputPath);
+		const gunzip = createGunzip();
+		return pipeline(input, gunzip, output).then(() => {
+			return this.unlinkFn(inputPath).then(() => outputPath);
+		});
+	}
+
+	/**
 	 * Encrypt a file using AES-256-CBC if encryption is enabled.
 	 * Deletes the unencrypted input after successful encryption.
 	 * Returns the path to the encrypted file (or original if disabled).
@@ -69,6 +88,19 @@ export class SnapshotHelper {
 		if (!this.encryptionEnabled) return Promise.resolve(inputPath);
 		const outputPath = `${inputPath}.enc`;
 		return this.encryptionHelper!.encryptFile(inputPath, outputPath).then(() => {
+			return this.unlinkFn(inputPath).then(() => outputPath);
+		});
+	}
+
+	/**
+	 * Decrypt a file using AES-256-CBC if encryption is enabled.
+	 * Deletes the encrypted input after successful decryption.
+	 * Returns the path to the decrypted file (or original if disabled).
+	 */
+	decrypt(inputPath: string): Promise<string> {
+		if (!this.encryptionEnabled) return Promise.resolve(inputPath);
+		const outputPath = inputPath.slice(0, -'.enc'.length);
+		return this.encryptionHelper!.decryptFile(inputPath, outputPath).then(() => {
 			return this.unlinkFn(inputPath).then(() => outputPath);
 		});
 	}

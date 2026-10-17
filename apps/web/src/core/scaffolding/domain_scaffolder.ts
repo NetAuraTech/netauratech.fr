@@ -1,3 +1,5 @@
+import ScaffolderRegistrationException from '#core/exceptions/scaffolder_registration_exception';
+
 /**
  * Pure `make:domain` scaffolding logic.
  *
@@ -8,8 +10,16 @@
  * `start/permissions.ts`, `start/nav.ts` and the `package.json` imports map)
  * that wire the domain into the app.
  *
- * The module is dependency-free and side-effect-free so the `make:domain`
- * command and the scaffolder unit tests share the exact same logic.
+ * The `start/` edits splice each registration right after a pinned
+ * `@scaffold-marker` comment line ({@link ROUTES_IMPORTS_MARKER},
+ * {@link PERMISSIONS_IMPORTS_MARKER}, {@link PERMISSIONS_CATALOG_MARKER},
+ * {@link NAV_IMPORTS_MARKER}, {@link NAV_REGISTRATION_MARKER}) embedded in
+ * the composition file; a missing marker throws a
+ * {@link ScaffolderRegistrationException} instead of silently skipping the edit.
+ *
+ * The module is side-effect-free and depends only on the pure
+ * {@link ScaffolderRegistrationException} class, so the `make:domain` command
+ * and the scaffolder unit tests share the exact same logic.
  */
 export interface DomainNames {
 	/** Singular snake_case domain segment (e.g. `widget`), reused as the business import alias. */
@@ -1240,45 +1250,101 @@ export function buildDomainFiles(names: DomainNames, options: { timestamp?: numb
 }
 
 /**
+ * Pinned scaffold markers of the composition files the `make:domain` command
+ * edits.
+ *
+ * Each marker is a one-line comment embedded in a `start/` composition file
+ * and is the single insertion contract between that file and the scaffolder:
+ * a new domain's registration is spliced in right after the marker line, and
+ * a missing marker throws a {@link ScaffolderRegistrationException} instead of
+ * silently skipping the edit. The marker text is the seam — it may never be
+ * moved, renamed or removed from its file; the scaffolder unit tests pin the
+ * committed `start/*` files (and the flavor manifest rewrites) to it.
+ */
+export const ROUTES_IMPORTS_MARKER = `// @scaffold-marker routes-imports: make:domain appends new domain route imports after this line.`;
+
+/** Pinned marker of the `start/permissions.ts` permission-catalog import block. */
+export const PERMISSIONS_IMPORTS_MARKER = `// @scaffold-marker permissions-imports: make:domain appends new domain permission-catalog imports after this line.`;
+
+/** Pinned marker of the `start/permissions.ts` composed catalog matrix. */
+export const PERMISSIONS_CATALOG_MARKER = `// @scaffold-marker permissions-catalog: make:domain appends new domain permission-catalog spreads after this line.`;
+
+/** Pinned marker of the `start/nav.ts` nav-entry import block. */
+export const NAV_IMPORTS_MARKER = `// @scaffold-marker nav-imports: make:domain appends new domain nav-entry imports after this line.`;
+
+/** Pinned marker of the `start/nav.ts` `registry.register()` block. */
+export const NAV_REGISTRATION_MARKER = `// @scaffold-marker nav-registration: make:domain appends new domain registry.register() calls after this line.`;
+
+/**
+ * Insert `line` right after `marker` in `content`.
+ *
+ * @param content - The current content of the composition file.
+ * @param marker - The pinned marker line to insert after.
+ * @param line - The registration line to insert.
+ * @param file - The composition file name, reported when the marker is missing.
+ * @returns The updated content.
+ * @throws {ScaffolderRegistrationException} When `content` does not contain the marker.
+ */
+function insertAtMarker(content: string, marker: string, line: string, file: string): string {
+	if (!content.includes(marker)) {
+		throw new ScaffolderRegistrationException(
+			`${file} is missing the pinned scaffold marker line:\n  ${marker}\n` +
+				'The marker is the make:domain insertion contract for new domain registrations — it must not be ' +
+				'moved, renamed or removed (see src/core/scaffolding/domain_scaffolder.ts). Restore the marker line and re-run make:domain.',
+		);
+	}
+
+	return content.replace(marker, `${marker}\n${line}`);
+}
+
+/**
  * Add the domain route-module import to `start/routes.ts` (idempotent).
+ *
+ * The import is spliced in right after the pinned {@link ROUTES_IMPORTS_MARKER}
+ * line; a missing marker throws a {@link ScaffolderRegistrationException} instead
+ * of silently skipping the registration.
  *
  * @param content - The current `start/routes.ts` content.
  * @param names - The derived {@link DomainNames}.
  * @returns The updated content, unchanged when already registered.
+ * @throws {ScaffolderRegistrationException} When the routes-imports marker is missing.
  */
 export function applyRoutesRegistration(content: string, names: DomainNames): string {
 	const line = `import '#transport/${names.domain}/routes';`;
-	const marker = `import '#transport/log/routes';`;
 
 	if (content.includes(line)) return content;
 
-	return content.includes(marker) ? content.replace(marker, `${marker}\n${line}`) : `${content.trimEnd()}\n${line}\n`;
+	return insertAtMarker(content, ROUTES_IMPORTS_MARKER, line, 'start/routes.ts');
 }
 
 /**
  * Add the domain permission catalog to `start/permissions.ts` (idempotent).
  *
+ * The catalog import and the matrix spread are each spliced in right after
+ * their pinned marker ({@link PERMISSIONS_IMPORTS_MARKER} and
+ * {@link PERMISSIONS_CATALOG_MARKER}); a half-applied registration (import
+ * without spread, or vice versa) is completed, and a missing marker throws a
+ * {@link ScaffolderRegistrationException} instead of silently skipping the edit.
+ *
  * @param content - The current `start/permissions.ts` content.
  * @param names - The derived {@link DomainNames}.
- * @returns The updated content, unchanged when already registered.
+ * @returns The updated content, unchanged when fully registered.
+ * @throws {ScaffolderRegistrationException} When a permissions marker is missing.
  */
 export function applyPermissionsRegistration(content: string, names: DomainNames): string {
 	const importLine = `import { ${names.permissionCatalogName} } from '${names.domainAlias}/permissions';`;
 	const spreadLine = `\t...${names.permissionCatalogName},`;
 
-	if (content.includes(importLine) || content.includes(spreadLine.trim())) return content;
+	if (content.includes(importLine) && content.includes(spreadLine)) return content;
 
 	let next = content;
 
 	if (!next.includes(importLine)) {
-		next = next.replace(
-			`import { loggingPermissionCatalog } from '#log/permissions';`,
-			`import { loggingPermissionCatalog } from '#log/permissions';\n${importLine}`,
-		);
+		next = insertAtMarker(next, PERMISSIONS_IMPORTS_MARKER, importLine, 'start/permissions.ts');
 	}
 
 	if (!next.includes(spreadLine)) {
-		next = next.replace(`\t...loggingPermissionCatalog,`, `\t...loggingPermissionCatalog,\n${spreadLine}`);
+		next = insertAtMarker(next, PERMISSIONS_CATALOG_MARKER, spreadLine, 'start/permissions.ts');
 	}
 
 	return next;
@@ -1287,30 +1353,32 @@ export function applyPermissionsRegistration(content: string, names: DomainNames
 /**
  * Add the domain nav entries to `start/nav.ts` (idempotent).
  *
+ * The nav-entry import and the `registry.register()` call are each spliced in
+ * right after their pinned marker ({@link NAV_IMPORTS_MARKER} and
+ * {@link NAV_REGISTRATION_MARKER}); a half-applied registration (import
+ * without register call, or vice versa) is completed, and a missing marker
+ * throws a {@link ScaffolderRegistrationException} instead of silently skipping
+ * the edit.
+ *
  * @param content - The current `start/nav.ts` content.
  * @param names - The derived {@link DomainNames}.
- * @returns The updated content, unchanged when already registered.
+ * @returns The updated content, unchanged when fully registered.
+ * @throws {ScaffolderRegistrationException} When a nav marker is missing.
  */
 export function applyNavRegistration(content: string, names: DomainNames): string {
 	const importLine = `import { ${names.navEntriesName} } from '#transport/${names.domain}/nav';`;
 	const registerLine = `registry.register('${names.domain}', ${names.navEntriesName});`;
 
-	if (content.includes(importLine) || content.includes(registerLine)) return content;
+	if (content.includes(importLine) && content.includes(registerLine)) return content;
 
 	let next = content;
 
 	if (!next.includes(importLine)) {
-		next = next.replace(
-			`import { loggingNavEntries } from '#transport/log/nav';`,
-			`import { loggingNavEntries } from '#transport/log/nav';\n${importLine}`,
-		);
+		next = insertAtMarker(next, NAV_IMPORTS_MARKER, importLine, 'start/nav.ts');
 	}
 
 	if (!next.includes(registerLine)) {
-		next = next.replace(
-			`registry.register('logging', loggingNavEntries);`,
-			`registry.register('logging', loggingNavEntries);\n${registerLine}`,
-		);
+		next = insertAtMarker(next, NAV_REGISTRATION_MARKER, registerLine, 'start/nav.ts');
 	}
 
 	return next;
@@ -1319,6 +1387,11 @@ export function applyNavRegistration(content: string, names: DomainNames): strin
 /**
  * Add the `#<domain>/*` business import alias to the `package.json` imports
  * map (idempotent).
+ *
+ * Unlike the `start/` composition files, `package.json` carries no pinned
+ * marker: JSON has no comment syntax, so the edit is structural (parse,
+ * insert the alias after the `#backup/*` key, re-serialize) and can never
+ * silently no-op on a moved anchor line.
  *
  * @param content - The current `package.json` content.
  * @param names - The derived {@link DomainNames}.

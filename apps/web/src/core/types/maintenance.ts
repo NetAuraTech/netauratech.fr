@@ -13,9 +13,10 @@ export type MaintenanceSchedule = {
 /**
  * Maintenance configuration — the persisted single source of truth.
  *
- * Stored under the Redis `maintenance:config` key, with an in-memory
- * fallback when Redis is unavailable. The `enabled` flag is the admin
- * toggle; `scheduled` optionally arms a maintenance window.
+ * Stored through the cache seam under the `maintenance:config` key (root
+ * `CacheService`: composite failover driver with Redis as the primary tier
+ * and a process-local in-memory tier as fallback). The `enabled` flag is
+ * the admin toggle; `scheduled` optionally arms a maintenance window.
  */
 export type MaintenanceConfig = {
 	enabled: boolean;

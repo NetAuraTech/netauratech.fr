@@ -1,3 +1,7 @@
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { test } from '@japa/runner';
 import sinon from 'sinon';
 
@@ -71,5 +75,66 @@ test.group('SnapshotHelper', (group) => {
 		assert.equal(result, '/tmp/data.sql.enc');
 		// Verify order: encryptFile called before unlink
 		assert.isTrue(encryptFileStub.calledBefore(unlinkStub));
+	});
+
+	// ─── decrypt() ───────────────────────────────────────────────────────────
+
+	test('decrypt() returns input path when encryption is disabled', async ({ assert }) => {
+		const { SnapshotHelper } = await import('#backup/services/snapshot_helper');
+
+		const helper = new SnapshotHelper(undefined, undefined, { _encryptionEnabled: false });
+		const result = await helper.decrypt('/tmp/dump.sql.gz.enc');
+
+		assert.equal(result, '/tmp/dump.sql.gz.enc');
+	});
+
+	test('decrypt() calls encryptionHelper.decryptFile and deletes the encrypted input', async ({ assert }) => {
+		const decryptFileStub = sinon.stub().resolves();
+		const unlinkStub = sinon.stub().resolves();
+		const mockEncryptionHelper = { decryptFile: decryptFileStub } as any;
+
+		const { SnapshotHelper } = await import('#backup/services/snapshot_helper');
+		const helper = new SnapshotHelper(mockEncryptionHelper, unlinkStub);
+
+		const result = await helper.decrypt('/tmp/dump.sql.gz.enc');
+
+		assert.equal(result, '/tmp/dump.sql.gz');
+		assert.isTrue(decryptFileStub.calledWith('/tmp/dump.sql.gz.enc', '/tmp/dump.sql.gz'));
+		assert.isTrue(unlinkStub.calledWith('/tmp/dump.sql.gz.enc'));
+		assert.isTrue(decryptFileStub.calledBefore(unlinkStub));
+	});
+
+	// ─── decompress() ────────────────────────────────────────────────────────
+
+	test('decompress() returns input path when compression is disabled', async ({ assert }) => {
+		const { SnapshotHelper } = await import('#backup/services/snapshot_helper');
+
+		const helper = new SnapshotHelper(undefined, undefined, {
+			_encryptionEnabled: false,
+			_compressionEnabled: false,
+		});
+		const result = await helper.decompress('/tmp/dump.sql.gz');
+
+		assert.equal(result, '/tmp/dump.sql.gz');
+	});
+
+	test('decompress() gunzips the file and deletes the compressed input', async ({ assert }) => {
+		const dir = await mkdtemp(join(tmpdir(), 'snapshot-decompress-'));
+		const compressedPath = join(dir, 'dump.sql.gz');
+		await writeFile(compressedPath, gzipSync('SELECT 1;'));
+
+		const { SnapshotHelper } = await import('#backup/services/snapshot_helper');
+		const helper = new SnapshotHelper(undefined, undefined, { _encryptionEnabled: false });
+
+		const result = await helper.decompress(compressedPath);
+
+		try {
+			assert.equal(result, join(dir, 'dump.sql'));
+			const content = await readFile(result);
+			assert.equal(content.toString(), 'SELECT 1;');
+			await assert.rejects(() => readFile(compressedPath), Error);
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
 	});
 });

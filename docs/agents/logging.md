@@ -2,6 +2,8 @@
 
 All structured logging goes through a central `LogService`, injected via DI (`@inject()`). Never call the raw logger directly from services or controllers — always go through `LogService`.
 
+Exception — infrastructure drivers. Drivers built by hand in `start/container.ts` (e.g. the cache drivers in `src/shared/services/cache/drivers/`) are not `@inject()`-ed domain services and may operate while the application's own dependencies are down — including the database behind `LogService`'s write-through persistence. They log to the raw logger directly; their entries are diagnostics and are never persisted to `log_entries`.
+
 ## Generic levels
 
 `logService.debug/info/warn/error/fatal(entry)` — use for raw, level-driven logging without a specific domain meaning. `entry` accepts `message`, `category`, `context`, `metadata`, and optionally `error`.

@@ -1,6 +1,7 @@
 import logger from '@adonisjs/core/services/logger';
-import redis from '@adonisjs/redis/services/main';
 import ipaddr from 'ipaddr.js';
+import { type CacheTier } from '#core/contracts/cache_driver';
+import { CacheService } from '#shared/services/cache_service';
 import type { MaintenanceConfig, MaintenanceSchedule, MemoryConfig } from '#core/types/maintenance';
 import type { IPv4, IPv6 } from 'ipaddr.js';
 
@@ -18,13 +19,31 @@ interface CidrRange {
 export const MAX_ALLOWED_IPS = 100;
 
 /**
+ * Cache key for the stored config within the `maintenance` namespace
+ * (absolute key: `maintenance:config`) — unchanged from the pre-seam
+ * Redis transport.
+ */
+const CONFIG_KEY = 'config';
+
+/**
+ * TTL for the stored config: 24h, refreshed on every read.
+ */
+const CONFIG_TTL_SECONDS = 86400;
+
+/**
  * Maintenance Service - Single source of truth for maintenance mode configuration.
  *
- * Uses Redis as primary source of truth with in-memory fallback when Redis is unavailable.
- * Implements fallback lifecycle: initialize → explicit override → reconcile on Redis recovery.
+ * Stores its config through the cache seam (the root `CacheService`:
+ * composite failover driver with Redis as the primary tier and a
+ * process-local in-memory tier as fallback, see ADR-012). Implements the
+ * fallback lifecycle: initialize → explicit override → reconcile on primary
+ * recovery.
  */
 export class MaintenanceService {
-	private static instance: MaintenanceService;
+	/**
+	 * Namespaced view of the cache seam holding the stored config.
+	 */
+	private readonly configCache: CacheService;
 	private memoryConfig: MemoryConfig = {
 		enabled: false,
 		message: '',
@@ -34,51 +53,35 @@ export class MaintenanceService {
 		source: 'memory',
 		_explicitlySet: false,
 	};
-	private redisAvailable = true;
 	private cidrCache: CidrRange[] = [];
 	private cidrCacheValid = false;
 
-	constructor() {}
-
-	static getInstance(): MaintenanceService {
-		if (!MaintenanceService.instance) {
-			MaintenanceService.instance = new MaintenanceService();
-		}
-		return MaintenanceService.instance;
+	/**
+	 * @param cache - The root {@link CacheService} (composite failover
+	 *   driver in production, see `start/container.ts`).
+	 */
+	constructor(cache: CacheService) {
+		this.configCache = cache.namespace('maintenance');
 	}
 
 	/**
 	 * Initialize memory fallback on application startup.
-	 * Reads from Redis if available, otherwise initializes safe defaults.
+	 * Reads the stored config through the cache seam, otherwise initializes
+	 * safe defaults. Logs a warning when the fallback tier is serving and no
+	 * stored config exists, i.e. when safe defaults were actually used.
 	 */
 	async initializeMemoryFallback(): Promise<void> {
-		try {
-			const config = await this.readFromRedis();
-			if (config) {
-				this.memoryConfig = {
-					...config,
-					source: 'memory',
-					_explicitlySet: false,
-					_lastRedisSync: new Date(),
-					updatedAt: new Date(),
-				};
-				this.redisAvailable = true;
-			} else {
-				// No Redis config exists - safe default: maintenance OFF
-				this.memoryConfig = {
-					enabled: false,
-					message: '',
-					allowedIps: [],
-					retryAfter: 3600,
-					updatedAt: new Date(),
-					source: 'memory',
-					_explicitlySet: false,
-					_lastRedisSync: new Date(),
-				};
-				this.redisAvailable = true;
-			}
-		} catch (error) {
-			// Redis unavailable - start with safe default (maintenance OFF)
+		const stored = await this.readStoredConfig();
+		if (stored) {
+			this.memoryConfig = {
+				...stored,
+				source: 'memory',
+				_explicitlySet: false,
+				_lastRedisSync: new Date(),
+				updatedAt: new Date(),
+			};
+		} else {
+			// No stored config on the serving tier - safe default: maintenance OFF
 			this.memoryConfig = {
 				enabled: false,
 				message: '',
@@ -89,11 +92,13 @@ export class MaintenanceService {
 				_explicitlySet: false,
 				_lastRedisSync: new Date(),
 			};
-			this.redisAvailable = false;
-			logger.warn(
-				{ error },
-				'[MaintenanceService] Redis unavailable at startup. Memory fallback initialized with safe default (maintenance OFF).',
-			);
+
+			if (this.cacheTier() === 'fallback') {
+				logger.warn(
+					{},
+					'[MaintenanceService] Primary tier unavailable at startup. Memory fallback initialized with safe default (maintenance OFF).',
+				);
+			}
 		}
 	}
 
@@ -133,7 +138,9 @@ export class MaintenanceService {
 
 	/**
 	 * Update maintenance configuration.
-	 * Writes to Redis if available, otherwise to memory with explicit flag.
+	 * Writes through the cache seam; when the composite driver is degraded
+	 * to the fallback tier the change is flagged for reconciliation on
+	 * recovery.
 	 */
 	async setConfig(config: Partial<MaintenanceConfig>): Promise<void> {
 		if (config.allowedIps && config.allowedIps.length > MAX_ALLOWED_IPS) {
@@ -216,76 +223,69 @@ export class MaintenanceService {
 
 	/**
 	 * Get current configuration source (for admin UI / CLI status).
+	 * Reports `memory` while the composite driver is serving operations from
+	 * the process-local fallback tier.
 	 */
 	getSource(): 'redis' | 'memory' {
-		return this.redisAvailable ? 'redis' : 'memory';
+		return this.cacheTier() === 'fallback' ? 'memory' : 'redis';
 	}
 
 	/**
-	 * Check if Redis is currently available.
+	 * Check if the primary tier (Redis in production) is currently available.
 	 */
 	isRedisAvailable(): boolean {
-		return this.redisAvailable;
+		return this.cacheTier() !== 'fallback';
 	}
 
 	/**
-	 * Attempt to reconcile memory config with Redis on Redis recovery.
-	 * Called when Redis becomes available again.
+	 * Attempt to reconcile the in-process config with the primary tier on
+	 * primary recovery.
+	 *
+	 * While the primary is down the read lands on the fallback tier and this
+	 * is a no-op — there is nothing to reconcile against yet. Once the
+	 * primary serves operations again: if the in-process config was
+	 * explicitly modified during the outage it is pushed to the primary,
+	 * otherwise the primary's value wins and is synced locally.
 	 */
 	async reconcileWithRedis(): Promise<void> {
-		if (!this.redisAvailable) {
-			try {
-				await this.testRedisConnection();
-				this.redisAvailable = true;
-			} catch {
-				return; // Still unavailable
-			}
-		}
-
 		try {
-			const redisConfig = await this.readFromRedis();
-			if (!redisConfig) {
-				// No Redis config exists - if memory was explicitly set, push to Redis
-				if (this.memoryConfig._explicitlySet) {
-					await this.writeToRedis({
-						enabled: this.memoryConfig.enabled,
-						message: this.memoryConfig.message,
-						allowedIps: this.memoryConfig.allowedIps,
-						retryAfter: this.memoryConfig.retryAfter,
-						source: 'memory',
-						scheduled: this.memoryConfig.scheduled,
-					});
-					logger.info({}, '[MaintenanceService] Reconciled: Pushed memory config to Redis.');
-				}
-				this.memoryConfig._lastRedisSync = new Date();
+			const stored = await this.readStoredConfig();
+
+			// The read lands on the fallback tier while the primary is still
+			// down - nothing to reconcile against yet.
+			if (this.cacheTier() !== 'primary') {
 				return;
 			}
 
-			// Redis has config - if memory was explicitly modified during outage, push to Redis
+			if (!stored) {
+				// No config on the primary - if memory was explicitly set, push to it
+				if (this.memoryConfig._explicitlySet) {
+					await this.writeStoredConfig(this.memoryConfig);
+					logger.info({}, '[MaintenanceService] Reconciled: Pushed memory config to the primary tier.');
+				}
+				this.memoryConfig = { ...this.memoryConfig, _lastRedisSync: new Date() };
+				return;
+			}
+
+			// Primary has a config - if memory was explicitly modified during an
+			// outage, push it to the primary
 			if (this.memoryConfig._explicitlySet && this.memoryConfig._lastRedisSync) {
 				if (this.memoryConfig.updatedAt > this.memoryConfig._lastRedisSync) {
-					await this.writeToRedis({
-						enabled: this.memoryConfig.enabled,
-						message: this.memoryConfig.message,
-						allowedIps: this.memoryConfig.allowedIps,
-						retryAfter: this.memoryConfig.retryAfter,
-						source: 'memory',
-						scheduled: this.memoryConfig.scheduled,
-					});
-					logger.info({}, '[MaintenanceService] Reconciled: Pushed modified memory config to Redis.');
+					await this.writeStoredConfig(this.memoryConfig);
+					logger.info({}, '[MaintenanceService] Reconciled: Pushed modified memory config to the primary tier.');
 				}
 			}
 
-			// Sync memory with Redis
+			// Sync memory with the primary
 			this.memoryConfig = {
-				...redisConfig,
+				...stored,
 				source: 'memory',
 				_explicitlySet: false,
 				_lastRedisSync: new Date(),
 				updatedAt: new Date(),
 			};
-			this.updateCidrCache(redisConfig.allowedIps);
-			logger.info({}, '[MaintenanceService] Reconciled: Synced memory config from Redis.');
+			this.updateCidrCache(stored.allowedIps);
+			logger.info({}, '[MaintenanceService] Reconciled: Synced memory config from the primary tier.');
 		} catch (error) {
 			logger.warn({ error }, '[MaintenanceService] Reconciliation failed.');
 		}
@@ -310,91 +310,107 @@ export class MaintenanceService {
 		};
 	}
 
-	private async readFromRedis(): Promise<MaintenanceConfig | null> {
-		const key = 'maintenance:config';
-		const raw = await redis.get(key);
-		if (!raw) return null;
-
-		try {
-			const parsed = JSON.parse(raw) as Partial<MaintenanceConfig>;
-			// Defensive fallback: ensure retryAfter is never undefined from stored Redis state
-			if (typeof parsed.retryAfter !== 'number' || parsed.retryAfter <= 0) {
-				parsed.retryAfter = this.getDefaultConfig().retryAfter;
-			}
-			// Refresh TTL on read (24h)
-			await redis.expire(key, 86400);
-			return parsed as MaintenanceConfig;
-		} catch {
-			return null;
-		}
-	}
-
-	private async writeToRedis(config: MaintenanceConfig): Promise<void> {
-		const key = 'maintenance:config';
-		const payload = JSON.stringify({
-			enabled: config.enabled,
-			message: config.message,
-			allowedIps: config.allowedIps,
-			retryAfter: config.retryAfter,
-			updatedAt: new Date().toISOString(),
-			source: config.source,
-			...(config.scheduled ? { scheduled: config.scheduled } : {}),
-		});
-		await redis.set(key, payload, 'EX', 86400); // 24h TTL
+	/**
+	 * The tier currently serving cache operations: `fallback` while the
+	 * composite driver is degraded to the process-local tier, `primary`
+	 * otherwise (single-tier drivers always serve directly).
+	 */
+	private cacheTier(): CacheTier {
+		return this.configCache.tier === 'fallback' ? 'fallback' : 'primary';
 	}
 
 	/**
-	 * Persist config to Redis (source of truth) or to memory with the explicit
-	 * flag when Redis is unavailable. Used by `setConfig` and the lazy schedule
-	 * auto-disable.
+	 * Read the stored config from the cache seam, or `null` when no live
+	 * value exists on the serving tier.
+	 *
+	 * Pre-seam payloads decode to the same JSON object the seam stores —
+	 * the old transport single-encoded the payload with `JSON.stringify`,
+	 * exactly like the seam's driver — so no legacy shape handling is
+	 * needed.
 	 */
-	private async persistConfig(config: MaintenanceConfig): Promise<void> {
-		if (this.redisAvailable) {
-			try {
-				await this.writeToRedis(config);
-				this.memoryConfig = {
-					...config,
-					source: 'memory',
-					_explicitlySet: false,
-					_lastRedisSync: new Date(),
-					updatedAt: new Date(),
-				};
-				this.updateCidrCache(config.allowedIps);
-				return;
-			} catch (error) {
-				this.redisAvailable = false;
-				logger.warn({ error }, '[MaintenanceService] Redis write failed, falling back to memory.');
-			}
+	private async readStoredConfig(): Promise<MaintenanceConfig | null> {
+		const raw = await this.configCache.get<MaintenanceConfig>(CONFIG_KEY);
+		if (raw === null) {
+			return null;
 		}
 
-		// Memory fallback - mark as explicitly set by admin
-		this.memoryConfig = {
-			...config,
-			source: 'memory',
-			updatedAt: new Date(),
-			_explicitlySet: true,
-		};
+		// Defensive fallback: ensure retryAfter is never undefined from stored state
+		if (typeof raw.retryAfter !== 'number' || raw.retryAfter <= 0) {
+			raw.retryAfter = this.getDefaultConfig().retryAfter;
+		}
+
+		// Refresh the TTL on read (24h), preserving the pre-seam behaviour.
+		// A compare-and-set with the just-read value refreshes the TTL
+		// without clobbering a concurrent write that happened in between.
+		await this.configCache.compareAndSet(CONFIG_KEY, raw, raw, CONFIG_TTL_SECONDS);
+
+		return raw;
+	}
+
+	/**
+	 * Store the config through the cache seam with the 24h TTL. The payload
+	 * is a single-encoded JSON object — the same on-wire shape the pre-seam
+	 * transport wrote, so stored values are byte-compatible across the
+	 * rollout.
+	 */
+	private async writeStoredConfig(config: MaintenanceConfig): Promise<void> {
+		await this.configCache.set(
+			CONFIG_KEY,
+			{
+				enabled: config.enabled,
+				message: config.message,
+				allowedIps: config.allowedIps,
+				retryAfter: config.retryAfter,
+				updatedAt: new Date().toISOString(),
+				source: config.source,
+				...(config.scheduled ? { scheduled: config.scheduled } : {}),
+			},
+			CONFIG_TTL_SECONDS,
+		);
+	}
+
+	/**
+	 * Persist config through the cache seam. The composite driver fails over
+	 * per call, so a successful write may land on the process-local fallback
+	 * tier while the primary is down — in that case the change is flagged
+	 * `_explicitlySet` so {@link reconcileWithRedis} pushes it back to the
+	 * primary on recovery.
+	 */
+	private async persistConfig(config: MaintenanceConfig): Promise<void> {
+		await this.writeStoredConfig(config);
+
+		if (this.cacheTier() === 'fallback') {
+			// Fallback-tier write - mark as explicitly set by admin
+			this.memoryConfig = {
+				...config,
+				source: 'memory',
+				updatedAt: new Date(),
+				_explicitlySet: true,
+			};
+		} else {
+			this.memoryConfig = {
+				...config,
+				source: 'memory',
+				_explicitlySet: false,
+				_lastRedisSync: new Date(),
+				updatedAt: new Date(),
+			};
+		}
 		this.updateCidrCache(config.allowedIps);
 	}
 
 	/**
-	 * Read the stored base config (Redis source of truth or memory fallback),
-	 * without applying the scheduled window.
+	 * Read the stored base config (primary tier, or the process-local
+	 * fallback tier while the primary is down), without applying the
+	 * scheduled window.
 	 */
 	private async readConfig(): Promise<MaintenanceConfig> {
-		if (this.redisAvailable) {
-			try {
-				const redisConfig = await this.readFromRedis();
-				if (redisConfig) {
-					return { ...redisConfig, source: 'redis' };
-				}
-			} catch (error) {
-				this.redisAvailable = false;
-				logger.warn({ error }, '[MaintenanceService] Redis read failed, falling back to memory.');
-			}
+		const stored = await this.readStoredConfig();
+		if (stored) {
+			return { ...stored, source: this.cacheTier() === 'fallback' ? 'memory' : 'redis' };
 		}
 
-		// Memory fallback
+		// No stored value on the serving tier - use the in-process copy
 		return {
 			enabled: this.memoryConfig.enabled,
 			message: this.memoryConfig.message,
@@ -456,10 +472,6 @@ export class MaintenanceService {
 
 		const retryAfter = Math.max(1, Math.ceil((endAt - now) / 1000));
 		return { ...config, enabled: true, retryAfter };
-	}
-
-	private async testRedisConnection(): Promise<void> {
-		await redis.ping();
 	}
 
 	private updateCidrCache(cidrStrings: string[]): void {

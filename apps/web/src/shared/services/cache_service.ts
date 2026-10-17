@@ -1,4 +1,4 @@
-import { type CacheDriver } from '#core/contracts/cache_driver';
+import { type CacheDriver, type CacheTier } from '#core/contracts/cache_driver';
 
 /**
  * Application-wide cache service.
@@ -31,6 +31,18 @@ export class CacheService {
 
 	private k(key: string): string {
 		return this.prefix ? `${this.prefix}:${key}` : key;
+	}
+
+	// ─── Driver introspection ─────────────────────────────────────────────────
+
+	/**
+	 * The tier currently serving operations when the underlying driver is a
+	 * composite with tier state (`'primary'` or `'fallback'`, see
+	 * `FailoverCacheDriver`), or `null` for single-tier drivers that have no
+	 * concept of tiers.
+	 */
+	get tier(): CacheTier | null {
+		return this.driver.currentTier ?? null;
 	}
 
 	// ─── CacheDriver delegation ───────────────────────────────────────────────

@@ -6,7 +6,16 @@ import { DeleteUserAction } from '#identity/actions/user/delete_user_action';
 import { GetUserDetailAction } from '#identity/actions/user/get_user_detail_action';
 import { ListUsersAction } from '#identity/actions/user/list_users_action';
 import { UpdateUserAction } from '#identity/actions/user/update_user_action';
+import { USER_STATUSES } from '#identity/domain/user';
 import { I18nService } from '#transport/core/helpers/i18n_service';
+import { type ApiOperationDoc, type JsonSchema } from '#transport/core/openapi/api_docs_registry';
+import {
+	dateTime,
+	errorSchema,
+	validationErrorSchema,
+	dataEnvelope,
+	paginatedEnvelope,
+} from '#transport/core/openapi/schemas';
 import { type RestEndpoint } from '#transport/core/rest/rest_adapter';
 import { buildUsersFormPayload } from '#transport/identity/helpers/i18n_payloads/users_form';
 import { buildUsersListPayload } from '#transport/identity/helpers/i18n_payloads/users_list';
@@ -27,6 +36,136 @@ type UserListPagination = Awaited<ReturnType<ListUsersAction['execute']>>;
 type UserCreateResult = Awaited<ReturnType<CreateUserAction['execute']>>;
 type UserUpdateResult = Awaited<ReturnType<UpdateUserAction['execute']>>;
 type UserDeleteResult = Awaited<ReturnType<DeleteUserAction['execute']>>;
+
+/** The permission payload, as shaped by `PermissionTransformer`. */
+export const permissionSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' },
+		name: { type: 'string' },
+		slug: { type: 'string' },
+		description: { type: 'string', nullable: true },
+		category: { type: 'string', nullable: true },
+		isSystem: { type: 'boolean' },
+		createdAt: dateTime,
+		updatedAt: dateTime,
+	},
+};
+
+/**
+ * The user payload as embedded in a role's `users` list. Deliberately omits
+ * the nested `role` (which would make the schema self-referential and
+ * unserializable): the enclosing resource is the role, so repeating it is
+ * redundant.
+ */
+export const userInRoleSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' },
+		username: { type: 'string' },
+		email: { type: 'string', format: 'email' },
+		status: { type: 'string', enum: USER_STATUSES },
+		emailVerifiedAt: dateTime,
+		createdAt: dateTime,
+		updatedAt: dateTime,
+	},
+};
+
+/** The role payload, as shaped by `RoleTransformer`. */
+export const roleSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' },
+		name: { type: 'string' },
+		slug: { type: 'string' },
+		description: { type: 'string', nullable: true },
+		isSystem: { type: 'boolean' },
+		createdAt: dateTime,
+		updatedAt: dateTime,
+		permissions: { type: 'array', items: permissionSchema, nullable: true },
+		users: { type: 'array', items: userInRoleSchema, nullable: true },
+		usersCount: { type: 'number', nullable: true },
+	},
+};
+
+/** The user payload, as shaped by `UserTransformer`. */
+export const userSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' },
+		username: { type: 'string' },
+		email: { type: 'string', format: 'email' },
+		apiRateLimit: { type: 'number', nullable: true },
+		status: { type: 'string', enum: USER_STATUSES },
+		emailVerifiedAt: dateTime,
+		createdAt: dateTime,
+		updatedAt: dateTime,
+		connectedProviders: {
+			type: 'object',
+			properties: {
+				github: { type: 'boolean' },
+				google: { type: 'boolean' },
+				facebook: { type: 'boolean' },
+			},
+		},
+		role: { ...roleSchema, nullable: true },
+		permissions: { type: 'array', items: { type: 'string' } },
+	},
+};
+
+export const usersEndpointsDocs: Record<'index' | 'show' | 'store' | 'update' | 'destroy', ApiOperationDoc> = {
+	index: {
+		summary: 'List users',
+		description: 'Paginated user listing, filterable by search term and role slug.',
+		tags: ['Users'],
+		request: [{ validator: listValidator([]), in: 'query' }],
+		paginated: true,
+		responses: {
+			'200': { description: 'The paginated user list.', schema: paginatedEnvelope(userSchema) },
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+	show: {
+		summary: 'Show a user',
+		tags: ['Users'],
+		request: [{ validator: restIdValidator, in: 'path' }],
+		responses: {
+			'200': { description: 'The user.', schema: dataEnvelope(userSchema) },
+			'404': { description: 'The user does not exist.', schema: errorSchema },
+		},
+	},
+	store: {
+		summary: 'Create a user',
+		tags: ['Users'],
+		request: [{ validator: createValidator([]), in: 'body' }],
+		responses: {
+			'201': { description: 'The created user.', schema: dataEnvelope(userSchema) },
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+	update: {
+		summary: 'Update a user',
+		tags: ['Users'],
+		request: [
+			{ validator: restIdValidator, in: 'path' },
+			{ validator: updateValidator(0, []), in: 'body' },
+		],
+		responses: {
+			'200': { description: 'The updated user.', schema: dataEnvelope(userSchema) },
+			'404': { description: 'The user does not exist.', schema: errorSchema },
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+	destroy: {
+		summary: 'Delete a user',
+		tags: ['Users'],
+		request: [{ validator: restIdValidator, in: 'path' }],
+		responses: {
+			'204': { description: 'The user was deleted.' },
+			'404': { description: 'The user does not exist.', schema: errorSchema },
+		},
+	},
+};
 
 /**
  * Endpoint declarations for the users resource.
@@ -87,6 +226,7 @@ export default class UsersResource {
 
 	readonly endpoints: UsersEndpoints = {
 		index: {
+			docs: usersEndpointsDocs.index,
 			paginated: true,
 			strip: true,
 			prepare: async () => {
@@ -113,12 +253,14 @@ export default class UsersResource {
 			},
 		},
 		show: {
+			docs: usersEndpointsDocs.show,
 			input: (context) => context.params,
 			validator: () => restIdValidator,
 			execute: (_context, _prepared, payload) => this.getUserDetailAction.execute({ id: payload.id }),
 			transform: (entity) => UserTransformer.transform(entity),
 		},
 		store: {
+			docs: usersEndpointsDocs.store,
 			status: 201,
 			prepare: async () => {
 				const roles = await this.listAllRolesAction.execute();
@@ -149,6 +291,7 @@ export default class UsersResource {
 			},
 		},
 		update: {
+			docs: usersEndpointsDocs.update,
 			prepare: async (context) => {
 				const { id } = await restIdValidator.validate(context.params);
 				const roles = await this.listAllRolesAction.execute();
@@ -183,6 +326,7 @@ export default class UsersResource {
 			},
 		},
 		destroy: {
+			docs: usersEndpointsDocs.destroy,
 			status: 204,
 			input: (context) => context.params,
 			validator: () => restIdValidator,

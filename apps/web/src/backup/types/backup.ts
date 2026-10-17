@@ -1,8 +1,8 @@
 /**
  * Shared backup types.
  *
- * The result and context contracts shared by the backup pipeline, the
- * backup engine, and the backup actions.
+ * The result and context contracts shared by the backup pipeline and the
+ * backup actions.
  */
 
 /** The kind of a backup artifact: a full dump or a delta on top of the last full. */
