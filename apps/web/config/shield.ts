@@ -57,8 +57,8 @@ const shieldConfig = defineConfig({
 			// Frames: default to same-origin only — the CMS iframe block is pruned.
 			frameSrc: ["'self'"],
 
-			// Frames: deny (xFrame also set to SAMEORIGIN)
-			frameAncestors: ["'none'"],
+			// Frames: same-origin only — agrees with the SAMEORIGIN X-Frame-Options
+			frameAncestors: ["'self'"],
 
 			// Forms: self only
 			formAction: ["'self'"],

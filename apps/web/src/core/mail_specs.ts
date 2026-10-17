@@ -1,31 +1,36 @@
-import type { TokenMailSpec } from '#core/types/token_mail';
+import { TOKEN_TYPES } from '#auth/enums/token_type';
+import type { MailSpec } from '#core/types/mail';
 
 /**
- * Catalog of the token mail flows: one spec row per flow, holding the i18n key
- * block, the flavor-aware candidate routes of the mail link, the token TTL and
- * the template.
+ * Catalog of the mail flows: one spec row per flow — token and contact alike —
+ * holding the i18n key block, the flavor-aware candidate routes of the mail
+ * link, the token type and TTL of flows that issue a token, and the template.
  *
  * The per-domain mail services (auth's `TokenMailService`, account's
- * `EmailChangeMailService`) build every mail from its row plus the shared
- * `MailService.buildTokenMail` assembly — a new token mail flow is a new row
- * here, not a hand-assembled payload block.
+ * `EmailChangeMailService`, CMS's `ContactMailService`) build every mail from
+ * its row plus the shared `MailService.buildMail` assembly — a new mail flow
+ * is a new row here, not a hand-assembled payload block. Token-issuing flows
+ * carry their {@link TOKEN_TYPES} member on the row, so callers never pair a
+ * token type with a spec row by hand.
  *
- * The rows are plain data (i18n key strings, route names, numbers): the kernel
- * owns no domain code, and the candidate routes keep the mails flavor-aware —
- * in the headless `api` flavor the front routes are absent and the first
- * registered candidate wins at runtime.
+ * The rows are plain data (i18n key strings, route names, token types,
+ * numbers): the kernel owns no domain code, and the candidate routes keep the
+ * mails flavor-aware — in the headless `api` flavor the front routes are
+ * absent and the first registered candidate wins at runtime.
  */
+
 /**
- * The name of a token mail flow, one per row of {@link TOKEN_MAIL_SPECS}.
+ * The name of a mail flow, one per row of {@link MAIL_SPECS}.
  */
-export type TokenMailFlow =
+export type MailFlow =
 	| 'emailVerification'
 	| 'passwordReset'
 	| 'invitation'
 	| 'emailChangeConfirmation'
-	| 'emailChangeNotification';
+	| 'emailChangeNotification'
+	| 'contactForm';
 
-export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
+export const MAIL_SPECS: Record<MailFlow, MailSpec> = {
 	/** Email verification mail, sent to a freshly registered user. */
 	emailVerification: {
 		keys: {
@@ -39,6 +44,7 @@ export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
 		},
 		linkRoutes: ['auth.email_verification.execute', 'api.v1.auth.email_verification.store'],
 		linkSlot: 'verification_link',
+		tokenType: TOKEN_TYPES.EMAIL_VERIFICATION,
 		ttlHours: 24,
 		template: 'emails/auth_email',
 	},
@@ -55,6 +61,7 @@ export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
 		},
 		linkRoutes: ['auth.reset_password.render', 'api.v1.auth.reset_password.store'],
 		linkSlot: 'reset_link',
+		tokenType: TOKEN_TYPES.PASSWORD_RESET,
 		ttlHours: 1,
 		template: 'emails/auth_email',
 	},
@@ -71,6 +78,7 @@ export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
 		},
 		linkRoutes: ['auth.accept_invitation.render', 'api.v1.auth.accept_invitation.store'],
 		linkSlot: 'accept_link',
+		tokenType: TOKEN_TYPES.PENDING_INVITE,
 		ttlHours: 7 * 24,
 		template: 'emails/admin_invite_email',
 	},
@@ -87,6 +95,7 @@ export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
 		},
 		linkRoutes: ['account.email_change.render'],
 		linkSlot: 'confirmation_link',
+		tokenType: TOKEN_TYPES.EMAIL_CHANGE,
 		ttlHours: 24,
 		template: 'emails/account_email',
 	},
@@ -105,5 +114,20 @@ export const TOKEN_MAIL_SPECS: Record<TokenMailFlow, TokenMailSpec> = {
 		},
 		linkRoutes: [],
 		template: 'emails/account_email',
+	},
+	/**
+	 * Contact-form notification mail, sent to the site administrator on a
+	 * front contact-form submission. Carries no link and issues no token; the
+	 * per-field value translations stay domain-side (CMS) and ride the payload
+	 * through the `fields` data slot.
+	 */
+	contactForm: {
+		keys: {
+			subject: 'cms.page.contact_form.mail.subject',
+			greeting: 'cms.page.contact_form.mail.greeting',
+			intro: 'cms.page.contact_form.mail.intro',
+		},
+		linkRoutes: [],
+		template: 'emails/contact_form_email',
 	},
 };

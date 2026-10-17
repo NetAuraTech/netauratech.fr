@@ -1,6 +1,7 @@
 import { type HttpContext } from '@adonisjs/core/http';
 import { extractPagination } from '#transport/core/helpers/extract_pagination';
 import { stripEmptyStrings } from '#transport/core/helpers/strip_empty_strings';
+import { type ApiOperationDoc } from '#transport/core/openapi/api_docs_registry';
 import { type PaginationFilters } from '#types/pagination';
 
 /**
@@ -93,6 +94,12 @@ export interface PageEndpoint<Prepared = unknown, Payload = unknown, Result = un
  * response, so the request interpretation exists exactly once, shared by
  * both transports.
  *
+ * `docs` carries the endpoint's OpenAPI operation metadata
+ * ({@link ApiOperationDoc}): the summary, tags, request and response
+ * declarations that the OpenAPI generator joins to the route registry.
+ * Declared alongside the endpoint so the runtime behaviour and its
+ * documentation live in a single place.
+ *
  * @template Prepared Value produced by `prepare` (undefined when absent)
  * @template Payload Typed input produced by the validator
  * @template Result  Value returned by the domain action
@@ -110,6 +117,7 @@ export interface RestEndpoint<Prepared, Payload, Result, Entity> {
 	refetch?(context: RestEndpointContext, prepared: Prepared, payload: Payload, result: Result): Promise<Entity>;
 	transform?(entity: Entity): unknown;
 	page?: PageEndpoint<Prepared, Payload, Result>;
+	docs?: ApiOperationDoc;
 }
 
 /**

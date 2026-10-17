@@ -1,6 +1,8 @@
 import { inject } from '@adonisjs/core';
 import { MaintenanceService } from '#core/services/maintenance_service';
 import { LogService } from '#log/services/log_service';
+import { type ApiOperationDoc, type JsonSchema } from '#transport/core/openapi/api_docs_registry';
+import { dataEnvelope, validationErrorSchema } from '#transport/core/openapi/schemas';
 import { type RestEndpoint } from '#transport/core/rest/rest_adapter';
 import { updateMaintenanceValidator, toggleMaintenanceValidator } from '#transport/core/validators/maintenance';
 import type { Infer } from '@vinejs/vine/types';
@@ -10,6 +12,69 @@ type MaintenanceTogglePayload = Infer<typeof toggleMaintenanceValidator>;
 
 type MaintenanceIndexState = Awaited<ReturnType<MaintenanceResource['buildIndexState']>>;
 type MaintenanceConfigResult = Awaited<ReturnType<MaintenanceService['getConfig']>>;
+
+const maintenanceConfigSchema: JsonSchema = {
+	type: 'object',
+	properties: {
+		enabled: { type: 'boolean' },
+		message: { type: 'string' },
+		allowedIps: { type: 'array', items: { type: 'string' } },
+		retryAfter: { type: 'number' },
+		scheduled: { type: 'object', nullable: true },
+	},
+};
+
+export const maintenanceEndpointsDocs: Record<keyof MaintenanceEndpoints, ApiOperationDoc> = {
+	index: {
+		summary: 'Show the maintenance configuration',
+		description: 'Stored configuration, effective runtime state, and the configuration source.',
+		tags: ['Maintenance'],
+		responses: {
+			'200': {
+				description: 'The maintenance state.',
+				schema: dataEnvelope({
+					type: 'object',
+					properties: {
+						config: maintenanceConfigSchema,
+						effectiveEnabled: { type: 'boolean' },
+						redisAvailable: { type: 'boolean' },
+						source: { type: 'string' },
+					},
+				}),
+			},
+		},
+	},
+	update: {
+		summary: 'Update the maintenance configuration',
+		tags: ['Maintenance'],
+		request: [{ validator: updateMaintenanceValidator, in: 'body' }],
+		responses: {
+			'200': {
+				description: 'The updated configuration.',
+				schema: dataEnvelope({
+					type: 'object',
+					properties: { config: maintenanceConfigSchema },
+				}),
+			},
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+	toggle: {
+		summary: 'Toggle maintenance mode',
+		tags: ['Maintenance'],
+		request: [{ validator: toggleMaintenanceValidator, in: 'body' }],
+		responses: {
+			'200': {
+				description: 'The new maintenance state.',
+				schema: dataEnvelope({
+					type: 'object',
+					properties: { enabled: { type: 'boolean' } },
+				}),
+			},
+			'422': { description: 'Validation failed.', schema: validationErrorSchema },
+		},
+	},
+};
 
 /**
  * Endpoint declarations for the maintenance REST resource.
@@ -36,10 +101,12 @@ export default class MaintenanceResource {
 
 	readonly endpoints: MaintenanceEndpoints = {
 		index: {
+			docs: maintenanceEndpointsDocs.index,
 			execute: () => this.buildIndexState(),
 			transform: (entity) => entity,
 		},
 		update: {
+			docs: maintenanceEndpointsDocs.update,
 			validator: () => updateMaintenanceValidator,
 			execute: async (context, _prepared, payload) => {
 				const user = context.auth.getUserOrFail();
@@ -61,6 +128,7 @@ export default class MaintenanceResource {
 			transform: (entity) => ({ config: entity }),
 		},
 		toggle: {
+			docs: maintenanceEndpointsDocs.toggle,
 			validator: () => toggleMaintenanceValidator,
 			execute: async (context, _prepared, payload) => {
 				const user = context.auth.getUserOrFail();

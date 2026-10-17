@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { BaseCommand } from '@adonisjs/core/ace';
+import ScaffolderRegistrationException from '#core/exceptions/scaffolder_registration_exception';
 import {
 	applyNavRegistration,
 	applyPackageImportsRegistration,
@@ -12,6 +13,17 @@ import {
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 
 /**
+ * A tracked composition file and the pure, idempotent registration
+ * transformation applied to its content.
+ */
+interface CompositionEdit {
+	/** App-relative path of the tracked composition file. */
+	file: 'start/routes.ts' | 'start/permissions.ts' | 'start/nav.ts' | 'package.json';
+	/** The registration transformation (may throw a {@link ScaffolderRegistrationException}). */
+	edit: (content: string) => string;
+}
+
+/**
  * Ace command that scaffolds a complete DDD domain end to end.
  *
  * Generates the business layer (`src/{domain}/`), the transport layer
@@ -19,6 +31,12 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
  * factory and tests, and wires the domain into the app through four
  * idempotent registration edits: `start/routes.ts`, `start/permissions.ts`,
  * `start/nav.ts` and the `package.json` imports map.
+ *
+ * All four registration edits are computed in memory before any file is
+ * written: the `start/` edits anchor on the pinned `@scaffold-marker`
+ * comment lines, and a missing marker aborts the run with an explicit error
+ * and zero side effects, so a failed run never leaves a half-registered
+ * domain behind.
  *
  * Safe to run repeatedly for the same domain: nothing is overridden and the
  * registration edits are idempotent, so a partial generation can be retried
@@ -83,6 +101,22 @@ export default class MakeDomain extends BaseCommand {
 		}
 
 		try {
+			// Compute every registration edit in memory before writing anything:
+			// a missing scaffold marker throws before any file is written, so a
+			// failed run never leaves a half-registered domain behind.
+			const compositionFiles: CompositionEdit[] = [
+				{ file: 'start/routes.ts', edit: (content) => applyRoutesRegistration(content, names) },
+				{ file: 'start/permissions.ts', edit: (content) => applyPermissionsRegistration(content, names) },
+				{ file: 'start/nav.ts', edit: (content) => applyNavRegistration(content, names) },
+				{ file: 'package.json', edit: (content) => applyPackageImportsRegistration(content, names) },
+			];
+
+			const edits = compositionFiles.map((compositionFile) => {
+				const before = readFileSync(this.app.makePath(compositionFile.file), 'utf8');
+
+				return { file: compositionFile.file, before, after: compositionFile.edit(before) };
+			});
+
 			for (const file of files) {
 				const filePath = this.app.makePath(file.path);
 				mkdirSync(dirname(filePath), { recursive: true });
@@ -90,10 +124,12 @@ export default class MakeDomain extends BaseCommand {
 				this.logger.success(`Created ${file.path}`);
 			}
 
-			this.applyRegistration('start/routes.ts', (content) => applyRoutesRegistration(content, names));
-			this.applyRegistration('start/permissions.ts', (content) => applyPermissionsRegistration(content, names));
-			this.applyRegistration('start/nav.ts', (content) => applyNavRegistration(content, names));
-			this.applyRegistration('package.json', (content) => applyPackageImportsRegistration(content, names));
+			for (const edit of edits) {
+				if (edit.after === edit.before) continue;
+
+				writeFileSync(this.app.makePath(edit.file), edit.after, 'utf8');
+				this.logger.success(`Updated ${edit.file}`);
+			}
 
 			this.logger.success(`Domain "${names.domain}" scaffolded.`);
 			this.logger.info(
@@ -107,30 +143,13 @@ export default class MakeDomain extends BaseCommand {
 				].join('\n'),
 			);
 		} catch (error) {
-			this.logger.error(error instanceof Error ? error.message : 'An unexpected error occurred while scaffolding.');
-			if (error instanceof Error) this.logger.debug(error.stack ?? '');
+			if (error instanceof ScaffolderRegistrationException) {
+				this.logger.error(error.message);
+			} else {
+				this.logger.error(error instanceof Error ? error.message : 'An unexpected error occurred while scaffolding.');
+				if (error instanceof Error) this.logger.debug(error.stack ?? '');
+			}
 			this.exitCode = 1;
 		}
-	}
-
-	/**
-	 * Apply an idempotent registration edit to a tracked file, logging when it
-	 * actually changed the file.
-	 *
-	 * @param file - App-relative path of the file to edit.
-	 * @param edit - The pure registration transformation.
-	 */
-	private applyRegistration<TFile extends 'start/routes.ts' | 'start/permissions.ts' | 'start/nav.ts' | 'package.json'>(
-		file: TFile,
-		edit: (content: string) => string,
-	): void {
-		const filePath = this.app.makePath(file);
-		const before = readFileSync(filePath, 'utf8');
-		const after = edit(before);
-
-		if (after === before) return;
-
-		writeFileSync(filePath, after, 'utf8');
-		this.logger.success(`Updated ${file}`);
 	}
 }

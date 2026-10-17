@@ -8,7 +8,10 @@
 | endpoint (`/api/v1/admin/preferences/theme`) shared with the in-repo admin
 | UI. Self-registers on import (see `app/account/routes.ts`), gated by the
 | `adminApi` feature flag; the token API additionally requires the `api`
-| access-token guard. Route names carry the `api.v1.account` prefix.
+| access-token guard. Route names carry the `api.v1.account` prefix. Each
+| route registers its OpenAPI docs at its declaration (`registerApiDoc`),
+| keyed by the route itself: the route name is derived from the route, never
+| hand-assembled.
 |
 */
 
@@ -18,8 +21,12 @@ import features from '#config/features';
 import { controllers } from '#generated/controllers';
 import { middleware } from '#start/kernel';
 import { apiClientThrottle } from '#start/limiter';
-import { registerAccountApiDocs } from '#transport/account/api_docs';
+import { accountApiDocs } from '#transport/account/rest/account_resource';
+import { profileEndpointsDocs } from '#transport/account/rest/profile_resource';
+import { updateValidator as preferencesValidator } from '#transport/account/validators/preference';
 import { maintenanceMiddleware } from '#transport/core/maintenance';
+import { registerApiDoc, type ApiOperationDoc } from '#transport/core/openapi/api_docs_registry';
+import { validationErrorSchema } from '#transport/core/openapi/schemas';
 
 /**
  * The admin JSON surface is shared: the in-repo admin UI (session guard) and
@@ -29,20 +36,39 @@ import { maintenanceMiddleware } from '#transport/core/maintenance';
  */
 const apiGuards = enabledAuthGuards.api ? (['web', 'api'] as const) : (['web'] as const);
 
+const preferencesDoc: ApiOperationDoc = {
+	summary: "Update the current user's preferences",
+	description: 'Theme and/or locale preference; fields are optional so a single preference can be posted.',
+	tags: ['Account'],
+	request: [{ validator: preferencesValidator, in: 'body' }],
+	responses: {
+		'200': { description: 'A success message (translated string).', schema: { type: 'string' } },
+		'422': { description: 'Validation failed.', schema: validationErrorSchema },
+	},
+};
+
 if (features.adminApi && enabledAuthGuards.api) {
 	router
 		.group(() => {
 			router
 				.group(() => {
-					router.get('/', [controllers.account.api.Profile, 'show']).as('account.profile.show');
-					router.put('/', [controllers.account.api.Profile, 'update']).as('account.profile.update');
+					registerApiDoc(router.get('/', [controllers.account.api.Profile, 'show']), profileEndpointsDocs.show).as(
+						'account.profile.show',
+					);
+					registerApiDoc(router.put('/', [controllers.account.api.Profile, 'update']), profileEndpointsDocs.update).as(
+						'account.profile.update',
+					);
 				})
 				.prefix('profile');
 
 			router
 				.group(() => {
-					router.put('/', [controllers.account.api.Account, 'update']).as('account.account.update');
-					router.delete('/', [controllers.account.api.Account, 'destroy']).as('account.account.destroy');
+					registerApiDoc(router.put('/', [controllers.account.api.Account, 'update']), accountApiDocs.update).as(
+						'account.account.update',
+					);
+					registerApiDoc(router.delete('/', [controllers.account.api.Account, 'destroy']), accountApiDocs.destroy).as(
+						'account.account.destroy',
+					);
 				})
 				.prefix('account');
 		})
@@ -52,15 +78,12 @@ if (features.adminApi && enabledAuthGuards.api) {
 }
 
 if (features.adminApi) {
-	// Document the account surface alongside the routes, so the OpenAPI spec
-	// and the registry above stay in lockstep.
-	registerAccountApiDocs();
-
 	router
 		.group(() => {
-			router
-				.post('preferences/theme', [controllers.account.api.Preferences, 'execute'])
-				.as('account.preferences.execute');
+			registerApiDoc(
+				router.post('preferences/theme', [controllers.account.api.Preferences, 'execute']),
+				preferencesDoc,
+			).as('account.preferences.execute');
 		})
 		.prefix('api/v1/admin')
 		.as('api.v1.admin')

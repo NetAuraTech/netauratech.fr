@@ -128,7 +128,11 @@ jobs:
             # Fetch inside the loop: the prune pipeline force-pushes the branch
             # after this step starts, so a one-shot fetch would only ever see the
             # pre-release state and the poll would run out without matching.
-            git fetch origin "refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}" 2>/dev/null || true
+            # The '+' allows the non-fast-forward update: the regenerated branch
+            # is not a descendant of the previously fetched HEAD, so a plain
+            # refspec would be rejected (and silently, behind the 2>/dev/null)
+            # on every iteration, pinning the poll on the stale state.
+            git fetch origin "+refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}" 2>/dev/null || true
             MSG="$(git log -1 --format=%B "refs/remotes/origin/${FLAVOR}" 2>/dev/null || true)"
             if printf '%s' "${MSG}" | grep -qF "from main ${SHA}"; then
               echo "Flavor branch '${FLAVOR}' is pruned from ${SHA}."
@@ -152,7 +156,7 @@ jobs:
           TAG="${{ needs.release-main.outputs.tag }}"
           SHA="${{ needs.release-main.outputs.sha }}"
           FLAVOR_TAG="${TAG}-${FLAVOR}"
-          git fetch origin "refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}"
+           git fetch origin "+refs/heads/${FLAVOR}:refs/remotes/origin/${FLAVOR}"
 
           if git rev-parse -q --verify "refs/tags/${FLAVOR_TAG}" >/dev/null 2>&1; then
             echo "Tag ${FLAVOR_TAG} already exists — reusing it."

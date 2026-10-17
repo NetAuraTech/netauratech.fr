@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { test } from '@japa/runner';
-import { RestEndpointManifest } from '#transport/core/rest/rest_endpoint_manifest';
+import { restRoutesRegistryHook } from '#transport/core/rest/rest_routes_registry_hook';
 import type { ScannedController } from '@adonisjs/assembler/types';
 
 const APP_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
@@ -145,7 +145,7 @@ export default class BrokenResource {
  */
 async function createFixtureAppRoot(): Promise<string> {
 	await mkdir(join(APP_ROOT, 'tmp'), { recursive: true });
-	const root = await mkdtemp(join(APP_ROOT, 'tmp', 'rest-manifest-'));
+	const root = await mkdtemp(join(APP_ROOT, 'tmp', 'rest-hook-'));
 	await mkdir(join(root, 'app/fixturedom/controllers/api'), { recursive: true });
 	await mkdir(join(root, 'app/fixturedom/rest'), { recursive: true });
 	await mkdir(join(root, 'app/gadgetdom/controllers/api'), { recursive: true });
@@ -188,13 +188,44 @@ function makeController(
 	};
 }
 
-test.group('rest endpoint manifest', () => {
+/** The `extractValidators` callback the hook installs on the routes scanner. */
+type ValidatorExtractor = (route: unknown, controller: ScannedController) => Promise<unknown>;
+
+/** The endpoint resolver the seam exposes per scanned controller. */
+type EndpointResolver = (controller: ScannedController) => Promise<unknown>;
+
+/**
+ * Drive the module through its public seam: register the init hook, fire the
+ * `routesScanning` event, and return the `extractValidators` callback the
+ * hook installed on the routes scanner.
+ */
+function createEndpointResolver(appRoot: string): EndpointResolver {
+	const hook = restRoutesRegistryHook();
+	let extractor: ValidatorExtractor = async () => undefined;
+	const bus = {
+		add(
+			_event: 'routesScanning',
+			cb: (devServer: unknown, routesScanner: { extractValidators(cb: ValidatorExtractor): unknown }) => void,
+		): void {
+			cb(undefined, {
+				extractValidators(installed) {
+					extractor = installed;
+					return undefined;
+				},
+			});
+		},
+	};
+	hook.run({ cwdPath: appRoot }, bus);
+	return (controller) => extractor(undefined, controller);
+}
+
+test.group('rest routes registry hook', () => {
 	let appRoot: string;
 
 	test('resolves the endpoint validator by importing the controller and resource', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.deepEqual(await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'fixturedom', 'show')), [
+			assert.deepEqual(await createEndpointResolver(appRoot)(makeController(appRoot, 'fixturedom', 'show')), [
 				{
 					name: 'restIdValidator',
 					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'restIdValidator' },
@@ -208,15 +239,12 @@ test.group('rest endpoint manifest', () => {
 	test('follows a renamed endpoint key from the imported code', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.deepEqual(
-				await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'fixturedom', 'details')),
-				[
-					{
-						name: 'restIdValidator',
-						import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'restIdValidator' },
-					},
-				],
-			);
+			assert.deepEqual(await createEndpointResolver(appRoot)(makeController(appRoot, 'fixturedom', 'details')), [
+				{
+					name: 'restIdValidator',
+					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'restIdValidator' },
+				},
+			]);
 		} finally {
 			await rm(appRoot, { recursive: true, force: true });
 		}
@@ -225,7 +253,7 @@ test.group('rest endpoint manifest', () => {
 	test('follows a swapped validator binding from the imported code', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.deepEqual(await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'gadgetdom', 'show')), [
+			assert.deepEqual(await createEndpointResolver(appRoot)(makeController(appRoot, 'gadgetdom', 'show')), [
 				{
 					name: 'updateValidator',
 					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'updateValidator' },
@@ -239,15 +267,12 @@ test.group('rest endpoint manifest', () => {
 	test('resolves factory validators to their identifier', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.deepEqual(
-				await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'fixturedom', 'update')),
-				[
-					{
-						name: 'updateValidator',
-						import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'updateValidator' },
-					},
-				],
-			);
+			assert.deepEqual(await createEndpointResolver(appRoot)(makeController(appRoot, 'fixturedom', 'update')), [
+				{
+					name: 'updateValidator',
+					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'updateValidator' },
+				},
+			]);
 		} finally {
 			await rm(appRoot, { recursive: true, force: true });
 		}
@@ -256,9 +281,7 @@ test.group('rest endpoint manifest', () => {
 	test('returns undefined for methods that do not delegate to an endpoint', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.isUndefined(
-				await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'fixturedom', 'orphan')),
-			);
+			assert.isUndefined(await createEndpointResolver(appRoot)(makeController(appRoot, 'fixturedom', 'orphan')));
 		} finally {
 			await rm(appRoot, { recursive: true, force: true });
 		}
@@ -267,7 +290,7 @@ test.group('rest endpoint manifest', () => {
 	test('falls back to the source parser when the controller module cannot be imported', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			assert.deepEqual(await new RestEndpointManifest(appRoot).resolve(makeController(appRoot, 'brokindom', 'show')), [
+			assert.deepEqual(await createEndpointResolver(appRoot)(makeController(appRoot, 'brokindom', 'show')), [
 				{
 					name: 'restIdValidator',
 					import: { specifier: '#transport/identity/validators/user', type: 'named', value: 'restIdValidator' },
@@ -281,10 +304,10 @@ test.group('rest endpoint manifest', () => {
 	test('imports the controller module once and traces each method once', async ({ assert }) => {
 		appRoot = await createFixtureAppRoot();
 		try {
-			const manifest = new RestEndpointManifest(appRoot);
-			const first = await manifest.resolve(makeController(appRoot, 'fixturedom', 'show'));
-			const second = await manifest.resolve(makeController(appRoot, 'fixturedom', 'show'));
-			const third = await manifest.resolve(makeController(appRoot, 'fixturedom', 'details'));
+			const resolve = createEndpointResolver(appRoot);
+			const first = await resolve(makeController(appRoot, 'fixturedom', 'show'));
+			const second = await resolve(makeController(appRoot, 'fixturedom', 'show'));
+			const third = await resolve(makeController(appRoot, 'fixturedom', 'details'));
 
 			assert.strictEqual(first, second);
 			assert.deepEqual(third, first);

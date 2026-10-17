@@ -1,6 +1,7 @@
 ﻿import { inject } from '@adonisjs/core';
 import { BackupMetadata } from '#backup/domain/backup';
-import { ListBackupsQuery } from '#backup/queries/list_backups_query';
+import { BackupPipeline } from '#backup/services/backup_pipeline';
+import { LogService } from '#log/services/log_service';
 import type { BackupType } from '#backup/types/backup';
 
 interface ListBackupsPayload {
@@ -12,7 +13,7 @@ interface ListBackupsPayload {
  */
 @inject()
 export class ListBackupsAction {
-	constructor(protected listBackupsQuery: ListBackupsQuery) {}
+	constructor(protected logService: LogService) {}
 
 	/**
 	 * Execute backup listing.
@@ -24,7 +25,7 @@ export class ListBackupsAction {
 	 * const backups = await listBackupsAction.execute({ type: 'full' })
 	 */
 	async execute(payload?: ListBackupsPayload): Promise<BackupMetadata[]> {
-		const backups = await this.listBackupsQuery.execute();
+		const backups = await new BackupPipeline(this.logService).list();
 
 		if (payload?.type) {
 			return backups.filter((backup) => backup.type === payload.type);

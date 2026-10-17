@@ -18,6 +18,9 @@ test.group('SEO endpoints (core)', () => {
 		assert.include(res.header('content-type'), 'text/plain');
 		assert.include(res.text(), 'User-agent: *');
 		assert.include(res.text(), 'Allow: /');
+		assert.include(res.text(), 'Disallow: /admin/*');
+		assert.include(res.text(), 'Disallow: /settings/*');
+		assert.include(res.text(), 'Disallow: /api/*');
 		assert.include(res.text(), `Sitemap: ${env.get('APP_URL')}/sitemap.xml`);
 	});
 

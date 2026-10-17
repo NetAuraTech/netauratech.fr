@@ -18,6 +18,7 @@ import '#transport/auth/routes';
 import '#transport/file/routes';
 import '#transport/identity/routes';
 import '#transport/log/routes';
+// @scaffold-marker routes-imports: make:domain appends new domain route imports after this line.
 import router from '@adonisjs/core/services/router';
 import features from '#config/features';
 import { middleware } from '#start/kernel';

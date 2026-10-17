@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core';
 import drive from '@adonisjs/drive/services/main';
 import { BackupMetadata } from '#backup/domain/backup';
-import { ListBackupsQuery } from '#backup/queries/list_backups_query';
+import { BackupPipeline } from '#backup/services/backup_pipeline';
 import backupConfig from '#config/backup';
 import { LogService } from '#log/services/log_service';
 import { LogCategory } from '#log/types/logging';
@@ -29,14 +29,7 @@ interface HealthCheckPayload {
  */
 @inject()
 export class HealthCheckBackupAction {
-	constructor(
-		protected logService: LogService,
-		protected listBackupsQuery: ListBackupsQuery,
-	) {}
-
-	private getDisk() {
-		return drive.use(backupConfig.storage.disk as Parameters<typeof drive.use>[0]);
-	}
+	constructor(protected logService: LogService) {}
 
 	/**
 	 * Execute the health check.
@@ -57,16 +50,15 @@ export class HealthCheckBackupAction {
 		const issues: string[] = [];
 		let available = false;
 
-		// Ping the disk first, matching BackupService.healthCheck
 		try {
-			const disk = this.getDisk();
+			const disk = drive.use(backupConfig.storage.disk as Parameters<typeof drive.use>[0]);
 			await disk.listAll(`${backupConfig.storage.prefix}/`);
 			available = true;
 		} catch {
 			issues.push(`Storage disk "${backupConfig.storage.disk}" is not available`);
 		}
 
-		const backups = await this.listBackupsQuery.execute();
+		const backups = await new BackupPipeline(this.logService).list();
 		let lastBackup: BackupMetadata | null = null;
 		let lastBackupAgeHours = Infinity;
 		const totalBackups = backups.length;
@@ -75,7 +67,6 @@ export class HealthCheckBackupAction {
 		if (backups.length > 0) {
 			lastBackup = backups[0];
 
-			// maxBackupAge is in hours in the service; payload override is converted accordingly
 			const maxAgeHours =
 				payload?.maxAgeDays !== undefined ? payload.maxAgeDays * 24 : backupConfig.health.maxBackupAge;
 
