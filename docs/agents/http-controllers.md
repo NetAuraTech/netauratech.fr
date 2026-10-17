@@ -12,8 +12,8 @@ One controller = one action. `render()` serves the Inertia page; `execute()` per
 
 ```typescript
 import { inject } from '@adonisjs/core';
-import type { HttpContext } from '@adonisjs/core/http';
 import { renderInertiaPage } from '#transport/core/helpers/inertia_render';
+import type { HttpContext } from '@adonisjs/core/http';
 
 @inject()
 export default class ExampleController {
