@@ -129,7 +129,7 @@ export default function HomePage(props: HomePageProps) {
 			</Section>
 			<ContactForm
 				index="04"
-				email={sharedProps.email}
+				action={urlFor('core.contact.execute')}
 				title={
 					<>
 						Prêt à créer votre site web <em>sur mesure</em> ?

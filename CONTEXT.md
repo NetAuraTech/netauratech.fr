@@ -153,4 +153,4 @@ _Avoid_: Expiration, TTL (TTL belongs to cache entries)
 **Domain**: No — it's a Token (selector/validator pattern), single-purpose and short-lived. Session/auth tokens are handled by `@adonisjs/auth`, not this Token model.
 
 **Dev**: Is the contact form stored in the database?
-**Domain**: No. It is a client-side `mailto:` form — the submission leaves through the visitor's mail client. Nothing is written to the database.
+**Domain**: No. The submission is posted to the server, which relays it as a notification mail to the site address through the kernel mail flow (the `contactForm` row of `MAIL_SPECS`). Nothing is persisted — the only trace is a business log entry.

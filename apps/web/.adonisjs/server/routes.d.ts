@@ -40,14 +40,6 @@ export type ScannedRoutes = {
     'admin.core.maintenance.render': { paramsTuple?: []; params?: {} }
     'admin.core.maintenance.update': { paramsTuple?: []; params?: {} }
     'admin.core.maintenance.toggle': { paramsTuple?: []; params?: {} }
-    'core.projects.render': { paramsTuple?: []; params?: {} }
-    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
-    'core.services.render': { paramsTuple?: []; params?: {} }
-    'core.mentions.render': { paramsTuple?: []; params?: {} }
-    'core.privacy.render': { paramsTuple?: []; params?: {} }
-    'core.sitemap.show': { paramsTuple?: []; params?: {} }
-    'core.robots.show': { paramsTuple?: []; params?: {} }
-    'core.docs.show': { paramsTuple?: []; params?: {} }
     'account.profile.render': { paramsTuple?: []; params?: {} }
     'account.profile.execute': { paramsTuple?: []; params?: {} }
     'account.account.render': { paramsTuple?: []; params?: {} }
@@ -120,6 +112,15 @@ export type ScannedRoutes = {
     'api.v1.admin.core.maintenance.update': { paramsTuple?: []; params?: {} }
     'api.v1.admin.core.maintenance.toggle': { paramsTuple?: []; params?: {} }
     'core.openapi.spec': { paramsTuple?: []; params?: {} }
+    'core.projects.render': { paramsTuple?: []; params?: {} }
+    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'core.services.render': { paramsTuple?: []; params?: {} }
+    'core.mentions.render': { paramsTuple?: []; params?: {} }
+    'core.privacy.render': { paramsTuple?: []; params?: {} }
+    'core.contact.execute': { paramsTuple?: []; params?: {} }
+    'core.sitemap.show': { paramsTuple?: []; params?: {} }
+    'core.robots.show': { paramsTuple?: []; params?: {} }
+    'core.docs.show': { paramsTuple?: []; params?: {} }
     'health.liveness': { paramsTuple?: []; params?: {} }
     'health.readiness': { paramsTuple?: []; params?: {} }
     'core.home.render': { paramsTuple?: []; params?: {} }
@@ -142,14 +143,6 @@ export type ScannedRoutes = {
     'admin.log.logs.render': { paramsTuple?: []; params?: {} }
     'admin.core.dashboard.render': { paramsTuple?: []; params?: {} }
     'admin.core.maintenance.render': { paramsTuple?: []; params?: {} }
-    'core.projects.render': { paramsTuple?: []; params?: {} }
-    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
-    'core.services.render': { paramsTuple?: []; params?: {} }
-    'core.mentions.render': { paramsTuple?: []; params?: {} }
-    'core.privacy.render': { paramsTuple?: []; params?: {} }
-    'core.sitemap.show': { paramsTuple?: []; params?: {} }
-    'core.robots.show': { paramsTuple?: []; params?: {} }
-    'core.docs.show': { paramsTuple?: []; params?: {} }
     'account.profile.render': { paramsTuple?: []; params?: {} }
     'account.account.render': { paramsTuple?: []; params?: {} }
     'account.email_change.render': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
@@ -181,6 +174,14 @@ export type ScannedRoutes = {
     'api.v1.admin.core.dashboard.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.core.maintenance.index': { paramsTuple?: []; params?: {} }
     'core.openapi.spec': { paramsTuple?: []; params?: {} }
+    'core.projects.render': { paramsTuple?: []; params?: {} }
+    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'core.services.render': { paramsTuple?: []; params?: {} }
+    'core.mentions.render': { paramsTuple?: []; params?: {} }
+    'core.privacy.render': { paramsTuple?: []; params?: {} }
+    'core.sitemap.show': { paramsTuple?: []; params?: {} }
+    'core.robots.show': { paramsTuple?: []; params?: {} }
+    'core.docs.show': { paramsTuple?: []; params?: {} }
     'health.liveness': { paramsTuple?: []; params?: {} }
     'health.readiness': { paramsTuple?: []; params?: {} }
     'core.home.render': { paramsTuple?: []; params?: {} }
@@ -203,14 +204,6 @@ export type ScannedRoutes = {
     'admin.log.logs.render': { paramsTuple?: []; params?: {} }
     'admin.core.dashboard.render': { paramsTuple?: []; params?: {} }
     'admin.core.maintenance.render': { paramsTuple?: []; params?: {} }
-    'core.projects.render': { paramsTuple?: []; params?: {} }
-    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
-    'core.services.render': { paramsTuple?: []; params?: {} }
-    'core.mentions.render': { paramsTuple?: []; params?: {} }
-    'core.privacy.render': { paramsTuple?: []; params?: {} }
-    'core.sitemap.show': { paramsTuple?: []; params?: {} }
-    'core.robots.show': { paramsTuple?: []; params?: {} }
-    'core.docs.show': { paramsTuple?: []; params?: {} }
     'account.profile.render': { paramsTuple?: []; params?: {} }
     'account.account.render': { paramsTuple?: []; params?: {} }
     'account.email_change.render': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
@@ -242,6 +235,14 @@ export type ScannedRoutes = {
     'api.v1.admin.core.dashboard.index': { paramsTuple?: []; params?: {} }
     'api.v1.admin.core.maintenance.index': { paramsTuple?: []; params?: {} }
     'core.openapi.spec': { paramsTuple?: []; params?: {} }
+    'core.projects.render': { paramsTuple?: []; params?: {} }
+    'core.projects.show.render': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'core.services.render': { paramsTuple?: []; params?: {} }
+    'core.mentions.render': { paramsTuple?: []; params?: {} }
+    'core.privacy.render': { paramsTuple?: []; params?: {} }
+    'core.sitemap.show': { paramsTuple?: []; params?: {} }
+    'core.robots.show': { paramsTuple?: []; params?: {} }
+    'core.docs.show': { paramsTuple?: []; params?: {} }
     'health.liveness': { paramsTuple?: []; params?: {} }
     'health.readiness': { paramsTuple?: []; params?: {} }
     'core.home.render': { paramsTuple?: []; params?: {} }
@@ -284,6 +285,7 @@ export type ScannedRoutes = {
     'api.v1.admin.file.folders.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.identity.users.store': { paramsTuple?: []; params?: {} }
     'api.v1.admin.identity.roles.store': { paramsTuple?: []; params?: {} }
+    'core.contact.execute': { paramsTuple?: []; params?: {} }
   }
   DELETE: {
     'admin.file.files.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

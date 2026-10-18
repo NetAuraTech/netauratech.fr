@@ -84,38 +84,6 @@ export interface ApiDefinition {
       }
     }
   }
-  core: {
-    projects: {
-      render: typeof routes['core.projects.render']
-      show: {
-        render: typeof routes['core.projects.show.render']
-      }
-    }
-    services: {
-      render: typeof routes['core.services.render']
-    }
-    mentions: {
-      render: typeof routes['core.mentions.render']
-    }
-    privacy: {
-      render: typeof routes['core.privacy.render']
-    }
-    sitemap: {
-      show: typeof routes['core.sitemap.show']
-    }
-    robots: {
-      show: typeof routes['core.robots.show']
-    }
-    docs: {
-      show: typeof routes['core.docs.show']
-    }
-    openapi: {
-      spec: typeof routes['core.openapi.spec']
-    }
-    home: {
-      render: typeof routes['core.home.render']
-    }
-  }
   account: {
     profile: {
       render: typeof routes['account.profile.render']
@@ -271,6 +239,41 @@ export interface ApiDefinition {
       redirect: typeof routes['auth.social.redirect']
       callback: typeof routes['auth.social.callback']
       unlink: typeof routes['auth.social.unlink']
+    }
+  }
+  core: {
+    openapi: {
+      spec: typeof routes['core.openapi.spec']
+    }
+    projects: {
+      render: typeof routes['core.projects.render']
+      show: {
+        render: typeof routes['core.projects.show.render']
+      }
+    }
+    services: {
+      render: typeof routes['core.services.render']
+    }
+    mentions: {
+      render: typeof routes['core.mentions.render']
+    }
+    privacy: {
+      render: typeof routes['core.privacy.render']
+    }
+    contact: {
+      execute: typeof routes['core.contact.execute']
+    }
+    sitemap: {
+      show: typeof routes['core.sitemap.show']
+    }
+    robots: {
+      show: typeof routes['core.robots.show']
+    }
+    docs: {
+      show: typeof routes['core.docs.show']
+    }
+    home: {
+      render: typeof routes['core.home.render']
     }
   }
   health: {

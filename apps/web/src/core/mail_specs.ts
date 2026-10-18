@@ -6,10 +6,10 @@ import type { MailSpec } from '#core/types/mail';
  * holding the i18n key block, the flavor-aware candidate routes of the mail
  * link, the token type and TTL of flows that issue a token, and the template.
  *
- * The per-domain mail services (auth's `TokenMailService`, account's
- * `EmailChangeMailService`, CMS's `ContactMailService`) build every mail from
- * its row plus the shared `MailService.buildMail` assembly — a new mail flow
- * is a new row here, not a hand-assembled payload block. Token-issuing flows
+ * The per-domain mail flows (auth's `TokenMailService`, account's
+ * `EmailChangeMailService`, core's `SendContactFormAction`) build every mail
+ * from its row plus the shared `MailService.buildMail` assembly — a new mail
+ * flow is a new row here, not a hand-assembled payload block. Token-issuing flows
  * carry their {@link TOKEN_TYPES} member on the row, so callers never pair a
  * token type with a spec row by hand.
  *
@@ -118,14 +118,14 @@ export const MAIL_SPECS: Record<MailFlow, MailSpec> = {
 	/**
 	 * Contact-form notification mail, sent to the site administrator on a
 	 * front contact-form submission. Carries no link and issues no token; the
-	 * per-field value translations stay domain-side (CMS) and ride the payload
-	 * through the `fields` data slot.
+	 * per-field value translations stay domain-side (core front) and ride the
+	 * payload through the `fields` data slot.
 	 */
 	contactForm: {
 		keys: {
-			subject: 'cms.page.contact_form.mail.subject',
-			greeting: 'cms.page.contact_form.mail.greeting',
-			intro: 'cms.page.contact_form.mail.intro',
+			subject: 'core.contact_form.mail.subject',
+			greeting: 'core.contact_form.mail.greeting',
+			intro: 'core.contact_form.mail.intro',
 		},
 		linkRoutes: [],
 		template: 'emails/contact_form_email',

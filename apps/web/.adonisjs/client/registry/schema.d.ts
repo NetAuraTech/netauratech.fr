@@ -439,102 +439,6 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/admin/maintenance_controller').default['toggle']>>>
     }
   }
-  'core.projects.render': {
-    methods: ["GET","HEAD"]
-    pattern: '/projets'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
-    }
-  }
-  'core.projects.show.render': {
-    methods: ["GET","HEAD"]
-    pattern: '/projets/:slug'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { slug: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
-    }
-  }
-  'core.services.render': {
-    methods: ["GET","HEAD"]
-    pattern: '/services'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
-    }
-  }
-  'core.mentions.render': {
-    methods: ["GET","HEAD"]
-    pattern: '/mentions-legales'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
-    }
-  }
-  'core.privacy.render': {
-    methods: ["GET","HEAD"]
-    pattern: '/politique-de-confidentialite'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
-    }
-  }
-  'core.sitemap.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/sitemap.xml'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/sitemap_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/sitemap_controller').default['show']>>>
-    }
-  }
-  'core.robots.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/robots.txt'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/robots_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/robots_controller').default['show']>>>
-    }
-  }
-  'core.docs.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/docs'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/docs_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/docs_controller').default['show']>>>
-    }
-  }
   'account.profile.render': {
     methods: ["GET","HEAD"]
     pattern: '/settings/profile'
@@ -1397,6 +1301,114 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/api/openapi_controller').default['spec']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/api/openapi_controller').default['spec']>>>
+    }
+  }
+  'core.projects.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/projects_controller').default['render']>>>
+    }
+  }
+  'core.projects.show.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/projets/:slug'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { slug: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/project_controller').default['render']>>>
+    }
+  }
+  'core.services.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/services'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/services_controller').default['render']>>>
+    }
+  }
+  'core.mentions.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/mentions-legales'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/mentions_controller').default['render']>>>
+    }
+  }
+  'core.privacy.render': {
+    methods: ["GET","HEAD"]
+    pattern: '/politique-de-confidentialite'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/privacy_controller').default['render']>>>
+    }
+  }
+  'core.contact.execute': {
+    methods: ["POST"]
+    pattern: '/contact'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#transport/core/validators/contact_form').ContactFormValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#transport/core/validators/contact_form').ContactFormValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/contact_controller').default['execute']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/contact_controller').default['execute']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'core.sitemap.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/sitemap.xml'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/sitemap_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/sitemap_controller').default['show']>>>
+    }
+  }
+  'core.robots.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/robots.txt'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/robots_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/robots_controller').default['show']>>>
+    }
+  }
+  'core.docs.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/docs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#transport/core/controllers/front/docs_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#transport/core/controllers/front/docs_controller').default['show']>>>
     }
   }
   'health.liveness': {

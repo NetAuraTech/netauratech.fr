@@ -51,6 +51,7 @@ export const controllers = {
       Openapi: () => import('#transport/core/controllers/api/openapi_controller'),
     },
     front: {
+      Contact: () => import('#transport/core/controllers/front/contact_controller'),
       Docs: () => import('#transport/core/controllers/front/docs_controller'),
       Home: () => import('#transport/core/controllers/front/home_controller'),
       Mentions: () => import('#transport/core/controllers/front/mentions_controller'),
