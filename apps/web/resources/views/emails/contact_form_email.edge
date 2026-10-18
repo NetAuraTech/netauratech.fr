@@ -105,10 +105,10 @@
 
         @if(fields)
           <div class="fields">
-            @each(fields as value, label)
+            @each((value, label) in fields)
               <div class="field">
                 <div class="field-label">{{ label }}</div>
-                <div class="field-value">{{ value | nl2br }}</div>
+                <div class="field-value">{{{ nl2br(html.escape(value)) }}}</div>
               </div>
             @end
           </div>
