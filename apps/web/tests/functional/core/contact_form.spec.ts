@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import app from '@adonisjs/core/services/app';
 import limiter from '@adonisjs/limiter/services/main';
 import { test } from '@japa/runner';
+import edge from 'edge.js';
 import env from '#start/env';
 import { restoreMailClient, swapMailClient } from '#tests/helpers/mail';
 import { fieldError } from '#tests/helpers/validation';
@@ -65,6 +68,39 @@ test.group('Contact form endpoint', (group) => {
 
 		res.assertStatus(302);
 		assert.equal(mail.sent.length, 1);
+	});
+
+	test('the notification mail template renders the recorded payload', async ({ client, assert }) => {
+		const mail = swapMailClient();
+
+		await client
+			.post('/contact')
+			.redirects(0)
+			.withCsrfToken()
+			.form({
+				name: 'Jeanne Dupont',
+				email: 'jeanne@exemple.fr',
+				message: 'Ligne un\nLigne deux <script>alert(1)</script>',
+			})
+			.send();
+
+		restoreMailClient();
+
+		assert.equal(mail.sent.length, 1);
+		const message = mail.sent[0];
+		// The recording client keeps the template name and data: render the
+		// template with them (the dispatch path does the same through the mail
+		// driver) so template syntax drift fails the suite.
+		const viewPath = app.makePath(`resources/views/${message.template}.edge`);
+		const html = await edge.renderRaw(readFileSync(viewPath, 'utf8'), message.data);
+
+		assert.include(html, 'Jeanne Dupont');
+		assert.include(html, 'jeanne@exemple.fr');
+		// Newlines of the project message become line breaks...
+		assert.include(html, 'Ligne un<br>Ligne deux');
+		// ...and any HTML the visitor typed stays inert.
+		assert.include(html, '&lt;script&gt;');
+		assert.notInclude(html, '<script>alert(1)</script>');
 	});
 
 	test('POST /contact rejects an invalid payload with 422 field errors for JSON clients', async ({
