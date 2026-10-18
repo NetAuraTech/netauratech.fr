@@ -32,9 +32,18 @@ const shieldConfig = defineConfig({
 			// Default: only same-origin
 			defaultSrc: ["'self'"],
 
-			// Scripts: self + Vite HMR in dev/test
+			// Scripts: self + per-request nonce in production + Vite HMR in dev/test.
+			//
+			// The `@nonce` keyword resolves to `'nonce-<random>'` per request (shield
+			// shares the same value with Edge views as `cspNonce`, see the theme script
+			// in `inertia_layout.edge`). Nonces are production-only: in dev/test the
+			// directive keeps `'unsafe-inline'` (report-only mode), and a nonce in the
+			// same directive would silence it — which would break Vite's inline HMR
+			// preamble. Cloudflare also parses this CSP header and stamps its injected
+			// challenge scripts with the same nonce, so no extra allowlist is needed.
 			scriptSrc: [
 				"'self'",
+				...(app.inDev || app.inTest ? [] : ['@nonce']),
 				...(app.inDev || app.inTest ? ["'unsafe-eval'", "'unsafe-inline'"] : []), // Vite HMR needs these in dev/test
 			],
 
