@@ -10,6 +10,7 @@ import { Section } from '@foundry/design-system/section';
 import { SectionHeader } from '@foundry/design-system/section-header';
 import { ServiceDetail } from '@foundry/design-system/service-detail';
 import { usePage } from '@inertiajs/react';
+import { urlFor } from '~/client';
 import { SeoHead } from '~/components/atoms/seo_head';
 import { businessJsonLd } from '~/helpers/structured_data';
 import type { SiteService } from '#types/site_content';
@@ -86,7 +87,7 @@ export default function ServicesPage(props: ServicesPageProps) {
 				</Container>
 			</Section>
 			<ContactForm
-				email={sharedProps.email}
+				action={urlFor('core.contact.execute')}
 				title={
 					<>
 						Prêt à lancer votre projet <em>sur mesure</em> ?

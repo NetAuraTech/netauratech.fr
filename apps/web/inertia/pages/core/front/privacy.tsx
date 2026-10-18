@@ -28,11 +28,12 @@ interface PrivacyPageProps {
  * The page opens on the shared hero (kicker, title and RGPD lead), then flows
  * into the numbered policy sections — controller, data collected, purposes,
  * legal basis, retention, sharing, security, rights, cookies — closed by a
- * return-to-home row. The contact form being a client-side mailto, the site
- * collects no form data at all; only technical, security and error-supervision
- * data are described. The controller identity and the revision date are
- * resolved from the `LEGAL_*` environment variables and fall back to the
- * `<CHANGEME>` placeholder when a value is unset.
+ * return-to-home row. The contact form posts its submission to the server,
+ * which relays it by mail to the site address without persisting it; the
+ * "données collectées" section therefore covers both the form fields and the
+ * technical, security and error-supervision data. The controller identity and
+ * the revision date are resolved from the `LEGAL_*` environment variables and
+ * fall back to the `<CHANGEME>` placeholder when a value is unset.
  */
 export default function PrivacyPage(props: PrivacyPageProps) {
 	const { translations, identity, privacyUpdatedAt } = props;
@@ -90,9 +91,10 @@ export default function PrivacyPage(props: PrivacyPageProps) {
 								A. Via le formulaire de contact
 							</Paragraph>
 							<Paragraph>
-								Le formulaire de contact du site n’envoie aucune donnée au serveur : il ouvre directement votre client
-								de messagerie avec votre message déjà composé (nom, adresse e-mail, message). Le site ne collecte ni ne
-								stocke ces informations.
+								Lorsque vous utilisez le formulaire de contact, le site reçoit les données que vous saisissez : nom,
+								adresse e-mail, service concerné (facultatif) et message. Ces données ne sont pas enregistrées dans une
+								base de données : elles sont transmises uniquement par e-mail à l’adresse de contact du site et servent
+								uniquement à répondre à votre demande.
 							</Paragraph>
 							<Paragraph fs="xs" spacing="xs" className="font-news tracking-[0.3em]" uppercase>
 								B. Données techniques et de sécurité
@@ -127,6 +129,7 @@ export default function PrivacyPage(props: PrivacyPageProps) {
 							<Paragraph>Les données collectées sont utilisées pour :</Paragraph>
 							<ul className="space-y-2">
 								{[
+									'Répondre aux demandes envoyées via le formulaire de contact',
 									'Protéger le site contre les accès malveillants et en assurer le bon fonctionnement',
 									'Identifier et corriger les erreurs techniques',
 								].map((item) => (
@@ -139,14 +142,17 @@ export default function PrivacyPage(props: PrivacyPageProps) {
 						</LegalSection>
 						<LegalSection index="04" title="Base légale du traitement">
 							<Paragraph>
-								Les traitements sont réalisés sur le fondement de l’intérêt légitime du responsable du site à protéger
-								celui-ci et à en assurer le bon fonctionnement (article 6.1.f du RGPD), pour les données techniques, de
-								sécurité et de supervision.
+								Pour les données techniques, de sécurité et de supervision, les traitements sont réalisés sur le
+								fondement de l’intérêt légitime du responsable du site à protéger celui-ci et à en assurer le bon
+								fonctionnement (article 6.1.f du RGPD). Les données envoyées via le formulaire de contact sont traitées
+								sur le fondement du consentement du visiteur, donné lors de l’envoi de sa demande, afin de y répondre
+								(article 6.1.a du RGPD).
 							</Paragraph>
 						</LegalSection>
 						<LegalSection index="05" title="Durée de conservation">
 							<ul className="space-y-2">
 								{[
+									'Demandes envoyées via le formulaire de contact : non stockées par le site sous forme structurée, elles sont relayées par e-mail et conservées uniquement dans la boîte de réception du site',
 									"Journaux serveur (adresses IP, dates) : conservés quelques mois au maximum, selon la politique de sécurité de l'hébergeur",
 									'Rapports de supervision des erreurs : conservés pendant une durée limitée fixée dans la configuration du service',
 								].map((item) => (

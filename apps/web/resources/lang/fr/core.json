@@ -1,0 +1,16 @@
+{
+	"contact_form": {
+		"submitted": "Votre demande a bien été envoyée. Nous reviendrons vers vous dans les plus brefs délais.",
+		"mail": {
+			"subject": "Nouvelle demande de {name} — formulaire de contact",
+			"greeting": "Bonjour,",
+			"intro": "Une nouvelle demande vient d'être envoyée via le formulaire de contact du site."
+		},
+		"field": {
+			"name": "Nom",
+			"email": "E-mail",
+			"service": "Service",
+			"message": "Projet"
+		}
+	}
+}

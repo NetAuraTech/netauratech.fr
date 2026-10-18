@@ -44,7 +44,7 @@ The public front is content-driven: no CMS, no page persistence.
 - **Content sources** — committed markdown in `content/projects/{slug}.md` and `content/services/{slug}.md`: frontmatter (`order`, `cover` (a backend file id), `rubrique`, `title`, `note`) and a structured body — `:::` fenced blocks (`lede`, `features`, `quote`, `gallery`, `metrics`) plus `##` chapters — parsed by `src/core/services/project_blocks.ts` and orchestrated by `src/core/services/site_content_service.ts`.
 - **Adding a project** — drop `content/projects/{slug}.md`. The route, the page and the sitemap pick it up with no code change.
 - **Sitemap** — `start/sitemap.ts` registers two collectors (the route collector and the projects collector, `src/core/services/`) into a shared registry; `SitemapService` aggregates them plus the `SITEMAP_ADDITIONS` / `SITEMAP_EXCLUSIONS` env values.
-- **Contact** — the `contact_form` organism is a client-side `mailto:` form (recipient from `MAIL_FROM_ADDRESS`); nothing is written to the database.
+- **Contact** — the `contact_form` organism posts to `POST /contact` (`core.contact.execute`): the `ContactController` validates the fields and `SendContactFormAction` relays the submission as a notification mail to `MAIL_FROM_ADDRESS` through the kernel `MailService` (the `contactForm` row of `MAIL_SPECS`, rendered in the visitor's request locale); nothing is written to the database.
 - **Project visuals** — `cover` and gallery `id:N` references resolve through the `file` domain (`FindFileAction` → server-resolved URLs and responsive WebP variants); images are never committed to the repo.
 
 ## Working Agreements

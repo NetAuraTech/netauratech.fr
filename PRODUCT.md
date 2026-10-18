@@ -39,7 +39,8 @@ services live as committed markdown under `apps/web/content/` (one file each,
 no database), the portfolio is one parameterized route
 (`core.projects.show.render`) and the sitemap collectors index everything
 automatically, and the contact form (name, email, service selector, message)
-is a client-side `mailto:` form — nothing is written to the database.
+posts to the server, which relays the submission by email to the site
+address — nothing is written to the database.
 
 ## Capabilities and Constraints
 

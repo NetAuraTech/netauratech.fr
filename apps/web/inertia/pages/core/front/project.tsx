@@ -120,7 +120,7 @@ export default function ProjectPage(props: ProjectPageProps) {
 				</Section>
 			)}
 			<ContactForm
-				email={sharedProps.email}
+				action={urlFor('core.contact.execute')}
 				title={
 					<>
 						Un projet <em>similaire</em> en tête ?

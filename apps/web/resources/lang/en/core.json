@@ -1,0 +1,16 @@
+{
+	"contact_form": {
+		"submitted": "Your request has been sent. We will get back to you as soon as possible.",
+		"mail": {
+			"subject": "New contact request from {name}",
+			"greeting": "Hello,",
+			"intro": "A new request was just sent through the site's contact form."
+		},
+		"field": {
+			"name": "Name",
+			"email": "Email",
+			"service": "Service",
+			"message": "Project"
+		}
+	}
+}
