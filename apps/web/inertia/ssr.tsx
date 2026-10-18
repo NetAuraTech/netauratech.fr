@@ -13,7 +13,9 @@ export default function render(page: any) {
 	return createInertiaApp({
 		page,
 		render: ReactDOMServer.renderToString,
-		title: (title) => (title ? `${title} - ${appName}` : appName),
+		// Public front pages already include the app name in their title (the same string feeds og:title),
+		// so only append it when it is missing — otherwise the brand is duplicated.
+		title: (title) => (title ? (title.includes(appName) ? title : `${title} - ${appName}`) : appName),
 		resolve: (name) => {
 			return resolvePageComponent<ResolvedComponent>(
 				`./pages/${name}.tsx`,

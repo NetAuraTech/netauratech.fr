@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script>
+    {{-- The nonce matches the `@nonce` keyword of the CSP `script-src` directive (see `config/shield.ts`). --}}
+    <script nonce="{{ cspNonce }}">
       (function() {
         const stored = localStorage.getItem("theme");
         const isDark = stored === "dark" || stored === null && window.matchMedia("(prefers-color-scheme: dark)").matches;
