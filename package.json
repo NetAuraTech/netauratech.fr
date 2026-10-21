@@ -48,6 +48,7 @@
     "@adonisjs/session": {
       "@adonisjs/redis": "^11.0.0"
     },
+    "@japa/runner": "^5.4.0",
     "nodemailer": "^10.0.13"
   },
   "engines": {
