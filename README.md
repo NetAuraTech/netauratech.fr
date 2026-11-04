@@ -1,8 +1,8 @@
 # NetAuraTech — `netauratech.fr`
 
 The public website of NetAuraTech, a web-development studio, and its admin
-back-office. Built on the Foundry 2.0 baseline (AdonisJS v7 + Inertia/React,
-the `inertia` flavor of `adonisjs-foundry` v2.0.0).
+back-office. Built on the Foundry 1.0 baseline (AdonisJS v7 + Inertia/React,
+the `inertia` flavor of `adonisjs-foundry` v1.0.0).
 
 ## What is in the repo
 

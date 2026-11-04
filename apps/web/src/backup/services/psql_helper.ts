@@ -6,6 +6,10 @@ export interface PsqlRestoreOptions {
 	user: string;
 	database: string;
 	password: string;
+	/**
+	 * Reset prelude replayed before the dump, inside the same transaction.
+	 */
+	preludePath?: string;
 	sqlPath: string;
 }
 
@@ -17,6 +21,12 @@ export interface PsqlRestoreOptions {
  * `-v ON_ERROR_STOP=1` makes `psql` abort on the first failing statement, and
  * `-1` wraps the whole restore in a single transaction, so a failing restore
  * rolls back instead of partially applying the dump.
+ *
+ * **Reset prelude**
+ *
+ * When `options.preludePath` is set, it is passed as a `-f` file before the
+ * dump, so the reset and the replay run in the same transaction: either
+ * both apply or both roll back.
  *
  * **Dependency injection for testability**
  *
@@ -44,9 +54,12 @@ export function restoreDatabaseWithPsql(
 			options.user,
 			'-d',
 			options.database,
-			'-f',
-			options.sqlPath,
 		];
+
+		if (options.preludePath) {
+			args.push('-f', options.preludePath);
+		}
+		args.push('-f', options.sqlPath);
 
 		const psql: ChildProcess = _spawn('psql', args, {
 			env: { ...process.env, PGPASSWORD: options.password },
