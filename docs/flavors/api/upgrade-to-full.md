@@ -65,7 +65,7 @@ pruned it by name from the frozen rewrite):
 
 ```jsonc
 // apps/web/package.json → "dependencies": add back
-"@foundry/design-system": "^2.3.0",
+"@foundry/design-system": "^1.0.0",
 ```
 
 then run a bare `npm install` in the repo root so npm re-links the workspace
@@ -111,8 +111,8 @@ Restore it from the `full` tree:
 No package install is needed — the module rides on the already-kept
 `@adonisjs/queue`. After restoring the files, run
 `node ace migration:run` so the `webhook_deliveries` table is created, and
-point the production worker at the `webhook` queue (it is already listed in
-the `docker-compose.prod.yml` queue set). The receiver stays disabled until
+point the production worker at the `webhook` queue (it is already part of the
+`default,auth,maintenance,webhook` queue set). The receiver stays disabled until
 `WEBHOOK_SECRET` is set.
 
 ## 4. Recover the session auth, admin UI and public site

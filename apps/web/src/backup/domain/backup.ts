@@ -23,7 +23,8 @@ export class BackupMetadata extends ValueObject<{
 	 * `YYYY-MM-DD`/`HHmmss` timestamp, followed by the optional
 	 * `.sql[.gz][.enc]` extension stack.
 	 */
-	private static readonly FILENAME_PATTERN = /^backup-(full|differential)-(\d{4}-\d{2}-\d{2})-(\d{6})/;
+	private static readonly FILENAME_PATTERN =
+		/^backup-(full|differential)-(\d{4}-\d{2}-\d{2})-(\d{6})\.sql(\.gz)?(\.enc)?$/;
 
 	private constructor(
 		readonly filename: string,
@@ -57,6 +58,17 @@ export class BackupMetadata extends ValueObject<{
 	 */
 	static manifestFilename(backupFilename: string): string {
 		return backupFilename.replace(/(\.(sql|gz|enc))+$/, '.manifest.json');
+	}
+
+	/**
+	 * Extract the strategy type from a backup filename, or `null` when the
+	 * filename does not follow the backup filename grammar.
+	 *
+	 * @param filename - The artifact filename (relative to the storage prefix).
+	 */
+	static parseType(filename: string): BackupType | null {
+		const parsed = BackupMetadata.parseFilename(filename);
+		return parsed ? parsed.type : null;
 	}
 
 	/**

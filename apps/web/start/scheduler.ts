@@ -1,4 +1,5 @@
 import app from '@adonisjs/core/services/app';
+import { QueueManager } from '@adonisjs/queue';
 import { EnforceBackupRetentionJob } from '#backup/jobs/enforce_backup_retention_job';
 import maintenanceConfig from '#config/maintenance';
 import { PruneLogEntriesJob } from '#log/jobs/prune_log_entries_job';
@@ -37,7 +38,14 @@ export async function registerMaintenanceSchedules(
  * Register the maintenance schedules once the app has booted, when the queue
  * adapter is available. This runs at import time of this preload (the app is
  * already booted by then, so the `booted` hook fires immediately).
+ *
+ * Registration is skipped when the queue manager is not initialized: in
+ * warmup mode (e.g. `node ace codegen`) the queue provider does not boot the
+ * manager, and pushing schedules without it throws `E_QUEUE_NOT_INITIALIZED`.
  */
 await app.booted(async () => {
+	if (!QueueManager.isInitialized()) {
+		return;
+	}
 	await registerMaintenanceSchedules();
 });

@@ -23,6 +23,16 @@ const backupConfig = {
 	 */
 	database: {
 		connection: env.get('DB_CONNECTION', 'pg'),
+
+		/**
+		 * Schemas to include in the dump (one `pg_dump --schema` flag per value).
+		 * Empty (default) dumps every schema of the database.
+		 */
+		schemas: env
+			.get('BACKUP_PG_SCHEMAS', '')
+			.split(',')
+			.map((schema) => schema.trim())
+			.filter(Boolean),
 	},
 
 	/**

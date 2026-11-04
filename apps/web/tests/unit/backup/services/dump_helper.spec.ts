@@ -56,6 +56,8 @@ test.group('DumpHelper', (group) => {
 		assert.include(args, '/tmp/dump.sql');
 		assert.include(args, '--no-owner');
 		assert.include(args, '--no-privileges');
+		// No schema scoping by default: pg_dump dumps every schema
+		assert.notInclude(args, '--schema');
 	});
 
 	test('createDatabaseDump appends -t flags for each table', async ({ assert }) => {
@@ -90,6 +92,40 @@ test.group('DumpHelper', (group) => {
 		assert.equal(args[tIdx1 + 1], 'users');
 		const tIdx2 = args.lastIndexOf('-t');
 		assert.equal(args[tIdx2 + 1], 'posts');
+	});
+
+	test('createDatabaseDump appends --schema flags for each schema', async ({ assert }) => {
+		const { createDatabaseDump } = await import('#backup/services/dump_helper');
+
+		const mockProcess = {
+			on: sinon.stub().callsFake((event: string, cb: (...args: any[]) => void) => {
+				if (event === 'close') cb(0);
+			}),
+			stderr: { on: sinon.stub() },
+		};
+		const spawnStub = sinon.stub().returns(mockProcess);
+		const sanitizeStub = sinon.stub().resolves();
+
+		await createDatabaseDump(
+			{
+				host: 'localhost',
+				port: 5432,
+				user: 'postgres',
+				database: 'mydb',
+				password: 'secret',
+				outputPath: '/tmp/dump.sql',
+				schemas: ['public', 'audit'],
+			},
+			spawnStub,
+			sanitizeStub,
+		);
+
+		const [, args] = spawnStub.firstCall.args;
+		// Find --schema flags and their following schema names
+		const sIdx1 = args.indexOf('--schema');
+		assert.equal(args[sIdx1 + 1], 'public');
+		const sIdx2 = args.lastIndexOf('--schema');
+		assert.equal(args[sIdx2 + 1], 'audit');
 	});
 
 	test('createDatabaseDump passes PGPASSWORD in env', async ({ assert }) => {

@@ -71,6 +71,16 @@ test.group('BackupMetadata', () => {
 		assert.isNull(BackupMetadata.parseFilename('backup-weekly-2024-01-15-143022.sql.gz.enc'));
 	});
 
+	test('parseFilename() returns null for manifest filenames', ({ assert }) => {
+		assert.isNull(BackupMetadata.parseFilename('backup-full-2024-01-15-143022.manifest.json'));
+		assert.isNull(BackupMetadata.parseFilename('backup-differential-2024-01-16-100000.manifest.json'));
+	});
+
+	test('parseFilename() returns null when the extension stack does not end the filename', ({ assert }) => {
+		assert.isNull(BackupMetadata.parseFilename('backup-full-2024-01-15-143022.sql.gz.enc.bak'));
+		assert.isNull(BackupMetadata.parseFilename('backup-full-2024-01-15-143022.sql.gz.enc.tar'));
+	});
+
 	test('parseFilename() returns null when the grammar is not at the start of the filename', ({ assert }) => {
 		assert.isNull(BackupMetadata.parseFilename('prefix-backup-full-2024-01-15-143022.sql.gz.enc'));
 	});

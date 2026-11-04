@@ -143,6 +143,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
 	BACKUP_STORAGE_DISK: Env.schema.enum.optional(['fs', 's3', 'r2', 'r2-backup'] as const),
 	BACKUP_TIME: Env.schema.string.optional(),
+	BACKUP_PG_SCHEMAS: Env.schema.string.optional(),
 	BACKUP_ENCRYPTION_ENABLED: Env.schema.boolean.optional(),
 
 	/*

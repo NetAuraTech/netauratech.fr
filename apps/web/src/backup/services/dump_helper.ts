@@ -10,6 +10,11 @@ export interface DumpOptions {
 	outputPath: string;
 	tables?: string[];
 	/**
+	 * Schemas to restrict the dump to (one `--schema` flag per value).
+	 * Empty or undefined dumps every schema of the database.
+	 */
+	schemas?: string[];
+	/**
 	 * Sanitize the dump file in place once pg_dump succeeds.
 	 * Defaults to true.
 	 */
@@ -94,6 +99,7 @@ export function createDatabaseDump(
 	_sanitize: (path: string) => Promise<void> = sanitizeDumpFile,
 ): Promise<void> {
 	const tables = options.tables ?? [];
+	const schemas = options.schemas ?? [];
 
 	return new Promise((resolve, reject) => {
 		const args = [
@@ -115,6 +121,10 @@ export function createDatabaseDump(
 
 		for (const table of tables) {
 			args.push('-t', table);
+		}
+
+		for (const schema of schemas) {
+			args.push('--schema', schema);
 		}
 
 		const pgDump: ChildProcess = _spawn('pg_dump', args, {
