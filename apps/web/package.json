@@ -59,7 +59,7 @@
     "@iconify/react": "^6.0.3",
     "@inertiajs/react": "^3.9.1",
     "@lukeed/ms": "^2.0.2",
-    "@scalar/api-reference": "^1.76.0",
+    "@scalar/api-reference": "^1.77.0",
     "@sentry/node": "^11.9.0",
     "@sentry/react": "^11.8.0",
     "@tailwindcss/vite": "^4.2.1",
